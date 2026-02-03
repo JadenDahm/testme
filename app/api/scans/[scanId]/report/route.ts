@@ -22,7 +22,7 @@ export async function GET(
         domains!inner(domain, user_id)
       `)
       .eq('id', scanId)
-      .single()
+      .single() as any
 
     if (scanError || !scan) {
       return NextResponse.json(
@@ -44,20 +44,20 @@ export async function GET(
       .from('scan_findings')
       .select('*')
       .eq('scan_id', scanId)
-      .order('severity', { ascending: false })
+      .order('severity', { ascending: false }) as any
 
     // Generate PDF
     const pdf = generatePDFReport({
-      scanId: scan.id,
+      scanId: (scan as any).id,
       domain: (scan as any).domains.domain,
-      scanDate: scan.created_at,
-      securityScore: scan.security_score || 0,
-      totalFindings: scan.total_findings,
+      scanDate: (scan as any).created_at,
+      securityScore: (scan as any).security_score || 0,
+      totalFindings: (scan as any).total_findings,
       findings: {
-        critical: scan.critical_count,
-        high: scan.high_count,
-        medium: scan.medium_count,
-        low: scan.low_count,
+        critical: (scan as any).critical_count,
+        high: (scan as any).high_count,
+        medium: (scan as any).medium_count,
+        low: (scan as any).low_count,
       },
       scanFindings: (findings || []).map(f => ({
         title: f.title,
