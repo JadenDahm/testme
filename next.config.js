@@ -11,6 +11,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Disable source maps in production to avoid parsing issues
+  productionBrowserSourceMaps: false,
 }
 
 module.exports = nextConfig
