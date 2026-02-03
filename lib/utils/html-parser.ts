@@ -33,10 +33,12 @@ export function parseHTML(html: string): {
   // Extrahiere Formulare
   const formRegex = /<form[^>]*>(.*?)<\/form>/gis
   while ((match = formRegex.exec(html)) !== null) {
-    const formTag = html.substring(match.index, match.index + match[0].indexOf('>'))
+    const formTagStart = match.index
+    const formTagEnd = match.index + match[0].indexOf('>')
+    const formTag = html.substring(formTagStart, formTagEnd)
     const formContent = match[1] || ''
     
-    // Extrahiere action
+    // Extrahiere action (kann leer sein, dann wird current URL verwendet)
     const actionMatch = formTag.match(/action=["']([^"']+)["']/i)
     const action = actionMatch ? actionMatch[1] : ''
     
@@ -52,9 +54,8 @@ export function parseHTML(html: string): {
       inputs.push(inputMatch[1])
     }
 
-    if (action) {
-      forms.push({ action, method, inputs })
-    }
+    // Formulare auch ohne action-Attribut berücksichtigen (submit to current URL)
+    forms.push({ action: action || '', method, inputs })
   }
 
   // Extrahiere Script-Inhalte
