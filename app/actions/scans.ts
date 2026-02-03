@@ -105,44 +105,36 @@ async function processScan(
 
   try {
     // Update queue status
-    await (supabase
-      .from('scan_queue') as any)
-      .update({
-        status: 'processing',
-        started_at: new Date().toISOString(),
-      })
-      .eq('scan_id', scanId)
+    const queueUpdate = supabase.from('scan_queue') as any
+    await queueUpdate.update({
+      status: 'processing',
+      started_at: new Date().toISOString(),
+    }).eq('scan_id', scanId)
 
     // Run scan
     const engine = new ScanEngine(scanId, domain, userId, baseUrl)
     await engine.run(scanType)
 
     // Update queue status
-    await (supabase
-      .from('scan_queue') as any)
-      .update({
-        status: 'completed',
-        completed_at: new Date().toISOString(),
-      })
-      .eq('scan_id', scanId)
+    const queueUpdate2 = supabase.from('scan_queue') as any
+    await queueUpdate2.update({
+      status: 'completed',
+      completed_at: new Date().toISOString(),
+    }).eq('scan_id', scanId)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    await (supabase
-      .from('scan_queue') as any)
-      .update({
-        status: 'failed',
-        completed_at: new Date().toISOString(),
-      })
-      .eq('scan_id', scanId)
+    const queueUpdate3 = supabase.from('scan_queue') as any
+    await queueUpdate3.update({
+      status: 'failed',
+      completed_at: new Date().toISOString(),
+    }).eq('scan_id', scanId)
     
-    await (supabase
-      .from('scans') as any)
-      .update({
-        status: 'failed',
-        error_message: errorMessage,
-        completed_at: new Date().toISOString(),
-      })
-      .eq('id', scanId)
+    const scanUpdate = supabase.from('scans') as any
+    await scanUpdate.update({
+      status: 'failed',
+      error_message: errorMessage,
+      completed_at: new Date().toISOString(),
+    }).eq('id', scanId)
   }
 }
 
@@ -169,13 +161,11 @@ export async function cancelScan(scanId: string) {
       return { error: 'Scan cannot be cancelled' }
     }
 
-    await (supabase
-      .from('scans') as any)
-      .update({
-        status: 'cancelled',
-        completed_at: new Date().toISOString(),
-      })
-      .eq('id', scanId)
+    const scanUpdate2 = supabase.from('scans') as any
+    await scanUpdate2.update({
+      status: 'cancelled',
+      completed_at: new Date().toISOString(),
+    }).eq('id', scanId)
 
     revalidatePath('/dashboard/scans')
     return { success: true }
