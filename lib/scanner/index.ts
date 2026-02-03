@@ -548,3 +548,4 @@ async function checkSensitiveFiles(
   }
   
   console.log(`[checkSensitiveFiles] Abgeschlossen`);
+}
