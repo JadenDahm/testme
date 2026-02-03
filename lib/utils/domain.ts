@@ -60,13 +60,14 @@ export function validateDomain(domain: string): { valid: boolean; error?: string
 
 export function generateVerificationToken(): string {
   // Kryptographisch sicherer Token für Domain-Verifizierung
-  const array = new Uint8Array(32)
   if (typeof window !== 'undefined' && window.crypto) {
+    const array = new Uint8Array(32)
     window.crypto.getRandomValues(array)
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
   } else {
-    // Fallback für Node.js
+    // Fallback für Node.js (Server-seitig)
+    // Dynamischer Import für Node.js crypto
     const crypto = require('crypto')
-    crypto.randomFillSync(array)
+    return crypto.randomBytes(32).toString('hex')
   }
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
 }

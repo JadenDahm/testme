@@ -121,7 +121,7 @@ export async function verifyDomainDNS(domainId: string) {
   // WICHTIG: In Production sollte dies über einen externen DNS-Resolver erfolgen
   // Hier vereinfachte Version - für Production: dns.promises.resolveTxt() oder externe API
   try {
-    const dns = require('dns').promises
+    const dns = await import('dns/promises')
     const txtRecords = await dns.resolveTxt(domain.normalized_domain)
     
     const expectedValue = `security-scanner-verification=${domain.verification_token}`
