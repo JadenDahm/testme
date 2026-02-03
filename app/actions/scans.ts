@@ -71,13 +71,13 @@ export async function startScan(domainId: string, scanType: 'full' | 'passive' |
     await supabase
       .from('scan_queue')
       .insert({
-        scan_id: scan.id,
+        scan_id: (scan as any).id,
         status: 'pending',
       } as any)
 
     // Start scan asynchronously (in production, use a proper job queue)
     // For now, we'll process it immediately
-    processScan(scan.id, domain.domain, user.id, scanType).catch(error => {
+    processScan((scan as any).id, (domain as any).domain, user.id, scanType).catch(error => {
       console.error('Scan processing error:', error)
     })
 
