@@ -105,12 +105,12 @@ async function processScan(
 
   try {
     // Update queue status
-    await supabase
-      .from('scan_queue')
+    await (supabase
+      .from('scan_queue') as any)
       .update({
         status: 'processing',
         started_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('scan_id', scanId)
 
     // Run scan
@@ -118,30 +118,30 @@ async function processScan(
     await engine.run(scanType)
 
     // Update queue status
-    await supabase
-      .from('scan_queue')
+    await (supabase
+      .from('scan_queue') as any)
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('scan_id', scanId)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    await supabase
-      .from('scan_queue')
+    await (supabase
+      .from('scan_queue') as any)
       .update({
         status: 'failed',
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('scan_id', scanId)
     
-    await supabase
-      .from('scans')
+    await (supabase
+      .from('scans') as any)
       .update({
         status: 'failed',
         error_message: errorMessage,
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', scanId)
   }
 }
@@ -169,12 +169,12 @@ export async function cancelScan(scanId: string) {
       return { error: 'Scan cannot be cancelled' }
     }
 
-    await supabase
-      .from('scans')
+    await (supabase
+      .from('scans') as any)
       .update({
         status: 'cancelled',
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', scanId)
 
     revalidatePath('/dashboard/scans')

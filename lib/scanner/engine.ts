@@ -42,12 +42,12 @@ export class ScanEngine {
 
     try {
       // Update scan status to running
-      await supabase
-        .from('scans')
+      await (supabase
+        .from('scans') as any)
         .update({
           status: 'running',
           started_at: new Date().toISOString(),
-        } as any)
+        })
         .eq('id', this.context.scanId)
 
       // Log scan start
@@ -119,8 +119,8 @@ export class ScanEngine {
       await this.saveFindings()
 
       // Update scan status
-      await supabase
-        .from('scans')
+      await (supabase
+        .from('scans') as any)
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
@@ -131,7 +131,7 @@ export class ScanEngine {
           high_count: counts.high,
           medium_count: counts.medium,
           low_count: counts.low,
-        } as any)
+        })
         .eq('id', this.context.scanId)
 
       await this.log('info', 'Scan completed successfully', {
@@ -143,13 +143,13 @@ export class ScanEngine {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       
-      await supabase
-        .from('scans')
+      await (supabase
+        .from('scans') as any)
         .update({
           status: 'failed',
           completed_at: new Date().toISOString(),
           error_message: errorMessage,
-        } as any)
+        })
         .eq('id', this.context.scanId)
 
       await this.log('error', 'Scan failed', { error: errorMessage })
@@ -223,11 +223,11 @@ export class ScanEngine {
    */
   private async updateProgress(percentage: number, message: string): Promise<void> {
     const supabase = await createClient()
-    await supabase
-      .from('scans')
+    await (supabase
+      .from('scans') as any)
       .update({
         progress_percentage: Math.min(100, percentage),
-      } as any)
+      })
       .eq('id', this.context.scanId)
   }
 
@@ -251,12 +251,12 @@ export class ScanEngine {
    */
   async cancel(): Promise<void> {
     const supabase = await createClient()
-    await supabase
-      .from('scans')
+    await (supabase
+      .from('scans') as any)
       .update({
         status: 'cancelled',
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', this.context.scanId)
     
     await this.log('info', 'Scan cancelled by user')
