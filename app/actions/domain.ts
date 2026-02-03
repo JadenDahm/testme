@@ -122,10 +122,10 @@ export async function verifyDomainDNS(domainId: string) {
   // Hier vereinfachte Version - für Production: dns.promises.resolveTxt() oder externe API
   try {
     const dns = await import('dns/promises')
-    const txtRecords = await dns.resolveTxt(domain.normalized_domain)
+    const txtRecords: string[][] = await dns.resolveTxt(domain.normalized_domain)
     
     const expectedValue = `security-scanner-verification=${domain.verification_token}`
-    const found = txtRecords.some((record: string[][]) =>
+    const found = txtRecords.some((record: string[]) =>
       record.some((txt: string) => txt === expectedValue)
     )
 
