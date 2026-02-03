@@ -255,9 +255,9 @@ export class ScanEngine {
    */
   async cancel(): Promise<void> {
     const supabase = await createClient()
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scans')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         status: 'cancelled',
         completed_at: new Date().toISOString(),
