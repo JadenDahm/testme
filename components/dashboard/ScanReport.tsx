@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { AlertCircle, CheckCircle, Clock, Shield, ArrowLeft } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, Shield, ArrowLeft, XCircle } from 'lucide-react';
 import type { ScanResult, Vulnerability, Severity } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 export default function ScanReport({ scanResult: initialResult }: { scanResult: ScanResult }) {
+  const router = useRouter();
   const [scanResult, setScanResult] = useState(initialResult);
   const [filter, setFilter] = useState<Severity | 'all'>('all');
   const [isMounted, setIsMounted] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   // Verhindere Hydration-Fehler
   useEffect(() => {
@@ -38,6 +41,26 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
       return () => clearInterval(interval);
     }
   }, [scanResult.scan.id, scanResult.scan.status, isMounted]);
+
+  const handleCancelScan = async () => {
+    setCancelling(true);
+    try {
+      const response = await fetch(`/api/scans/${scanResult.scan.id}/cancel`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Fehler beim Abbrechen');
+      }
+
+      router.refresh();
+    } catch (error) {
+      console.error('Cancel error:', error);
+      alert('Fehler beim Abbrechen des Scans');
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   const getSeverityColor = (severity: Severity) => {
     switch (severity) {
@@ -106,14 +129,26 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
               )}
             </div>
           </div>
-          {scanResult.scan.status === 'completed' && (
-            <div className="text-right">
-              <div className="text-4xl font-bold text-gray-900 mb-1">
-                {scanResult.summary.security_score}
+          <div className="flex items-center gap-3">
+            {scanResult.scan.status === 'completed' && (
+              <div className="text-right">
+                <div className="text-4xl font-bold text-gray-900 mb-1">
+                  {scanResult.summary.security_score}
+                </div>
+                <div className="text-sm text-gray-600">Security Score</div>
               </div>
-              <div className="text-sm text-gray-600">Security Score</div>
-            </div>
-          )}
+            )}
+            {isRunning && (
+              <button
+                onClick={handleCancelScan}
+                disabled={cancelling}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <XCircle className="h-5 w-5" />
+                {cancelling ? 'Wird abgebrochen...' : 'Scan abbrechen'}
+              </button>
+            )}
+          </div>
         </div>
 
         {scanResult.scan.status === 'completed' && (
