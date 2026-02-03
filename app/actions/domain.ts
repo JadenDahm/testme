@@ -61,7 +61,7 @@ export async function addDomain(domain: string) {
       user_id: user.id,
       domain: domain,
       normalized_domain: normalized,
-      verification_status: 'pending',
+      verification_status: 'pending' as const,
       verification_token: verificationToken,
     })
     .select()
