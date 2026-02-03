@@ -1,166 +1,142 @@
-import { ScanContext, ScanFinding, Severity } from './types'
-
 /**
- * Active Vulnerability Scanner Module
- * 
- * CRITICAL SECURITY: Only performs non-destructive, read-only verification tests
- * - No actual exploitation
- * - No data modification
- * - No brute-force attacks
- * - Strict timeouts and rate limits
- * - Only error-based detection
+ * Active Vulnerability Scans
+ * WICHTIG: Non-destructive, read-only verification techniques only
+ * Nur für verifizierte Domains
  */
-export class ActiveScanner {
-  private timeout = 5000 // 5 seconds per test
-  private maxTestsPerUrl = 10
 
-  constructor(
-    private context: ScanContext,
-    private onProgress?: (progress: { stage: string; percentage: number; message: string }) => void
-  ) {}
+import { ScannerModule, ScanFinding, ScanContext, ScanProgress } from './types'
 
-  /**
-   * Run all active security tests
-   */
-  async scan(): Promise<ScanFinding[]> {
-    this.onProgress?.({
+export class ActiveScanner implements ScannerModule {
+  name = 'active'
+  description = 'Aktive Schwachstellen-Scans (nur für verifizierte Domains)'
+
+  async run(
+    context: ScanContext,
+    onProgress?: (progress: ScanProgress) => Promise<void>
+  ): Promise<ScanFinding[]> {
+    const findings: ScanFinding[] = []
+    const baseUrl = `https://${context.domain}`
+
+    await onProgress?.({
       stage: 'active',
-      percentage: 0,
-      message: 'Starting active vulnerability scans (read-only)...'
+      progress: 0,
+      message: 'Starte aktive Scans...',
     })
 
-    const findings: ScanFinding[] = []
-    const urls = Array.from(this.context.discoveredUrls)
-    const totalTests = urls.length * 3 // 3 test types per URL
-    let completed = 0
+    // 1. SQL Injection Tests (non-destructive)
+    const sqlFindings = await this.testSQLInjection(baseUrl, context, onProgress)
+    findings.push(...sqlFindings)
 
-    for (const url of urls) {
-      // SQL Injection tests (error-based only, non-destructive)
-      const sqlFindings = await this.testSQLInjection(url)
-      findings.push(...sqlFindings)
-      completed++
-      this.updateProgress(completed, totalTests, 'Testing for SQL Injection...')
-
-      // XSS tests (reflected only, no stored XSS)
-      const xssFindings = await this.testXSS(url)
-      findings.push(...xssFindings)
-      completed++
-      this.updateProgress(completed, totalTests, 'Testing for XSS vulnerabilities...')
-
-      // IDOR detection (read-only checks)
-      const idorFindings = await this.testIDOR(url)
-      findings.push(...idorFindings)
-      completed++
-      this.updateProgress(completed, totalTests, 'Testing for IDOR vulnerabilities...')
-
-      // Rate limiting between tests
-      await this.delay(1000)
-    }
-
-    this.onProgress?.({
+    await onProgress?.({
       stage: 'active',
-      percentage: 100,
-      message: `Active scan complete: ${findings.length} findings`
+      progress: 25,
+      message: 'SQL Injection Tests abgeschlossen',
+    })
+
+    // 2. XSS Tests
+    const xssFindings = await this.testXSS(baseUrl, context, onProgress)
+    findings.push(...xssFindings)
+
+    await onProgress?.({
+      stage: 'active',
+      progress: 50,
+      message: 'XSS Tests abgeschlossen',
+    })
+
+    // 3. IDOR Detection
+    const idorFindings = await this.testIDOR(baseUrl, context, onProgress)
+    findings.push(...idorFindings)
+
+    await onProgress?.({
+      stage: 'active',
+      progress: 75,
+      message: 'IDOR Tests abgeschlossen',
+    })
+
+    // 4. Auth Bypass Checks
+    const authFindings = await this.testAuthBypass(baseUrl, context, onProgress)
+    findings.push(...authFindings)
+
+    await onProgress?.({
+      stage: 'active',
+      progress: 100,
+      message: 'Aktive Scans abgeschlossen',
     })
 
     return findings
   }
 
-  /**
-   * Test for SQL Injection vulnerabilities (error-based, read-only)
-   * 
-   * SECURITY: Only sends test payloads that trigger error messages
-   * Does not attempt to extract data or modify database
-   */
-  private async testSQLInjection(url: string): Promise<ScanFinding[]> {
+  private async testSQLInjection(
+    baseUrl: string,
+    context: ScanContext,
+    onProgress?: (progress: ScanProgress) => Promise<void>
+  ): Promise<ScanFinding[]> {
     const findings: ScanFinding[] = []
 
-    // Extract parameters from URL
-    const urlObj = new URL(url)
-    const params = Array.from(urlObj.searchParams.entries())
-
-    if (params.length === 0) return findings
-
-    // Non-destructive SQL injection test payloads (error-based only)
+    // Non-destructive SQL Injection Test Payloads
+    // Diese verursachen KEINE Datenänderungen, nur Fehlerprüfung
     const testPayloads = [
-      "'",
-      "''",
-      "`",
-      "\\",
-      "' OR '1'='1",
-      "' OR 1=1--",
-      "1' AND '1'='1",
+      { payload: "' OR '1'='1", type: 'boolean-based' },
+      { payload: "' OR 1=1--", type: 'boolean-based' },
+      { payload: "1' AND 1=1--", type: 'boolean-based' },
+      { payload: "1' UNION SELECT NULL--", type: 'union-based' },
     ]
 
-    for (const [paramName, paramValue] of params) {
-      for (const payload of testPayloads) {
+    // Teste auf typischen Endpunkten mit Parametern
+    const testUrls = [
+      `${baseUrl}/?id=TEST_PAYLOAD`,
+      `${baseUrl}/search?q=TEST_PAYLOAD`,
+      `${baseUrl}/user?id=TEST_PAYLOAD`,
+    ]
+
+    for (const testUrl of testUrls) {
+      for (const { payload, type } of testPayloads) {
         try {
-          const testUrl = new URL(url)
-          testUrl.searchParams.set(paramName, payload)
-
-          const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), this.timeout)
-
-          const response = await fetch(testUrl.toString(), {
+          const url = testUrl.replace('TEST_PAYLOAD', encodeURIComponent(payload))
+          const response = await fetch(url, {
             method: 'GET',
-            signal: controller.signal,
             headers: {
               'User-Agent': 'SecurityScanner/1.0',
-              ...this.context.headers,
+              ...context.authenticated?.headers,
             },
+            signal: AbortSignal.timeout(5000),
           })
 
-          clearTimeout(timeoutId)
+          const text = await response.text()
 
-          const content = await response.text()
-
-          // Check for SQL error messages (non-destructive detection)
+          // Prüfe auf SQL-Fehlermeldungen (nicht-destruktiv)
           const sqlErrorPatterns = [
-            /SQL syntax/i,
-            /mysql.*error/i,
-            /postgresql.*error/i,
-            /ORA-\d{5}/i,
-            /Microsoft.*ODBC.*SQL/i,
-            /SQLite.*error/i,
+            /SQL syntax.*MySQL/i,
             /Warning.*\Wmysql_/i,
-            /valid MySQL result/i,
-            /MySqlClient\./i,
             /PostgreSQL.*ERROR/i,
             /Warning.*\Wpg_/i,
-            /Warning.*\Woci_/i,
-            /Warning.*\Wifx_/i,
-            /Exception.*SQL/i,
-            /SQLException/i,
+            /Microsoft.*ODBC.*SQL Server/i,
+            /SQLServer JDBC Driver/i,
+            /ORA-\d{5}/i,
+            /Oracle.*Driver/i,
           ]
 
           for (const pattern of sqlErrorPatterns) {
-            if (pattern.test(content)) {
+            if (pattern.test(text)) {
               findings.push({
                 finding_type: 'sql_injection',
                 severity: 'critical',
-                title: 'SQL Injection Vulnerability Detected',
-                description: `The parameter "${paramName}" appears to be vulnerable to SQL injection. Error messages were returned when testing with SQL injection payloads.`,
+                title: `SQL Injection Schwachstelle gefunden (${type})`,
+                description: `Die Anwendung zeigt SQL-Fehlermeldungen bei manipulierten Eingaben. Dies deutet auf eine SQL Injection Schwachstelle hin.`,
                 affected_url: url,
-                affected_parameter: paramName,
-                proof_of_concept: `Test payload used: ${payload}. The server returned SQL error messages, indicating potential SQL injection vulnerability.`,
-                impact: `SQL injection can allow attackers to read, modify, or delete data from your database. In worst cases, it can lead to complete database compromise.`,
-                recommendation: `Use parameterized queries (prepared statements) for all database operations. Never concatenate user input directly into SQL queries. Validate and sanitize all user input. Use an ORM that handles parameterization automatically.`,
+                affected_parameter: 'id',
+                proof_of_concept: `Payload: ${payload}`,
+                impact: 'Angreifer können Datenbankabfragen ausführen, Daten lesen/löschen oder die Datenbankstruktur manipulieren.',
+                remediation: 'Nutze Prepared Statements / Parameterized Queries. Validiere und sanitize alle Benutzereingaben.',
                 owasp_category: 'A03:2021 – Injection',
                 cwe_id: 'CWE-89',
+                metadata: { injection_type: type, payload },
               })
-
-              // Found vulnerability, no need to test more payloads for this parameter
-              break
+              break // Nur ein Finding pro URL
             }
           }
-
-          // Rate limiting
-          await this.delay(500)
         } catch (error) {
-          // Continue with next test
-          if (error instanceof Error && error.name !== 'AbortError') {
-            console.error(`SQL injection test failed for ${url}:`, error)
-          }
+          // Ignoriere Timeouts/Fehler
         }
       }
     }
@@ -168,75 +144,63 @@ export class ActiveScanner {
     return findings
   }
 
-  /**
-   * Test for XSS vulnerabilities (reflected only)
-   * 
-   * SECURITY: Only tests for reflected XSS, does not attempt stored XSS
-   * Uses harmless test payloads that don't execute malicious code
-   */
-  private async testXSS(url: string): Promise<ScanFinding[]> {
+  private async testXSS(
+    baseUrl: string,
+    context: ScanContext,
+    onProgress?: (progress: ScanProgress) => Promise<void>
+  ): Promise<ScanFinding[]> {
     const findings: ScanFinding[] = []
 
-    const urlObj = new URL(url)
-    const params = Array.from(urlObj.searchParams.entries())
-
-    if (params.length === 0) return findings
-
-    // Harmless XSS test payloads (won't execute, just detect reflection)
+    // Non-destructive XSS Test Payloads
+    // Diese werden NICHT ausgeführt, nur geprüft ob sie reflektiert werden
     const testPayloads = [
       '<script>alert("XSS")</script>',
       '<img src=x onerror=alert("XSS")>',
       '<svg onload=alert("XSS")>',
       'javascript:alert("XSS")',
-      '<iframe src="javascript:alert(\'XSS\')">',
     ]
 
-    for (const [paramName, paramValue] of params) {
+    const testUrls = [
+      `${baseUrl}/?q=TEST_PAYLOAD`,
+      `${baseUrl}/search?query=TEST_PAYLOAD`,
+      `${baseUrl}/comment?text=TEST_PAYLOAD`,
+    ]
+
+    for (const testUrl of testUrls) {
       for (const payload of testPayloads) {
         try {
-          const testUrl = new URL(url)
-          testUrl.searchParams.set(paramName, payload)
-
-          const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), this.timeout)
-
-          const response = await fetch(testUrl.toString(), {
+          const url = testUrl.replace('TEST_PAYLOAD', encodeURIComponent(payload))
+          const response = await fetch(url, {
             method: 'GET',
-            signal: controller.signal,
             headers: {
               'User-Agent': 'SecurityScanner/1.0',
-              ...this.context.headers,
+              ...context.authenticated?.headers,
             },
+            signal: AbortSignal.timeout(5000),
           })
 
-          clearTimeout(timeoutId)
+          const text = await response.text()
 
-          const content = await response.text()
-
-          // Check if payload is reflected in response (potential XSS)
-          if (content.includes(payload) || content.includes(payload.replace(/"/g, '&quot;'))) {
+          // Prüfe ob Payload unescaped reflektiert wird
+          if (text.includes(payload) || text.includes(decodeURIComponent(payload))) {
             findings.push({
-              finding_type: 'xss',
+              finding_type: 'xss_reflected',
               severity: 'high',
-              title: 'Reflected XSS Vulnerability Detected',
-              description: `The parameter "${paramName}" reflects user input without proper encoding, which could lead to XSS attacks.`,
+              title: 'Reflected XSS Schwachstelle gefunden',
+              description: `Die Anwendung reflektiert Benutzereingaben ohne ausreichende Sanitization.`,
               affected_url: url,
-              affected_parameter: paramName,
-              proof_of_concept: `Test payload "${payload}" was reflected in the response without proper encoding.`,
-              impact: `XSS vulnerabilities allow attackers to execute malicious JavaScript in users' browsers, potentially stealing session cookies, credentials, or performing actions on behalf of users.`,
-              recommendation: `Encode all user input before displaying it in HTML. Use context-appropriate encoding (HTML entity encoding, JavaScript encoding, URL encoding). Consider using a templating engine that auto-escapes by default. Implement Content-Security-Policy headers.`,
+              affected_parameter: 'q',
+              proof_of_concept: `Payload wird unescaped reflektiert: ${payload.substring(0, 50)}...`,
+              impact: 'Angreifer können JavaScript-Code in der Anwendung ausführen, Session-Cookies stehlen oder Phishing-Angriffe durchführen.',
+              remediation: 'Validiere und escape alle Benutzereingaben. Nutze Content Security Policy (CSP).',
               owasp_category: 'A03:2021 – Injection',
               cwe_id: 'CWE-79',
+              metadata: { payload },
             })
-
-            break // Found vulnerability for this parameter
+            break
           }
-
-          await this.delay(500)
         } catch (error) {
-          if (error instanceof Error && error.name !== 'AbortError') {
-            console.error(`XSS test failed for ${url}:`, error)
-          }
+          // Ignoriere Fehler
         }
       }
     }
@@ -244,95 +208,121 @@ export class ActiveScanner {
     return findings
   }
 
-  /**
-   * Test for IDOR (Insecure Direct Object Reference) vulnerabilities
-   * 
-   * SECURITY: Only performs read-only checks, no data modification
-   */
-  private async testIDOR(url: string): Promise<ScanFinding[]> {
+  private async testIDOR(
+    baseUrl: string,
+    context: ScanContext,
+    onProgress?: (progress: ScanProgress) => Promise<void>
+  ): Promise<ScanFinding[]> {
     const findings: ScanFinding[] = []
 
-    // IDOR detection: Look for numeric IDs in URLs that might be enumerable
-    const idPattern = /\/(\d+)(?:\/|$|\?)/g
-    const matches = url.matchAll(idPattern)
+    // IDOR (Insecure Direct Object Reference) Tests
+    // Prüfe ob Ressourcen ohne Autorisierung zugänglich sind
+    const testIds = ['1', '2', '100', '999', 'admin', 'test']
 
-    for (const match of matches) {
-      const originalId = match[1]
-      const testIds = [
-        String(Number(originalId) + 1),
-        String(Number(originalId) - 1),
-        '1',
-        '999999',
-      ]
+    for (const id of testIds) {
+      try {
+        const testUrls = [
+          `${baseUrl}/user/${id}`,
+          `${baseUrl}/api/user/${id}`,
+          `${baseUrl}/profile?id=${id}`,
+        ]
 
-      for (const testId of testIds) {
-        try {
-          const testUrl = url.replace(`/${originalId}/`, `/${testId}/`)
-            .replace(`/${originalId}?`, `/${testId}?`)
-            .replace(`/${originalId}`, `/${testId}`)
-
-          // Only test if URL actually changed
-          if (testUrl === url) continue
-
-          const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), this.timeout)
-
-          const response = await fetch(testUrl, {
+        for (const url of testUrls) {
+          const response = await fetch(url, {
             method: 'GET',
-            signal: controller.signal,
             headers: {
               'User-Agent': 'SecurityScanner/1.0',
-              ...this.context.headers,
+              ...context.authenticated?.headers,
             },
+            signal: AbortSignal.timeout(5000),
           })
 
-          clearTimeout(timeoutId)
-
-          // If we get a successful response with different ID, potential IDOR
-          if (response.ok && response.status !== 404) {
-            const content = await response.text()
-            
-            // Check if response contains data (not just a generic error page)
-            if (content.length > 100 && !content.includes('404') && !content.includes('Not Found')) {
+          // Wenn Ressource ohne Auth zugänglich ist, könnte es IDOR sein
+          // (Dies ist eine vereinfachte Prüfung - in Production sollte man die Response analysieren)
+          if (response.ok && response.status === 200) {
+            const contentType = response.headers.get('content-type') || ''
+            if (contentType.includes('application/json')) {
+              // Könnte eine API-Ressource sein
               findings.push({
                 finding_type: 'idor',
-                severity: 'high',
-                title: 'Potential IDOR Vulnerability',
-                description: `The URL appears to allow access to resources by manipulating object IDs. Accessing ID ${testId} returned data when it should be restricted.`,
+                severity: 'medium',
+                title: 'Mögliche IDOR Schwachstelle',
+                description: `Die Ressource ${url} ist ohne explizite Autorisierungsprüfung zugänglich.`,
                 affected_url: url,
-                affected_parameter: `ID parameter (${originalId} -> ${testId})`,
-                proof_of_concept: `Changed ID from ${originalId} to ${testId} and received a successful response, indicating potential IDOR vulnerability.`,
-                impact: `IDOR vulnerabilities allow unauthorized users to access resources they shouldn't have access to by guessing or enumerating object IDs.`,
-                recommendation: `Implement proper authorization checks for all object access. Use indirect object references (mapping IDs to user-specific tokens). Implement access control lists (ACLs) to verify users have permission to access specific resources.`,
+                impact: 'Angreifer können möglicherweise auf Ressourcen anderer Benutzer zugreifen.',
+                remediation: 'Implementiere explizite Autorisierungsprüfungen für alle Ressourcen. Nutze Access Control Lists (ACLs).',
                 owasp_category: 'A01:2021 – Broken Access Control',
                 cwe_id: 'CWE-639',
+                metadata: { tested_id: id },
               })
-
-              break // Found potential IDOR
             }
           }
-
-          await this.delay(500)
-        } catch (error) {
-          if (error instanceof Error && error.name !== 'AbortError') {
-            console.error(`IDOR test failed for ${url}:`, error)
-          }
         }
+      } catch (error) {
+        // Ignoriere Fehler
       }
     }
 
     return findings
   }
 
-  private updateProgress(completed: number, total: number, message: string) {
-    this.onProgress?.({
-      stage: 'active',
-      percentage: Math.min(99, Math.round((completed / total) * 100)),
-      message,
-    })
-  }
+  private async testAuthBypass(
+    baseUrl: string,
+    context: ScanContext,
+    onProgress?: (progress: ScanProgress) => Promise<void>
+  ): Promise<ScanFinding[]> {
+    const findings: ScanFinding[] = []
 
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    // Prüfe auf typische Auth-Bypass-Pfade
+    const bypassPaths = [
+      '/admin',
+      '/api/admin',
+      '/dashboard',
+      '/admin/login',
+      '/wp-admin',
+      '/administrator',
+    ]
+
+    for (const path of bypassPaths) {
+      try {
+        const url = `${baseUrl}${path}`
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'User-Agent': 'SecurityScanner/1.0',
+            ...context.authenticated?.headers,
+          },
+          signal: AbortSignal.timeout(5000),
+        })
+
+        // Wenn Admin-Bereich ohne Auth zugänglich ist
+        if (response.ok && response.status === 200) {
+          const text = await response.text()
+          // Prüfe auf typische Admin-Keywords
+          if (
+            text.includes('admin') ||
+            text.includes('dashboard') ||
+            text.includes('manage')
+          ) {
+            findings.push({
+              finding_type: 'auth_bypass',
+              severity: 'high',
+              title: `Möglicher Auth-Bypass: ${path}`,
+              description: `Der Pfad ${path} ist ohne Authentifizierung zugänglich.`,
+              affected_url: url,
+              impact: 'Angreifer können möglicherweise auf geschützte Bereiche zugreifen.',
+              remediation: 'Implementiere Authentifizierung und Autorisierung für alle geschützten Pfade.',
+              owasp_category: 'A01:2021 – Broken Access Control',
+              cwe_id: 'CWE-287',
+              metadata: { path },
+            })
+          }
+        }
+      } catch (error) {
+        // Ignoriere Fehler
+      }
+    }
+
+    return findings
   }
 }

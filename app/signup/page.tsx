@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -19,9 +20,14 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
       })
 
       if (error) {
@@ -42,15 +48,15 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Anmelden
+            Registrieren
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Oder{' '}
             <Link
-              href="/signup"
+              href="/login"
               className="font-medium text-primary-600 hover:text-primary-500"
             >
-              erstelle ein neues Konto
+              melde dich an
             </Link>
           </p>
         </div>
@@ -61,6 +67,21 @@ export default function LoginPage() {
             </div>
           )}
           <div className="space-y-4 rounded-md shadow-sm">
+            <div>
+              <label htmlFor="fullName" className="sr-only">
+                Vollständiger Name
+              </label>
+              <input
+                id="fullName"
+                name="fullName"
+                type="text"
+                required
+                className="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm"
+                placeholder="Vollständiger Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            </div>
             <div>
               <label htmlFor="email" className="sr-only">
                 E-Mail-Adresse
@@ -85,10 +106,11 @@ export default function LoginPage() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
+                minLength={8}
                 className="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm"
-                placeholder="Passwort"
+                placeholder="Passwort (min. 8 Zeichen)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -101,7 +123,7 @@ export default function LoginPage() {
               disabled={loading}
               className="group relative flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50"
             >
-              {loading ? 'Wird angemeldet...' : 'Anmelden'}
+              {loading ? 'Wird registriert...' : 'Registrieren'}
             </button>
           </div>
         </form>

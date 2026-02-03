@@ -1,46 +1,46 @@
+/**
+ * Scanner Type Definitions
+ * Zentrale Typen für das modulare Scanning-System
+ */
+
 export type ScanStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled'
-export type ScanType = 'full' | 'passive' | 'active'
+export type ScanType = 'passive' | 'active' | 'full'
 export type Severity = 'low' | 'medium' | 'high' | 'critical'
-export type FindingType = 
-  | 'sql_injection'
-  | 'xss'
-  | 'idor'
-  | 'exposed_secret'
-  | 'exposed_file'
-  | 'security_header'
-  | 'auth_bypass'
-  | 'csrf'
-  | 'rate_limit'
-  | 'debug_flag'
-  | 'framework_leak'
 
 export interface ScanFinding {
-  finding_type: FindingType
+  finding_type: string
   severity: Severity
   title: string
   description: string
-  affected_url: string
+  affected_url?: string
   affected_parameter?: string
   proof_of_concept?: string
   impact: string
-  recommendation: string
+  remediation: string
   owasp_category?: string
   cwe_id?: string
+  metadata?: Record<string, unknown>
 }
 
 export interface ScanContext {
   scanId: string
   domain: string
   userId: string
-  baseUrl: string
-  discoveredUrls: Set<string>
-  findings: ScanFinding[]
-  cookies?: string[]
-  headers?: Record<string, string>
+  scanType: ScanType
+  authenticated?: {
+    cookies?: string[]
+    headers?: Record<string, string>
+  }
 }
 
 export interface ScanProgress {
   stage: string
-  percentage: number
-  message: string
+  progress: number
+  message?: string
+}
+
+export interface ScannerModule {
+  name: string
+  description: string
+  run(context: ScanContext, onProgress?: (progress: ScanProgress) => Promise<void>): Promise<ScanFinding[]>
 }

@@ -1,6 +1,6 @@
 # Security Scanner SaaS
 
-Eine produktionsreife Security-Scanning SaaS-Anwendung, die es Benutzern ermöglicht, ihre eigenen Websites auf Sicherheitslücken zu scannen.
+Eine production-ready Security-Scanning-SaaS-Anwendung, die es Benutzern ermöglicht, ihre eigenen Websites auf Sicherheitslücken zu scannen.
 
 ## Tech Stack
 
@@ -12,12 +12,15 @@ Eine produktionsreife Security-Scanning SaaS-Anwendung, die es Benutzern ermögl
 
 ## Features
 
-- ✅ Supabase Email/Password Authentifizierung
-- ✅ Domain Ownership Verification (DNS TXT + HTML)
-- ✅ Modulares Scanning System (Discovery, Passive, Active)
-- ✅ Detaillierte Security Reports mit PDF Export
-- ✅ Rate Limiting & Audit Logs
-- ✅ Modernes SaaS UI
+- ✅ Email/Password Authentication via Supabase
+- ✅ Domain Ownership Verification (DNS TXT, HTML file)
+- ✅ Modulares Scanning-System:
+  - Discovery & Crawl
+  - Passive Security Analysis
+  - Active Vulnerability Scans
+- ✅ Detaillierte Security Reports mit PDF-Export
+- ✅ OWASP Top 10 Mapping
+- ✅ Rate Limiting & Security Guards
 
 ## Setup
 
@@ -26,24 +29,28 @@ Eine produktionsreife Security-Scanning SaaS-Anwendung, die es Benutzern ermögl
 npm install
 ```
 
-2. Erstelle `.env.local` mit deinen Supabase Credentials:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+2. Erstelle eine `.env.local` Datei:
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-3. Führe die SQL-Migrationen in Supabase aus (siehe `supabase/schema.sql`)
+3. Führe die SQL-Migrationen in Supabase aus (siehe `supabase/migrations/`)
 
 4. Starte den Development Server:
 ```bash
 npm run dev
 ```
 
-## Sicherheitshinweise
+## Sicherheit
 
-- Scans werden nur auf verifizierte Domains durchgeführt
-- Keine destruktiven Payloads werden verwendet
-- Alle Scans werden protokolliert
-- Rate Limiting schützt vor Missbrauch
+- Alle Scans erfordern Domain-Verifizierung
+- Non-destructive Scanning-Techniken
+- Rate Limiting pro Benutzer
+- Audit Logging für alle Scans
+- Explizite Benutzerzustimmung erforderlich
+
+## Lizenz
+
+Proprietär - Alle Rechte vorbehalten

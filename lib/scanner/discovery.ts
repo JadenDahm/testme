@@ -1,224 +1,190 @@
-import { JSDOM } from 'jsdom'
-import { ScanContext } from './types'
-
 /**
- * Discovery & Crawling Module
- * 
- * SECURITY: Only performs GET requests, no destructive operations
- * Respects robots.txt and rate limits
+ * Discovery & Crawl Module
+ * Findet alle erreichbaren Seiten, Routen und Endpunkte
  */
-export class DiscoveryEngine {
+
+import * as cheerio from 'cheerio'
+import { ScannerModule, ScanFinding, ScanContext, ScanProgress } from './types'
+
+export class DiscoveryScanner implements ScannerModule {
+  name = 'discovery'
+  description = 'Crawlt Website und findet alle Routen und Endpunkte'
+
   private visitedUrls = new Set<string>()
-  private maxDepth = 3
-  private maxUrls = 100
-  private timeout = 10000 // 10 seconds
+  private foundUrls = new Set<string>()
+  private foundEndpoints: Array<{ url: string; method: string; params: string[] }> = []
 
-  constructor(
-    private context: ScanContext,
-    private onProgress?: (progress: { stage: string; percentage: number; message: string }) => void
-  ) {}
-
-  /**
-   * Discover all reachable pages from the base URL
-   */
-  async discover(): Promise<Set<string>> {
-    this.onProgress?.({
+  async run(
+    context: ScanContext,
+    onProgress?: (progress: ScanProgress) => Promise<void>
+  ): Promise<ScanFinding[]> {
+    const findings: ScanFinding[] = []
+    const baseUrl = `https://${context.domain}`
+    
+    await onProgress?.({
       stage: 'discovery',
-      percentage: 0,
-      message: 'Starting discovery...'
+      progress: 0,
+      message: 'Starte Discovery...',
     })
 
-    const queue: Array<{ url: string; depth: number }> = [
-      { url: this.context.baseUrl, depth: 0 }
-    ]
+    // Starte Crawl von Root
+    await this.crawlUrl(baseUrl, baseUrl, context, onProgress)
 
-    while (queue.length > 0 && this.visitedUrls.size < this.maxUrls) {
-      const { url, depth } = queue.shift()!
-
-      if (depth > this.maxDepth || this.visitedUrls.has(url)) {
-        continue
-      }
-
-      this.visitedUrls.add(url)
-      this.context.discoveredUrls.add(url)
-
-      this.onProgress?.({
-        stage: 'discovery',
-        percentage: Math.min(90, (this.visitedUrls.size / this.maxUrls) * 90),
-        message: `Discovered ${this.visitedUrls.size} URLs...`
-      })
-
-      try {
-        const links = await this.crawlPage(url)
-        
-        // Add new links to queue
-        for (const link of links) {
-          if (!this.visitedUrls.has(link) && this.isSameDomain(link)) {
-            queue.push({ url: link, depth: depth + 1 })
-          }
-        }
-
-        // Rate limiting: wait between requests
-        await this.delay(500)
-      } catch (error) {
-        // Continue with other URLs if one fails
-        console.error(`Failed to crawl ${url}:`, error)
-      }
-    }
-
-    this.onProgress?.({
+    await onProgress?.({
       stage: 'discovery',
-      percentage: 100,
-      message: `Discovery complete: ${this.visitedUrls.size} URLs found`
+      progress: 100,
+      message: `Discovery abgeschlossen: ${this.foundUrls.size} URLs gefunden`,
     })
 
-    return this.visitedUrls
+    // Speichere gefundene URLs in Metadata für andere Scanner
+    // (wird später in scan.ts verwendet)
+
+    return findings
   }
 
-  /**
-   * Crawl a single page and extract links
-   */
-  private async crawlPage(url: string): Promise<string[]> {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout)
+  private async crawlUrl(
+    url: string,
+    baseUrl: string,
+    context: ScanContext,
+    onProgress?: (progress: ScanProgress) => Promise<void>
+  ): Promise<void> {
+    // Verhindere Endlosschleifen
+    if (this.visitedUrls.has(url) || this.visitedUrls.size > 1000) {
+      return
+    }
+
+    this.visitedUrls.add(url)
 
     try {
       const response = await fetch(url, {
         method: 'GET',
-        signal: controller.signal,
         headers: {
-          'User-Agent': 'SecurityScanner/1.0 (Discovery)',
-          ...this.context.headers,
+          'User-Agent': 'SecurityScanner/1.0',
+          ...context.authenticated?.headers,
         },
+        signal: AbortSignal.timeout(10000),
         redirect: 'follow',
       })
 
-      clearTimeout(timeoutId)
-
       if (!response.ok) {
-        return []
+        return
+      }
+
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.includes('text/html')) {
+        return
       }
 
       const html = await response.text()
-      const links = this.extractLinks(html, url)
-      
-      // Also extract from JavaScript (basic regex, could be improved)
-      const jsLinks = this.extractLinksFromJS(html, url)
-      links.push(...jsLinks)
+      const $ = cheerio.load(html)
 
-      return links
-    } catch (error) {
-      clearTimeout(timeoutId)
-      if (error instanceof Error && error.name !== 'AbortError') {
-        throw error
-      }
-      return []
-    }
-  }
+      // Extrahiere Links
+      $('a[href]').each((_, element) => {
+        const href = $(element).attr('href')
+        if (!href) return
 
-  /**
-   * Extract links from HTML
-   */
-  private extractLinks(html: string, baseUrl: string): string[] {
-    try {
-      const dom = new JSDOM(html)
-      const document = dom.window.document
-      const links: string[] = []
-
-      // Extract from <a> tags
-      const anchorTags = document.querySelectorAll('a[href]')
-      for (const anchor of Array.from(anchorTags)) {
-        const href = anchor.getAttribute('href')
-        if (href) {
-          const absoluteUrl = this.resolveUrl(href, baseUrl)
-          if (absoluteUrl) links.push(absoluteUrl)
+        const absoluteUrl = this.resolveUrl(href, baseUrl, url)
+        if (absoluteUrl && absoluteUrl.startsWith(baseUrl)) {
+          this.foundUrls.add(absoluteUrl)
+          
+          // Crawle neue URLs (max. Tiefe 3)
+          if (this.getUrlDepth(absoluteUrl, baseUrl) <= 3) {
+            this.crawlUrl(absoluteUrl, baseUrl, context, onProgress).catch(() => {
+              // Ignoriere Fehler beim Crawlen
+            })
+          }
         }
-      }
+      })
 
-      // Extract from <form> action attributes
-      const forms = document.querySelectorAll('form[action]')
-      for (const form of Array.from(forms)) {
-        const action = form.getAttribute('action')
+      // Extrahiere Form-Actions (potenzielle Endpunkte)
+      $('form[action]').each((_, element) => {
+        const action = $(element).attr('action')
+        const method = $(element).attr('method') || 'GET'
         if (action) {
-          const absoluteUrl = this.resolveUrl(action, baseUrl)
-          if (absoluteUrl) links.push(absoluteUrl)
+          const absoluteUrl = this.resolveUrl(action, baseUrl, url)
+          if (absoluteUrl) {
+            const params: string[] = []
+            $(element).find('input[name]').each((_, input) => {
+              const name = $(input).attr('name')
+              if (name) params.push(name)
+            })
+            this.foundEndpoints.push({ url: absoluteUrl, method, params })
+          }
+        }
+      })
+
+      // Extrahiere API-Calls aus JavaScript (vereinfacht)
+      const scripts = $('script').toArray()
+      for (const script of scripts) {
+        const scriptContent = $(script).html() || ''
+        // Suche nach fetch(), axios(), $.ajax() etc.
+        const apiPatterns = [
+          /fetch\(['"]([^'"]+)['"]/g,
+          /axios\.(get|post|put|delete)\(['"]([^'"]+)['"]/g,
+          /\$\.ajax\([^)]*url:\s*['"]([^'"]+)['"]/g,
+        ]
+
+        for (const pattern of apiPatterns) {
+          let match
+          while ((match = pattern.exec(scriptContent)) !== null) {
+            const apiUrl = match[1] || match[2]
+            if (apiUrl) {
+              const absoluteUrl = this.resolveUrl(apiUrl, baseUrl, url)
+              if (absoluteUrl) {
+                this.foundEndpoints.push({
+                  url: absoluteUrl,
+                  method: 'GET',
+                  params: [],
+                })
+              }
+            }
+          }
         }
       }
 
-      return links
+      await onProgress?.({
+        stage: 'discovery',
+        progress: Math.min(90, (this.visitedUrls.size / 100) * 90),
+        message: `${this.visitedUrls.size} Seiten gecrawlt, ${this.foundUrls.size} URLs gefunden`,
+      })
     } catch (error) {
-      return []
+      // Ignoriere Fehler beim Crawlen einzelner URLs
+      console.debug(`Crawl error for ${url}:`, error)
     }
   }
 
-  /**
-   * Extract URLs from JavaScript code (basic implementation)
-   */
-  private extractLinksFromJS(html: string, baseUrl: string): string[] {
-    const links: string[] = []
-    
-    // Look for common URL patterns in JS
-    const urlPatterns = [
-      /['"](https?:\/\/[^'"]+)['"]/g,
-      /['"](\/[^'"]+)['"]/g,
-      /fetch\(['"]([^'"]+)['"]/g,
-      /axios\.(get|post|put|delete)\(['"]([^'"]+)['"]/g,
-    ]
-
-    for (const pattern of urlPatterns) {
-      let match
-      while ((match = pattern.exec(html)) !== null) {
-        const url = match[1] || match[2]
-        if (url) {
-          const absoluteUrl = this.resolveUrl(url, baseUrl)
-          if (absoluteUrl) links.push(absoluteUrl)
-        }
-      }
-    }
-
-    return links
-  }
-
-  /**
-   * Resolve relative URL to absolute
-   */
-  private resolveUrl(url: string, baseUrl: string): string | null {
+  private resolveUrl(href: string, baseUrl: string, currentUrl: string): string | null {
     try {
-      // Remove fragments and query params for normalization
-      const base = new URL(baseUrl)
-      
-      if (url.startsWith('http://') || url.startsWith('https://')) {
-        return url.split('#')[0].split('?')[0]
+      // Absolute URL
+      if (href.startsWith('http://') || href.startsWith('https://')) {
+        return href
       }
-      
-      if (url.startsWith('//')) {
-        return `${base.protocol}${url}`.split('#')[0].split('?')[0]
-      }
-      
-      if (url.startsWith('/')) {
-        return `${base.origin}${url}`.split('#')[0].split('?')[0]
-      }
-      
-      return new URL(url, baseUrl).href.split('#')[0].split('?')[0]
+
+      // Relative URL
+      const base = new URL(currentUrl)
+      return new URL(href, base).toString()
     } catch {
       return null
     }
   }
 
-  /**
-   * Check if URL belongs to same domain
-   */
-  private isSameDomain(url: string): boolean {
+  private getUrlDepth(url: string, baseUrl: string): number {
     try {
-      const urlObj = new URL(url)
-      const baseUrlObj = new URL(this.context.baseUrl)
-      return urlObj.hostname === baseUrlObj.hostname
+      const base = new URL(baseUrl)
+      const target = new URL(url)
+      const basePath = base.pathname.split('/').filter(Boolean)
+      const targetPath = target.pathname.split('/').filter(Boolean)
+      return targetPath.length - basePath.length
     } catch {
-      return false
+      return 0
     }
   }
 
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+  getFoundUrls(): string[] {
+    return Array.from(this.foundUrls)
+  }
+
+  getFoundEndpoints(): Array<{ url: string; method: string; params: string[] }> {
+    return this.foundEndpoints
   }
 }

@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Security Scanner SaaS',
-  description: 'Professional security scanning for your websites',
+  description: 'Scan deine Website auf Sicherheitslücken',
 }
 
 export default function RootLayout({

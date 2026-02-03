@@ -1,8 +1,12 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import DashboardClient from './client'
+import ScanDetailsClient from './client'
 
-export default async function DashboardPage() {
+export default async function ScanDetailsPage({
+  params,
+}: {
+  params: { id: string }
+}) {
   const supabase = await createClient()
   
   const {
@@ -13,5 +17,5 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  return <DashboardClient userId={user.id} />
+  return <ScanDetailsClient scanId={params.id} userId={user.id} />
 }
