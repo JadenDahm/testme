@@ -16,6 +16,7 @@ export default function DomainDetails({
   const router = useRouter();
   const [verifying, setVerifying] = useState(false);
   const [startingScan, setStartingScan] = useState(false);
+  const [showStartScanModal, setShowStartScanModal] = useState(false);
   const [verificationResult, setVerificationResult] = useState<{
     verified: boolean;
     message: string;
@@ -52,10 +53,6 @@ export default function DomainDetails({
       return;
     }
 
-    if (!confirm('Möchten Sie wirklich einen Sicherheitsscan starten? Dieser Vorgang kann einige Minuten dauern.')) {
-      return;
-    }
-
     setStartingScan(true);
 
     try {
@@ -76,6 +73,7 @@ export default function DomainDetails({
       alert(error.message || 'Fehler beim Starten des Scans');
     } finally {
       setStartingScan(false);
+      setShowStartScanModal(false);
     }
   };
 
@@ -136,7 +134,7 @@ export default function DomainDetails({
           </div>
           {domain.verified && (
             <button
-              onClick={handleStartScan}
+              onClick={() => setShowStartScanModal(true)}
               disabled={startingScan}
               className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -259,6 +257,34 @@ export default function DomainDetails({
           </div>
         )}
       </div>
+
+      {showStartScanModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Scan starten</h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Möchten Sie den Sicherheitsscan jetzt starten? Der Vorgang kann einige Minuten dauern.
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowStartScanModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Abbrechen
+              </button>
+              <button
+                type="button"
+                onClick={handleStartScan}
+                disabled={startingScan}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {startingScan ? 'Wird gestartet...' : 'Scan starten'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
