@@ -46,7 +46,7 @@ export async function addDomain(formData: FormData) {
         user_id: user.id,
         domain: normalizedDomain,
         is_verified: false,
-      })
+      } as any)
       .select()
       .single()
 

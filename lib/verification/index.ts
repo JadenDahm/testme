@@ -33,7 +33,7 @@ export async function createVerification(
       verification_token: token,
       verification_method: method,
       expires_at: expiresAt.toISOString(),
-    })
+    } as any)
     .select()
     .single()
 

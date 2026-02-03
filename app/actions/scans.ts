@@ -59,7 +59,7 @@ export async function startScan(domainId: string, scanType: 'full' | 'passive' |
         user_id: user.id,
         status: 'queued',
         scan_type: scanType,
-      })
+      } as any)
       .select()
       .single()
 
@@ -73,7 +73,7 @@ export async function startScan(domainId: string, scanType: 'full' | 'passive' |
       .insert({
         scan_id: scan.id,
         status: 'pending',
-      })
+      } as any)
 
     // Start scan asynchronously (in production, use a proper job queue)
     // For now, we'll process it immediately

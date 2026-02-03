@@ -211,7 +211,7 @@ export class ScanEngine {
 
     const { error } = await supabase
       .from('scan_findings')
-      .insert(findingsToInsert)
+      .insert(findingsToInsert as any)
 
     if (error) {
       throw new Error(`Failed to save findings: ${error.message}`)
@@ -243,7 +243,7 @@ export class ScanEngine {
         log_level: level,
         message,
         metadata: metadata || null,
-      })
+      } as any)
   }
 
   /**

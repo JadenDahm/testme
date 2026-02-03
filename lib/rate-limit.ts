@@ -51,7 +51,7 @@ export async function checkRateLimit(
           resource_type: resourceType,
           count: 1,
           window_start: windowStart.toISOString(),
-        })
+        } as any)
     }
   }
 
