@@ -68,24 +68,26 @@ export async function verifyDomain(
     return { verified: false, error: 'Verification record not found' }
   }
 
+  const verificationData = verification as any
+
   // Check if expired
-  if (new Date(verification.expires_at) < new Date()) {
+  if (new Date(verificationData.expires_at) < new Date()) {
     return { verified: false, error: 'Verification token has expired' }
   }
 
   // Check if already verified
-  if (verification.verified) {
+  if (verificationData.verified) {
     return { verified: true }
   }
 
-  const domain = (verification as any).domains.domain
+  const domain = verificationData.domains.domain
   let result: { verified: boolean; error?: string }
 
   // Perform verification based on method
-  if (verification.verification_method === 'dns_txt') {
-    result = await verifyDNSTXTRecord(domain, verification.verification_token)
-  } else if (verification.verification_method === 'html_file') {
-    result = await verifyHTMLFile(domain, verification.verification_token)
+  if (verificationData.verification_method === 'dns_txt') {
+    result = await verifyDNSTXTRecord(domain, verificationData.verification_token)
+  } else if (verificationData.verification_method === 'html_file') {
+    result = await verifyHTMLFile(domain, verificationData.verification_token)
   } else {
     return { verified: false, error: 'Invalid verification method' }
   }
@@ -97,7 +99,7 @@ export async function verifyDomain(
       .update({
         verified: true,
         verified_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', verificationId)
 
     // Update domain verification status
@@ -105,9 +107,9 @@ export async function verifyDomain(
       .from('domains')
       .update({
         is_verified: true,
-        verification_method: verification.verification_method,
+        verification_method: verificationData.verification_method,
         verified_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', domainId)
   }
 

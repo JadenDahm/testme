@@ -37,7 +37,7 @@ export async function startScan(domainId: string, scanType: 'full' | 'passive' |
     }
 
     // CRITICAL: Only allow scanning of verified domains
-    if (!domain.is_verified) {
+    if (!(domain as any).is_verified) {
       return { 
         error: 'Domain must be verified before scanning. Please verify domain ownership first.' 
       }
@@ -165,7 +165,7 @@ export async function cancelScan(scanId: string) {
       return { error: 'Scan not found or unauthorized' }
     }
 
-    if (scan.status !== 'running' && scan.status !== 'queued') {
+    if ((scan as any).status !== 'running' && (scan as any).status !== 'queued') {
       return { error: 'Scan cannot be cancelled' }
     }
 

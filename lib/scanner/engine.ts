@@ -91,10 +91,10 @@ export class ScanEngine {
           const { data: domainData } = await supabase
             .from('domains')
             .select('is_verified')
-            .eq('id', scanData.domain_id)
+            .eq('id', (scanData as any).domain_id)
             .single()
 
-          if (!domainData?.is_verified) {
+          if (!(domainData as any)?.is_verified) {
             await this.log('warning', 'Active scanning skipped: Domain not verified')
           } else {
             await this.updateProgress(70, 'Running active vulnerability tests (read-only)...')
