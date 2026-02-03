@@ -4,7 +4,7 @@
  */
 
 import { ScannerModule, ScanFinding, ScanContext, ScanProgress } from './types'
-import * as cheerio from 'cheerio'
+import { parseHTML } from '@/lib/utils/html-parser'
 
 export class PassiveScanner implements ScannerModule {
   name = 'passive'
@@ -165,11 +165,10 @@ export class PassiveScanner implements ScannerModule {
       })
 
       const html = await response.text()
-      const $ = cheerio.load(html)
+      const parsed = parseHTML(html)
 
       // Suche in JavaScript
-      $('script').each((_, element) => {
-        const scriptContent = $(element).html() || ''
+      for (const scriptContent of parsed.scripts) {
 
         // API Keys, Tokens, Secrets Patterns
         const secretPatterns = [
@@ -226,7 +225,7 @@ export class PassiveScanner implements ScannerModule {
             })
           }
         }
-      })
+      }
     } catch (error) {
       console.error('Secret scan error:', error)
     }
@@ -303,10 +302,9 @@ export class PassiveScanner implements ScannerModule {
       })
 
       const html = await response.text()
-      const $ = cheerio.load(html)
 
       // Suche nach Debug-Flags in HTML/Comments
-      const htmlText = $.html()
+      const htmlText = html
 
       // Debug-Modi in verschiedenen Frameworks
       const debugPatterns = [

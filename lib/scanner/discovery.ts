@@ -3,8 +3,8 @@
  * Findet alle erreichbaren Seiten, Routen und Endpunkte
  */
 
-import * as cheerio from 'cheerio'
 import { ScannerModule, ScanFinding, ScanContext, ScanProgress } from './types'
+import { parseHTML } from '@/lib/utils/html-parser'
 
 export class DiscoveryScanner implements ScannerModule {
   name = 'discovery'
@@ -76,12 +76,12 @@ export class DiscoveryScanner implements ScannerModule {
       }
 
       const html = await response.text()
-      const $ = cheerio.load(html)
+      const parsed = parseHTML(html)
 
       // Extrahiere Links
-      $('a[href]').each((_, element) => {
-        const href = $(element).attr('href')
-        if (!href) return
+      for (const link of parsed.links) {
+        const href = link.href
+        if (!href) continue
 
         const absoluteUrl = this.resolveUrl(href, baseUrl, url)
         if (absoluteUrl && absoluteUrl.startsWith(baseUrl)) {
@@ -94,29 +94,26 @@ export class DiscoveryScanner implements ScannerModule {
             })
           }
         }
-      })
+      }
 
       // Extrahiere Form-Actions (potenzielle Endpunkte)
-      $('form[action]').each((_, element) => {
-        const action = $(element).attr('action')
-        const method = $(element).attr('method') || 'GET'
+      for (const form of parsed.forms) {
+        const action = form.action
+        const method = form.method || 'GET'
         if (action) {
           const absoluteUrl = this.resolveUrl(action, baseUrl, url)
           if (absoluteUrl) {
-            const params: string[] = []
-            $(element).find('input[name]').each((_, input) => {
-              const name = $(input).attr('name')
-              if (name) params.push(name)
+            this.foundEndpoints.push({ 
+              url: absoluteUrl, 
+              method, 
+              params: form.inputs 
             })
-            this.foundEndpoints.push({ url: absoluteUrl, method, params })
           }
         }
-      })
+      }
 
       // Extrahiere API-Calls aus JavaScript (vereinfacht)
-      const scripts = $('script').toArray()
-      for (const script of scripts) {
-        const scriptContent = $(script).html() || ''
+      for (const scriptContent of parsed.scripts) {
         // Suche nach fetch(), axios(), $.ajax() etc.
         const apiPatterns = [
           /fetch\(['"]([^'"]+)['"]/g,
