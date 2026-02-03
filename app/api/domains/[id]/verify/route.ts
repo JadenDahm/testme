@@ -48,17 +48,30 @@ export async function POST(
     // DNS-TXT Verifizierung
     if (domain.verification_method === 'dns_txt') {
       try {
+        // Versuche DNS-Abfrage mit Node.js dns/promises
         const txtRecords = await resolveTxt(domain.domain);
         const expectedValue = `testmywebsite-verification=${domain.verification_token}`;
         
+        // TXT-Einträge können als Array von Strings zurückkommen (wegen 255-Byte-Limit)
         const found = txtRecords.some((record) => {
-          const combined = Array.isArray(record) ? record.join('') : record;
+          // Kombiniere Array-Elemente falls nötig
+          const combined = Array.isArray(record) ? record.join('') : String(record);
+          // Prüfe ob der erwartete Wert enthalten ist
           return combined.includes(expectedValue);
         });
 
         verified = found;
-      } catch (error) {
+        
+        if (!verified) {
+          console.log(`DNS verification failed for ${domain.domain}. Expected: ${expectedValue}`);
+          console.log(`Found TXT records:`, txtRecords);
+        }
+      } catch (error: any) {
         console.error('DNS verification error:', error);
+        // Detaillierte Fehlermeldung für besseres Debugging
+        if (error.code === 'ENOTFOUND' || error.code === 'ENODATA') {
+          console.error(`Domain ${domain.domain} not found or has no TXT records`);
+        }
         verified = false;
       }
     }
