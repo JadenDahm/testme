@@ -16,6 +16,30 @@ interface ScanContext {
   }>;
 }
 
+// Hilfsfunktion für Progress-Updates
+async function updateScanProgress(
+  supabase: SupabaseClient,
+  scanId: string,
+  message: string,
+  details?: string
+) {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] SCAN ${scanId}: ${message} ${details ? `- ${details}` : ''}`);
+  
+  try {
+    await supabase
+      .from('scans')
+      .update({
+        progress_message: message,
+        progress_details: details || null,
+        last_progress_at: timestamp,
+      })
+      .eq('id', scanId);
+  } catch (error) {
+    console.error('Failed to update progress:', error);
+  }
+}
+
 export async function runSecurityScan(
   scanId: string,
   domain: string,
@@ -24,13 +48,19 @@ export async function runSecurityScan(
   const SCAN_TIMEOUT = 25000; // 25 Sekunden Gesamt-Timeout
   
   const scanPromise = (async () => {
+    const startTime = Date.now();
+    await updateScanProgress(supabase, scanId, 'Starte Scan', `Domain: ${domain}`);
+    
     // Versuche zuerst HTTPS, dann HTTP
     let baseUrl = `https://${domain}`;
     let isHttps = true;
     
+    await updateScanProgress(supabase, scanId, 'Prüfe HTTPS-Erreichbarkeit', baseUrl);
+    
     try {
       await axios.get(baseUrl, { timeout: 2000, validateStatus: () => true });
     } catch {
+      await updateScanProgress(supabase, scanId, 'HTTPS fehlgeschlagen, versuche HTTP', baseUrl);
       baseUrl = `http://${domain}`;
       isHttps = false;
     }
@@ -54,25 +84,44 @@ export async function runSecurityScan(
     }
 
     // 1. Teste Erreichbarkeit
+    await updateScanProgress(supabase, scanId, 'Phase 1/6: Teste Erreichbarkeit');
+    const reachStart = Date.now();
     await testReachability(context, supabase, scanId);
+    console.log(`[Reachability] Dauer: ${Date.now() - reachStart}ms`);
 
     // 2. Analysiere HTTP-Security-Headers
+    await updateScanProgress(supabase, scanId, 'Phase 2/6: Analysiere Security-Headers');
+    const headersStart = Date.now();
     await analyzeSecurityHeaders(context, supabase, scanId);
+    console.log(`[Security Headers] Dauer: ${Date.now() - headersStart}ms`);
 
     // 3. Crawle Website
+    await updateScanProgress(supabase, scanId, 'Phase 3/6: Crawle Website');
+    const crawlStart = Date.now();
     await crawlWebsite(context, supabase, scanId);
+    console.log(`[Crawl] Dauer: ${Date.now() - crawlStart}ms, Seiten gescannt: ${context.visitedUrls.size}`);
 
     // 4. Suche nach sensiblen Daten
+    await updateScanProgress(supabase, scanId, 'Phase 4/6: Suche nach sensiblen Daten');
+    const secretsStart = Date.now();
     await searchForSecrets(context, supabase, scanId);
+    console.log(`[Secrets] Dauer: ${Date.now() - secretsStart}ms`);
 
     // 5. Teste auf typische Schwachstellen
+    await updateScanProgress(supabase, scanId, 'Phase 5/6: Teste auf Schwachstellen');
+    const vulnStart = Date.now();
     await testCommonVulnerabilities(context, supabase, scanId);
+    console.log(`[Vulnerabilities] Dauer: ${Date.now() - vulnStart}ms`);
 
     // 6. Prüfe auf öffentliche sensible Dateien
+    await updateScanProgress(supabase, scanId, 'Phase 6/6: Prüfe sensitive Dateien');
+    const filesStart = Date.now();
     await checkSensitiveFiles(context, supabase, scanId);
+    console.log(`[Sensitive Files] Dauer: ${Date.now() - filesStart}ms`);
 
     // Speichere alle Vulnerabilities
     if (context.vulnerabilities.length > 0) {
+      await updateScanProgress(supabase, scanId, 'Speichere Ergebnisse', `${context.vulnerabilities.length} Schwachstellen gefunden`);
       await supabase.from('vulnerabilities').insert(
         context.vulnerabilities.map((v) => ({
           scan_id: scanId,
@@ -82,11 +131,15 @@ export async function runSecurityScan(
     }
 
     // Markiere Scan als abgeschlossen
+    const totalTime = Date.now() - startTime;
+    console.log(`[SCAN COMPLETE] Scan ${scanId} abgeschlossen in ${totalTime}ms`);
+    
     await supabase
       .from('scans')
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
+        progress_message: `Scan abgeschlossen (${totalTime}ms)`,
       })
       .eq('id', scanId);
   })();
@@ -100,11 +153,14 @@ export async function runSecurityScan(
     await Promise.race([scanPromise, timeoutPromise]);
   } catch (error: any) {
     console.error('Scan error:', error);
+    const errorMsg = error.message || 'Unbekannter Fehler';
+    await updateScanProgress(supabase, scanId, 'Fehler beim Scan', errorMsg);
+    
     await supabase
       .from('scans')
       .update({
         status: 'failed',
-        error_message: error.message || 'Unbekannter Fehler',
+        error_message: errorMsg,
         completed_at: new Date().toISOString(),
       })
       .eq('id', scanId);
@@ -117,11 +173,17 @@ async function testReachability(
   scanId: string
 ) {
   try {
+    console.log(`[testReachability] Testing: ${context.baseUrl}`);
+    const start = Date.now();
+    
     const response = await axios.get(context.baseUrl, {
       timeout: 3000,
       maxRedirects: 3,
       validateStatus: () => true,
     });
+    
+    const duration = Date.now() - start;
+    console.log(`[testReachability] Status ${response.status} (${duration}ms)`);
 
     if (response.status >= 400) {
       context.vulnerabilities.push({
@@ -134,6 +196,7 @@ async function testReachability(
       });
     }
   } catch (error: any) {
+    console.error(`[testReachability] Error: ${error.message}`);
     context.vulnerabilities.push({
       type: 'reachability',
       severity: 'critical',
@@ -224,17 +287,23 @@ async function crawlWebsite(
   const urlsToVisit = [context.baseUrl];
   const maxPages = 3; // Limit für schnelle Scans
 
+  console.log(`[crawlWebsite] Starte Crawl von ${context.baseUrl}`);
+
   while (urlsToVisit.length > 0 && context.visitedUrls.size < maxPages) {
     const url = urlsToVisit.shift();
     if (!url || context.visitedUrls.has(url)) continue;
 
     try {
       context.visitedUrls.add(url);
+      console.log(`[crawlWebsite] Fetche: ${url} (${context.visitedUrls.size}/${maxPages})`);
+      
+      const start = Date.now();
       const response = await axios.get(url, {
         timeout: 2000,
         maxRedirects: 2,
         validateStatus: (status) => status < 400,
       });
+      console.log(`[crawlWebsite] OK (${Date.now() - start}ms)`);
 
       const $ = cheerio.load(response.data);
 
@@ -256,10 +325,13 @@ async function crawlWebsite(
           // Ungültige URL, ignorieren
         }
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.log(`[crawlWebsite] Fehler bei ${url}: ${error.message}`);
       // Seite konnte nicht geladen werden, weiter
     }
   }
+  
+  console.log(`[crawlWebsite] Abgeschlossen - ${context.visitedUrls.size} Seiten gescannt`);
 }
 
 async function searchForSecrets(
@@ -267,6 +339,8 @@ async function searchForSecrets(
   supabase: SupabaseClient,
   scanId: string
 ) {
+  console.log(`[searchForSecrets] Durchsuche ${context.visitedUrls.size} Seiten nach Secrets`);
+  
   const secretPatterns = [
     {
       pattern: /(?:api[_-]?key|apikey)\s*[:=]\s*["']?([a-zA-Z0-9_\-]{20,})["']?/gi,
@@ -296,15 +370,21 @@ async function searchForSecrets(
 
   for (const url of context.visitedUrls) {
     try {
+      console.log(`[searchForSecrets] Durchsuche: ${url}`);
+      const start = Date.now();
+      
       const response = await axios.get(url, {
         timeout: 2000,
         validateStatus: (status) => status < 400,
       });
+      
+      console.log(`[searchForSecrets] Gescannt in ${Date.now() - start}ms`);
 
       const content = response.data.toString();
 
       for (const { pattern, type, severity, title, description, recommendation } of secretPatterns) {
         if (pattern.test(content)) {
+          console.log(`[searchForSecrets] FOUND: ${type} in ${url}`);
           context.vulnerabilities.push({
             type,
             severity,
@@ -316,11 +396,13 @@ async function searchForSecrets(
           break; // Nur einmal pro Seite melden
         }
       }
-    } catch {
+    } catch (error: any) {
+      console.log(`[searchForSecrets] Error: ${error.message}`);
       // Seite konnte nicht geladen werden
     }
   }
-}
+  
+  console.log(`[searchForSecrets] Abgeschlossen`);
 
 async function testCommonVulnerabilities(
   context: ScanContext,
@@ -329,21 +411,26 @@ async function testCommonVulnerabilities(
 ) {
   // Teste auf SQL Injection (nicht-destruktiv)
   const testUrls = Array.from(context.visitedUrls).slice(0, 1); // Limit für schnelle Scans
+  
+  console.log(`[testCommonVulnerabilities] Teste ${testUrls.length} URLs auf Schwachstellen`);
 
   for (const url of testUrls) {
     try {
       // Teste auf SQL Injection in Query-Parametern
       const testParams = ["' OR '1'='1", "1' UNION SELECT NULL--", "'; DROP TABLE--"];
       
+      console.log(`[testCommonVulnerabilities] Teste SQL Injection: ${url}`);
       for (const param of testParams) {
         try {
           const testUrl = new URL(url);
           testUrl.searchParams.set('id', param);
           
+          const start = Date.now();
           const response = await axios.get(testUrl.toString(), {
             timeout: 2000,
             validateStatus: () => true,
           });
+          console.log(`[testCommonVulnerabilities] SQLi Test (${Date.now() - start}ms)`);
 
           // Prüfe auf SQL-Fehlermeldungen
           const errorIndicators = [
@@ -357,6 +444,7 @@ async function testCommonVulnerabilities(
 
           const body = response.data.toString().toLowerCase();
           if (errorIndicators.some((indicator) => body.includes(indicator))) {
+            console.log(`[testCommonVulnerabilities] FOUND: SQL Injection`);
             context.vulnerabilities.push({
               type: 'sql_injection',
               severity: 'critical',
@@ -374,16 +462,20 @@ async function testCommonVulnerabilities(
 
       // Teste auf XSS (nicht-destruktiv)
       try {
+        console.log(`[testCommonVulnerabilities] Teste XSS: ${url}`);
         const testUrl = new URL(url);
         testUrl.searchParams.set('test', '<script>alert("xss")</script>');
         
+        const start = Date.now();
         const response = await axios.get(testUrl.toString(), {
           timeout: 2000,
           validateStatus: () => true,
         });
+        console.log(`[testCommonVulnerabilities] XSS Test (${Date.now() - start}ms)`);
 
         const body = response.data.toString();
         if (body.includes('<script>alert("xss")</script>') && !body.includes('&lt;script&gt;')) {
+          console.log(`[testCommonVulnerabilities] FOUND: XSS`);
           context.vulnerabilities.push({
             type: 'xss',
             severity: 'high',
@@ -393,13 +485,16 @@ async function testCommonVulnerabilities(
             recommendation: 'Escapen Sie alle Benutzereingaben vor der Ausgabe. Verwenden Sie Content-Security-Policy.',
           });
         }
-      } catch {
+      } catch (error: any) {
+        console.log(`[testCommonVulnerabilities] XSS Test Error: ${error.message}`);
         // Test fehlgeschlagen
       }
-    } catch {
+    } catch (error: any) {
+      console.log(`[testCommonVulnerabilities] URL Error: ${error.message}`);
       // URL konnte nicht getestet werden
     }
   }
+  
 }
 
 async function checkSensitiveFiles(
@@ -424,13 +519,19 @@ async function checkSensitiveFiles(
 
   // Teste nur die wichtigsten Dateien für schnelle Scans
   const priorityFiles = sensitiveFiles.slice(0, 5);
+  console.log(`[checkSensitiveFiles] Prüfe ${priorityFiles.length} Dateien auf Öffentlichkeit`);
+  
   for (const file of priorityFiles) {
     try {
       const url = `${context.baseUrl}${file}`;
+      console.log(`[checkSensitiveFiles] Prüfe: ${url}`);
+      
+      const start = Date.now();
       const response = await axios.get(url, {
         timeout: 1500,
         validateStatus: (status) => status === 200,
       });
+      console.log(`[checkSensitiveFiles] FOUND: ${file} (${Date.now() - start}ms)`);
 
       context.vulnerabilities.push({
         type: 'sensitive_file_exposure',
@@ -440,8 +541,10 @@ async function checkSensitiveFiles(
         affected_url: url,
         recommendation: `Entfernen Sie ${file} aus dem öffentlichen Verzeichnis oder schützen Sie den Zugriff mit .htaccess oder Server-Konfiguration.`,
       });
-    } catch {
+    } catch (error: any) {
+      console.log(`[checkSensitiveFiles] Nicht vorhanden: ${file}`);
       // Datei nicht gefunden oder nicht zugänglich - das ist gut
     }
   }
-}
+  
+  console.log(`[checkSensitiveFiles] Abgeschlossen`);

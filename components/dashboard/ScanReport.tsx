@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { AlertCircle, CheckCircle, Clock, Shield, ArrowLeft, XCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, Shield, ArrowLeft, XCircle, Activity } from 'lucide-react';
 import type { ScanResult, Vulnerability, Severity } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
@@ -12,6 +12,8 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
   const [filter, setFilter] = useState<Severity | 'all'>('all');
   const [isMounted, setIsMounted] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [progressMessage, setProgressMessage] = useState<string>('');
+  const [progressDetails, setProgressDetails] = useState<string>('');
 
   // Verhindere Hydration-Fehler
   useEffect(() => {
@@ -29,6 +31,15 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
           if (response.ok) {
             const data = await response.json();
             setScanResult(data);
+            
+            // Update progress information
+            if (data.scan.progress_message) {
+              setProgressMessage(data.scan.progress_message);
+            }
+            if (data.scan.progress_details) {
+              setProgressDetails(data.scan.progress_details);
+            }
+            
             if (data.scan.status === 'completed' || data.scan.status === 'failed') {
               clearInterval(interval);
             }
@@ -36,7 +47,7 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
         } catch (error) {
           console.error('Error polling scan:', error);
         }
-      }, 3000); // Alle 3 Sekunden
+      }, 2000); // Alle 2 Sekunden
 
       return () => clearInterval(interval);
     }
@@ -172,6 +183,22 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">{scanResult.summary.low}</div>
               <div className="text-sm text-blue-600">Niedrig</div>
+            </div>
+          </div>
+        )}
+
+        {isRunning && (progressMessage || progressDetails) && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <Activity className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0 animate-pulse" />
+              <div>
+                {progressMessage && (
+                  <div className="font-semibold text-blue-900">{progressMessage}</div>
+                )}
+                {progressDetails && (
+                  <div className="text-sm text-blue-800 mt-1">{progressDetails}</div>
+                )}
+              </div>
             </div>
           </div>
         )}
