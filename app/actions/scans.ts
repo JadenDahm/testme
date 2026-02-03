@@ -105,9 +105,9 @@ async function processScan(
 
   try {
     // Update queue status
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scan_queue')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         status: 'processing',
         started_at: new Date().toISOString(),
@@ -119,9 +119,9 @@ async function processScan(
     await engine.run(scanType)
 
     // Update queue status
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scan_queue')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
@@ -129,18 +129,18 @@ async function processScan(
       .eq('scan_id', scanId)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scan_queue')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         status: 'failed',
         completed_at: new Date().toISOString(),
       })
       .eq('scan_id', scanId)
     
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scans')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         status: 'failed',
         error_message: errorMessage,
@@ -173,9 +173,9 @@ export async function cancelScan(scanId: string) {
       return { error: 'Scan cannot be cancelled' }
     }
 
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scans')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         status: 'cancelled',
         completed_at: new Date().toISOString(),

@@ -94,9 +94,9 @@ export async function verifyDomain(
 
   // Update verification status if successful
   if (result.verified) {
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('domain_verifications')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         verified: true,
         verified_at: new Date().toISOString(),
@@ -104,9 +104,9 @@ export async function verifyDomain(
       .eq('id', verificationId)
 
     // Update domain verification status
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('domains')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         is_verified: true,
         verification_method: verificationData.verification_method,

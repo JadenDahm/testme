@@ -42,9 +42,9 @@ export class ScanEngine {
 
     try {
       // Update scan status to running
-      // @ts-expect-error - Supabase types don't match manual Database type definition
       await supabase
         .from('scans')
+        // @ts-expect-error - Supabase types don't match manual Database type definition
         .update({
           status: 'running',
           started_at: new Date().toISOString(),
@@ -120,9 +120,9 @@ export class ScanEngine {
       await this.saveFindings()
 
       // Update scan status
-      // @ts-expect-error - Supabase types don't match manual Database type definition
       await supabase
         .from('scans')
+        // @ts-expect-error - Supabase types don't match manual Database type definition
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
@@ -145,9 +145,9 @@ export class ScanEngine {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       
-      // @ts-expect-error - Supabase types don't match manual Database type definition
       await supabase
         .from('scans')
+        // @ts-expect-error - Supabase types don't match manual Database type definition
         .update({
           status: 'failed',
           completed_at: new Date().toISOString(),
@@ -226,9 +226,9 @@ export class ScanEngine {
    */
   private async updateProgress(percentage: number, message: string): Promise<void> {
     const supabase = await createClient()
-    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scans')
+      // @ts-expect-error - Supabase types don't match manual Database type definition
       .update({
         progress_percentage: Math.min(100, percentage),
       })
