@@ -8,9 +8,17 @@ import type { ScanResult, Vulnerability, Severity } from '@/lib/types';
 export default function ScanReport({ scanResult: initialResult }: { scanResult: ScanResult }) {
   const [scanResult, setScanResult] = useState(initialResult);
   const [filter, setFilter] = useState<Severity | 'all'>('all');
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Verhindere Hydration-Fehler
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Polling für laufende Scans
   useEffect(() => {
+    if (!isMounted) return; // Nur nach Mount polling starten
+
     if (scanResult.scan.status === 'running' || scanResult.scan.status === 'pending') {
       const interval = setInterval(async () => {
         try {
@@ -29,7 +37,7 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
 
       return () => clearInterval(interval);
     }
-  }, [scanResult.scan.id, scanResult.scan.status]);
+  }, [scanResult.scan.id, scanResult.scan.status, isMounted]);
 
   const getSeverityColor = (severity: Severity) => {
     switch (severity) {

@@ -211,7 +211,7 @@ export default function DomainDetails({
           {domain.verified_at && (
             <div>
               <span className="text-gray-600">Verifiziert am:</span>
-              <span className="ml-2 font-medium">
+              <span className="ml-2 font-medium" suppressHydrationWarning>
                 {new Date(domain.verified_at).toLocaleString('de-DE')}
               </span>
             </div>
@@ -238,7 +238,7 @@ export default function DomainDetails({
                   <div className="flex items-center gap-3">
                     {getStatusIcon(scan.status)}
                     <div>
-                      <div className="font-semibold text-gray-900">
+                      <div className="font-semibold text-gray-900" suppressHydrationWarning>
                         Scan vom {new Date(scan.created_at).toLocaleString('de-DE')}
                       </div>
                       <div className="text-sm text-gray-600">
@@ -247,7 +247,7 @@ export default function DomainDetails({
                     </div>
                   </div>
                   {scan.completed_at && (
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600" suppressHydrationWarning>
                       Abgeschlossen: {new Date(scan.completed_at).toLocaleString('de-DE')}
                     </div>
                   )}
