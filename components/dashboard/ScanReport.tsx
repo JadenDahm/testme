@@ -30,14 +30,22 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
           const response = await fetch(`/api/scans/${scanResult.scan.id}`);
           if (response.ok) {
             const data = await response.json();
+            console.log('📊 Scan data received:', {
+              status: data.scan.status,
+              progress_message: data.scan.progress_message,
+              progress_details: data.scan.progress_details,
+              last_progress_at: data.scan.last_progress_at
+            });
             setScanResult(data);
             
             // Update progress information
             if (data.scan.progress_message) {
               setProgressMessage(data.scan.progress_message);
+              console.log('✅ Progress message set:', data.scan.progress_message);
             }
             if (data.scan.progress_details) {
               setProgressDetails(data.scan.progress_details);
+              console.log('✅ Progress details set:', data.scan.progress_details);
             }
             
             if (data.scan.status === 'completed' || data.scan.status === 'failed') {
