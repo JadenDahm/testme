@@ -48,13 +48,32 @@ export async function POST(
       .update({
         status: 'running',
         started_at: new Date().toISOString(),
+        progress_message: 'Initialisiere Scan...',
       })
       .eq('id', params.id);
 
-    // Starte Scan SYNCHRON (wichtig für Vercel!)
-    await runSecurityScan(scan.id, scan.domains.domain, supabase);
+    // Starte Scan im Hintergrund (Fire-and-Forget mit Error-Handling)
+    // WICHTIG: Nicht warten, damit die HTTP-Response sofort zurückkommt
+    runSecurityScan(scan.id, scan.domains.domain, supabase).catch(async (error) => {
+      console.error(`[Scan ${scan.id}] Unerwarteter Fehler:`, error);
+      try {
+        await supabase
+          .from('scans')
+          .update({
+            status: 'failed',
+            error_message: error.message || 'Unerwarteter Fehler während des Scans',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', params.id);
+      } catch (updateError) {
+        console.error('Fehler beim Aktualisieren des Scan-Status:', updateError);
+      }
+    });
 
-    return NextResponse.json({ message: 'Scan abgeschlossen' });
+    return NextResponse.json({ 
+      message: 'Scan gestartet',
+      scan_id: scan.id 
+    });
   } catch (error: any) {
     console.error('Start scan error:', error);
     return NextResponse.json(

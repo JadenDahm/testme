@@ -24,42 +24,45 @@ export default function ScanReport({ scanResult: initialResult }: { scanResult: 
   useEffect(() => {
     if (!isMounted) return; // Nur nach Mount polling starten
 
-    if (scanResult.scan.status === 'running' || scanResult.scan.status === 'pending') {
-      const interval = setInterval(async () => {
-        try {
-          const response = await fetch(`/api/scans/${scanResult.scan.id}`);
-          if (response.ok) {
-            const data = await response.json();
-            console.log('📊 Scan data received:', {
-              status: data.scan.status,
-              progress_message: data.scan.progress_message,
-              progress_details: data.scan.progress_details,
-              last_progress_at: data.scan.last_progress_at
-            });
-            setScanResult(data);
-            
-            // Update progress information
-            if (data.scan.progress_message) {
-              setProgressMessage(data.scan.progress_message);
-              console.log('✅ Progress message set:', data.scan.progress_message);
-            }
-            if (data.scan.progress_details) {
-              setProgressDetails(data.scan.progress_details);
-              console.log('✅ Progress details set:', data.scan.progress_details);
-            }
-            
-            if (data.scan.status === 'completed' || data.scan.status === 'failed') {
-              clearInterval(interval);
-            }
-          }
-        } catch (error) {
-          console.error('Error polling scan:', error);
-        }
-      }, 2000); // Alle 2 Sekunden
+    const scanId = scanResult.scan.id;
+    const isPolling = scanResult.scan.status === 'running' || scanResult.scan.status === 'pending';
 
-      return () => clearInterval(interval);
-    }
-  }, [scanResult.scan.id, scanResult.scan.status, isMounted]);
+    if (!isPolling) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/scans/${scanId}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('📊 Scan data received:', {
+            status: data.scan.status,
+            progress_message: data.scan.progress_message,
+            progress_details: data.scan.progress_details,
+            last_progress_at: data.scan.last_progress_at
+          });
+          setScanResult(data);
+          
+          // Update progress information
+          if (data.scan.progress_message) {
+            setProgressMessage(data.scan.progress_message);
+            console.log('✅ Progress message set:', data.scan.progress_message);
+          }
+          if (data.scan.progress_details) {
+            setProgressDetails(data.scan.progress_details);
+            console.log('✅ Progress details set:', data.scan.progress_details);
+          }
+          
+          if (data.scan.status === 'completed' || data.scan.status === 'failed') {
+            clearInterval(interval);
+          }
+        }
+      } catch (error) {
+        console.error('Error polling scan:', error);
+      }
+    }, 2000); // Alle 2 Sekunden
+
+    return () => clearInterval(interval);
+  }, [scanResult.scan.id, isMounted]);
 
   const handleCancelScan = async () => {
     setCancelling(true);

@@ -45,125 +45,136 @@ export async function runSecurityScan(
   domain: string,
   supabase: SupabaseClient
 ) {
-  const SCAN_TIMEOUT = 25000; // 25 Sekunden Gesamt-Timeout
+  const SCAN_TIMEOUT = 30000; // 30 Sekunden Gesamt-Timeout
   
   const scanPromise = (async () => {
-    const startTime = Date.now();
-    await updateScanProgress(supabase, scanId, 'Starte Scan', `Domain: ${domain}`);
-    
-    // Versuche zuerst HTTPS, dann HTTP
-    let baseUrl = `https://${domain}`;
-    let isHttps = true;
-    
-    await updateScanProgress(supabase, scanId, 'Prüfe HTTPS-Erreichbarkeit', baseUrl);
-    
     try {
-      await axios.get(baseUrl, { timeout: 2000, validateStatus: () => true });
-    } catch {
-      await updateScanProgress(supabase, scanId, 'HTTPS fehlgeschlagen, versuche HTTP', baseUrl);
-      baseUrl = `http://${domain}`;
-      isHttps = false;
+      const startTime = Date.now();
+      await updateScanProgress(supabase, scanId, 'Starte Scan', `Domain: ${domain}`);
+      
+      // Versuche zuerst HTTPS, dann HTTP
+      let baseUrl = `https://${domain}`;
+      let isHttps = true;
+      
+      await updateScanProgress(supabase, scanId, 'Prüfe HTTPS-Erreichbarkeit', baseUrl);
+      
+      try {
+        await axios.get(baseUrl, { timeout: 2000, validateStatus: () => true });
+      } catch {
+        await updateScanProgress(supabase, scanId, 'HTTPS fehlgeschlagen, versuche HTTP', baseUrl);
+        baseUrl = `http://${domain}`;
+        isHttps = false;
+      }
+      
+      const context: ScanContext = {
+        baseUrl,
+        visitedUrls: new Set(),
+        vulnerabilities: [],
+      };
+      
+      // Warnung wenn HTTP verwendet wird
+      if (!isHttps) {
+        context.vulnerabilities.push({
+          type: 'insecure_protocol',
+          severity: 'high',
+          title: 'HTTP statt HTTPS verwendet',
+          description: 'Die Website verwendet HTTP anstelle von HTTPS, was zu unsicheren Verbindungen führt.',
+          affected_url: baseUrl,
+          recommendation: 'Implementieren Sie HTTPS mit einem gültigen SSL/TLS-Zertifikat.',
+        });
+      }
+
+      // 1. Teste Erreichbarkeit
+      await updateScanProgress(supabase, scanId, 'Phase 1/6: Teste Erreichbarkeit');
+      const reachStart = Date.now();
+      await testReachability(context, supabase, scanId);
+      console.log(`[Reachability] Dauer: ${Date.now() - reachStart}ms`);
+
+      // 2. Analysiere HTTP-Security-Headers
+      await updateScanProgress(supabase, scanId, 'Phase 2/6: Analysiere Security-Headers');
+      const headersStart = Date.now();
+      await analyzeSecurityHeaders(context, supabase, scanId);
+      console.log(`[Security Headers] Dauer: ${Date.now() - headersStart}ms`);
+
+      // 3. Crawle Website
+      await updateScanProgress(supabase, scanId, 'Phase 3/6: Crawle Website');
+      const crawlStart = Date.now();
+      await crawlWebsite(context, supabase, scanId);
+      console.log(`[Crawl] Dauer: ${Date.now() - crawlStart}ms, Seiten gescannt: ${context.visitedUrls.size}`);
+
+      // 4. Suche nach sensiblen Daten
+      await updateScanProgress(supabase, scanId, 'Phase 4/6: Suche nach sensiblen Daten');
+      const secretsStart = Date.now();
+      await searchForSecrets(context, supabase, scanId);
+      console.log(`[Secrets] Dauer: ${Date.now() - secretsStart}ms`);
+
+      // 5. Teste auf typische Schwachstellen
+      await updateScanProgress(supabase, scanId, 'Phase 5/6: Teste auf Schwachstellen');
+      const vulnStart = Date.now();
+      await testCommonVulnerabilities(context, supabase, scanId);
+      console.log(`[Vulnerabilities] Dauer: ${Date.now() - vulnStart}ms`);
+
+      // 6. Prüfe auf öffentliche sensible Dateien
+      await updateScanProgress(supabase, scanId, 'Phase 6/6: Prüfe sensitive Dateien');
+      const filesStart = Date.now();
+      await checkSensitiveFiles(context, supabase, scanId);
+      console.log(`[Sensitive Files] Dauer: ${Date.now() - filesStart}ms`);
+
+      // Speichere alle Vulnerabilities
+      if (context.vulnerabilities.length > 0) {
+        await updateScanProgress(supabase, scanId, 'Speichere Ergebnisse', `${context.vulnerabilities.length} Schwachstellen gefunden`);
+        await supabase.from('vulnerabilities').insert(
+          context.vulnerabilities.map((v) => ({
+            scan_id: scanId,
+            ...v,
+          }))
+        );
+      } else {
+        await updateScanProgress(supabase, scanId, 'Speichere Ergebnisse', 'Keine Schwachstellen gefunden');
+      }
+
+      // Markiere Scan als abgeschlossen
+      const totalTime = Date.now() - startTime;
+      console.log(`[SCAN COMPLETE] Scan ${scanId} abgeschlossen in ${totalTime}ms`);
+      
+      await supabase
+        .from('scans')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          progress_message: `Scan abgeschlossen in ${Math.round(totalTime / 1000)}s`,
+        })
+        .eq('id', scanId);
+    } catch (scanError: any) {
+      console.error(`[SCAN ERROR] Scan ${scanId}:`, scanError);
+      throw scanError;
     }
-    
-    const context: ScanContext = {
-      baseUrl,
-      visitedUrls: new Set(),
-      vulnerabilities: [],
-    };
-    
-    // Warnung wenn HTTP verwendet wird
-    if (!isHttps) {
-      context.vulnerabilities.push({
-        type: 'insecure_protocol',
-        severity: 'high',
-        title: 'HTTP statt HTTPS verwendet',
-        description: 'Die Website verwendet HTTP anstelle von HTTPS, was zu unsicheren Verbindungen führt.',
-        affected_url: baseUrl,
-        recommendation: 'Implementieren Sie HTTPS mit einem gültigen SSL/TLS-Zertifikat.',
-      });
-    }
-
-    // 1. Teste Erreichbarkeit
-    await updateScanProgress(supabase, scanId, 'Phase 1/6: Teste Erreichbarkeit');
-    const reachStart = Date.now();
-    await testReachability(context, supabase, scanId);
-    console.log(`[Reachability] Dauer: ${Date.now() - reachStart}ms`);
-
-    // 2. Analysiere HTTP-Security-Headers
-    await updateScanProgress(supabase, scanId, 'Phase 2/6: Analysiere Security-Headers');
-    const headersStart = Date.now();
-    await analyzeSecurityHeaders(context, supabase, scanId);
-    console.log(`[Security Headers] Dauer: ${Date.now() - headersStart}ms`);
-
-    // 3. Crawle Website
-    await updateScanProgress(supabase, scanId, 'Phase 3/6: Crawle Website');
-    const crawlStart = Date.now();
-    await crawlWebsite(context, supabase, scanId);
-    console.log(`[Crawl] Dauer: ${Date.now() - crawlStart}ms, Seiten gescannt: ${context.visitedUrls.size}`);
-
-    // 4. Suche nach sensiblen Daten
-    await updateScanProgress(supabase, scanId, 'Phase 4/6: Suche nach sensiblen Daten');
-    const secretsStart = Date.now();
-    await searchForSecrets(context, supabase, scanId);
-    console.log(`[Secrets] Dauer: ${Date.now() - secretsStart}ms`);
-
-    // 5. Teste auf typische Schwachstellen
-    await updateScanProgress(supabase, scanId, 'Phase 5/6: Teste auf Schwachstellen');
-    const vulnStart = Date.now();
-    await testCommonVulnerabilities(context, supabase, scanId);
-    console.log(`[Vulnerabilities] Dauer: ${Date.now() - vulnStart}ms`);
-
-    // 6. Prüfe auf öffentliche sensible Dateien
-    await updateScanProgress(supabase, scanId, 'Phase 6/6: Prüfe sensitive Dateien');
-    const filesStart = Date.now();
-    await checkSensitiveFiles(context, supabase, scanId);
-    console.log(`[Sensitive Files] Dauer: ${Date.now() - filesStart}ms`);
-
-    // Speichere alle Vulnerabilities
-    if (context.vulnerabilities.length > 0) {
-      await updateScanProgress(supabase, scanId, 'Speichere Ergebnisse', `${context.vulnerabilities.length} Schwachstellen gefunden`);
-      await supabase.from('vulnerabilities').insert(
-        context.vulnerabilities.map((v) => ({
-          scan_id: scanId,
-          ...v,
-        }))
-      );
-    }
-
-    // Markiere Scan als abgeschlossen
-    const totalTime = Date.now() - startTime;
-    console.log(`[SCAN COMPLETE] Scan ${scanId} abgeschlossen in ${totalTime}ms`);
-    
-    await supabase
-      .from('scans')
-      .update({
-        status: 'completed',
-        completed_at: new Date().toISOString(),
-        progress_message: `Scan abgeschlossen (${totalTime}ms)`,
-      })
-      .eq('id', scanId);
   })();
 
   // Race zwischen Scan und Timeout
   const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Scan-Timeout überschritten')), SCAN_TIMEOUT)
+    setTimeout(() => reject(new Error('Scan-Timeout (30s) überschritten')), SCAN_TIMEOUT)
   );
 
   try {
     await Promise.race([scanPromise, timeoutPromise]);
   } catch (error: any) {
-    console.error('Scan error:', error);
+    console.error('[SCAN FAILED]', error);
     const errorMsg = error.message || 'Unbekannter Fehler';
     await updateScanProgress(supabase, scanId, 'Fehler beim Scan', errorMsg);
     
-    await supabase
-      .from('scans')
-      .update({
-        status: 'failed',
-        error_message: errorMsg,
-        completed_at: new Date().toISOString(),
-      })
-      .eq('id', scanId);
+    try {
+      await supabase
+        .from('scans')
+        .update({
+          status: 'failed',
+          error_message: errorMsg,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', scanId);
+    } catch (updateError) {
+      console.error('[UPDATE ERROR]', updateError);
+    }
   }
 }
 
@@ -299,7 +310,7 @@ async function crawlWebsite(
       
       const start = Date.now();
       const response = await axios.get(url, {
-        timeout: 2000,
+        timeout: 3000,
         maxRedirects: 2,
         validateStatus: (status) => status < 400,
       });
@@ -410,15 +421,20 @@ async function testCommonVulnerabilities(
   supabase: SupabaseClient,
   scanId: string
 ) {
-  // Teste auf SQL Injection (nicht-destruktiv)
-  const testUrls = Array.from(context.visitedUrls).slice(0, 1); // Limit für schnelle Scans
+  // Teste nur die erste URL für Geschwindigkeit
+  const testUrls = Array.from(context.visitedUrls).slice(0, 1);
   
+  if (testUrls.length === 0) {
+    console.log(`[testCommonVulnerabilities] Keine URLs zum Testen`);
+    return;
+  }
+
   console.log(`[testCommonVulnerabilities] Teste ${testUrls.length} URLs auf Schwachstellen`);
 
   for (const url of testUrls) {
     try {
       // Teste auf SQL Injection in Query-Parametern
-      const testParams = ["' OR '1'='1", "1' UNION SELECT NULL--", "'; DROP TABLE--"];
+      const testParams = ["' OR '1'='1"];
       
       console.log(`[testCommonVulnerabilities] Teste SQL Injection: ${url}`);
       for (const param of testParams) {
@@ -456,8 +472,9 @@ async function testCommonVulnerabilities(
             });
             break;
           }
-        } catch {
-          // Test fehlgeschlagen, weiter
+        } catch (error) {
+          // Test fehlgeschlagen
+          console.log(`[testCommonVulnerabilities] SQLi Test fehlgeschlagen`);
         }
       }
 
@@ -486,13 +503,11 @@ async function testCommonVulnerabilities(
             recommendation: 'Escapen Sie alle Benutzereingaben vor der Ausgabe. Verwenden Sie Content-Security-Policy.',
           });
         }
-      } catch (error: any) {
-        console.log(`[testCommonVulnerabilities] XSS Test Error: ${error.message}`);
-        // Test fehlgeschlagen
+      } catch (error) {
+        console.log(`[testCommonVulnerabilities] XSS Test fehlgeschlagen`);
       }
     } catch (error: any) {
       console.log(`[testCommonVulnerabilities] URL Error: ${error.message}`);
-      // URL konnte nicht getestet werden
     }
   }
   
@@ -507,20 +522,12 @@ async function checkSensitiveFiles(
   const sensitiveFiles = [
     '/.env',
     '/.git/config',
-    '/.git/HEAD',
     '/wp-config.php',
     '/config.php',
-    '/.htaccess',
-    '/web.config',
-    '/package.json',
-    '/composer.json',
-    '/.DS_Store',
-    '/.svn/entries',
-    '/.idea/workspace.xml',
   ];
 
-  // Teste nur die wichtigsten Dateien für schnelle Scans
-  const priorityFiles = sensitiveFiles.slice(0, 5);
+  // Teste nur wichtigste Dateien für schnelle Scans
+  const priorityFiles = sensitiveFiles.slice(0, 4);
   console.log(`[checkSensitiveFiles] Prüfe ${priorityFiles.length} Dateien auf Öffentlichkeit`);
   
   for (const file of priorityFiles) {
@@ -530,7 +537,7 @@ async function checkSensitiveFiles(
       
       const start = Date.now();
       const response = await axios.get(url, {
-        timeout: 1500,
+        timeout: 2000,
         validateStatus: (status) => status === 200,
       });
       console.log(`[checkSensitiveFiles] FOUND: ${file} (${Date.now() - start}ms)`);
@@ -545,7 +552,6 @@ async function checkSensitiveFiles(
       });
     } catch (error: any) {
       console.log(`[checkSensitiveFiles] Nicht vorhanden: ${file}`);
-      // Datei nicht gefunden oder nicht zugänglich - das ist gut
     }
   }
   
