@@ -41,8 +41,8 @@ export async function checkRateLimit(
     if (rateLimit) {
       await supabase
         .from('rate_limits')
-        .update({ count: currentCount + 1 })
-        .eq('id', rateLimit.id)
+        .update({ count: currentCount + 1 } as any)
+        .eq('id', (rateLimit as any).id)
     } else {
       await supabase
         .from('rate_limits')

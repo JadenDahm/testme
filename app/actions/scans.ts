@@ -110,7 +110,7 @@ async function processScan(
       .update({
         status: 'processing',
         started_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('scan_id', scanId)
 
     // Run scan
@@ -123,7 +123,7 @@ async function processScan(
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('scan_id', scanId)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -132,7 +132,7 @@ async function processScan(
       .update({
         status: 'failed',
         completed_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('scan_id', scanId)
     
     await supabase
@@ -141,7 +141,7 @@ async function processScan(
         status: 'failed',
         error_message: errorMessage,
         completed_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', scanId)
   }
 }
@@ -174,7 +174,7 @@ export async function cancelScan(scanId: string) {
       .update({
         status: 'cancelled',
         completed_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', scanId)
 
     revalidatePath('/dashboard/scans')

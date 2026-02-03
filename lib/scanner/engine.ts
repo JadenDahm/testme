@@ -47,7 +47,7 @@ export class ScanEngine {
         .update({
           status: 'running',
           started_at: new Date().toISOString(),
-        })
+        } as any)
         .eq('id', this.context.scanId)
 
       // Log scan start
@@ -131,7 +131,7 @@ export class ScanEngine {
           high_count: counts.high,
           medium_count: counts.medium,
           low_count: counts.low,
-        })
+        } as any)
         .eq('id', this.context.scanId)
 
       await this.log('info', 'Scan completed successfully', {
@@ -149,7 +149,7 @@ export class ScanEngine {
           status: 'failed',
           completed_at: new Date().toISOString(),
           error_message: errorMessage,
-        })
+        } as any)
         .eq('id', this.context.scanId)
 
       await this.log('error', 'Scan failed', { error: errorMessage })
@@ -227,7 +227,7 @@ export class ScanEngine {
       .from('scans')
       .update({
         progress_percentage: Math.min(100, percentage),
-      })
+      } as any)
       .eq('id', this.context.scanId)
   }
 
@@ -256,7 +256,7 @@ export class ScanEngine {
       .update({
         status: 'cancelled',
         completed_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', this.context.scanId)
     
     await this.log('info', 'Scan cancelled by user')
