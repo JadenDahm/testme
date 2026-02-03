@@ -21,36 +21,38 @@ export async function runSecurityScan(
   domain: string,
   supabase: SupabaseClient
 ) {
-  // Versuche zuerst HTTPS, dann HTTP
-  let baseUrl = `https://${domain}`;
-  let isHttps = true;
+  const SCAN_TIMEOUT = 25000; // 25 Sekunden Gesamt-Timeout
   
-  try {
-    await axios.get(baseUrl, { timeout: 5000, validateStatus: () => true });
-  } catch {
-    baseUrl = `http://${domain}`;
-    isHttps = false;
-  }
-  
-  const context: ScanContext = {
-    baseUrl,
-    visitedUrls: new Set(),
-    vulnerabilities: [],
-  };
-  
-  // Warnung wenn HTTP verwendet wird
-  if (!isHttps) {
-    context.vulnerabilities.push({
-      type: 'insecure_protocol',
-      severity: 'high',
-      title: 'HTTP statt HTTPS verwendet',
-      description: 'Die Website verwendet HTTP anstelle von HTTPS, was zu unsicheren Verbindungen führt.',
-      affected_url: baseUrl,
-      recommendation: 'Implementieren Sie HTTPS mit einem gültigen SSL/TLS-Zertifikat.',
-    });
-  }
+  const scanPromise = (async () => {
+    // Versuche zuerst HTTPS, dann HTTP
+    let baseUrl = `https://${domain}`;
+    let isHttps = true;
+    
+    try {
+      await axios.get(baseUrl, { timeout: 2000, validateStatus: () => true });
+    } catch {
+      baseUrl = `http://${domain}`;
+      isHttps = false;
+    }
+    
+    const context: ScanContext = {
+      baseUrl,
+      visitedUrls: new Set(),
+      vulnerabilities: [],
+    };
+    
+    // Warnung wenn HTTP verwendet wird
+    if (!isHttps) {
+      context.vulnerabilities.push({
+        type: 'insecure_protocol',
+        severity: 'high',
+        title: 'HTTP statt HTTPS verwendet',
+        description: 'Die Website verwendet HTTP anstelle von HTTPS, was zu unsicheren Verbindungen führt.',
+        affected_url: baseUrl,
+        recommendation: 'Implementieren Sie HTTPS mit einem gültigen SSL/TLS-Zertifikat.',
+      });
+    }
 
-  try {
     // 1. Teste Erreichbarkeit
     await testReachability(context, supabase, scanId);
 
@@ -87,6 +89,15 @@ export async function runSecurityScan(
         completed_at: new Date().toISOString(),
       })
       .eq('id', scanId);
+  })();
+
+  // Race zwischen Scan und Timeout
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Scan-Timeout überschritten')), SCAN_TIMEOUT)
+  );
+
+  try {
+    await Promise.race([scanPromise, timeoutPromise]);
   } catch (error: any) {
     console.error('Scan error:', error);
     await supabase
@@ -107,8 +118,8 @@ async function testReachability(
 ) {
   try {
     const response = await axios.get(context.baseUrl, {
-      timeout: 10000,
-      maxRedirects: 5,
+      timeout: 3000,
+      maxRedirects: 3,
       validateStatus: () => true,
     });
 
@@ -141,8 +152,8 @@ async function analyzeSecurityHeaders(
 ) {
   try {
     const response = await axios.get(context.baseUrl, {
-      timeout: 10000,
-      maxRedirects: 5,
+      timeout: 3000,
+      maxRedirects: 3,
       validateStatus: () => true,
     });
 
@@ -211,7 +222,7 @@ async function crawlWebsite(
   scanId: string
 ) {
   const urlsToVisit = [context.baseUrl];
-  const maxPages = 10; // Limit für Demo
+  const maxPages = 3; // Limit für schnelle Scans
 
   while (urlsToVisit.length > 0 && context.visitedUrls.size < maxPages) {
     const url = urlsToVisit.shift();
@@ -220,8 +231,8 @@ async function crawlWebsite(
     try {
       context.visitedUrls.add(url);
       const response = await axios.get(url, {
-        timeout: 10000,
-        maxRedirects: 5,
+        timeout: 2000,
+        maxRedirects: 2,
         validateStatus: (status) => status < 400,
       });
 
@@ -286,7 +297,7 @@ async function searchForSecrets(
   for (const url of context.visitedUrls) {
     try {
       const response = await axios.get(url, {
-        timeout: 10000,
+        timeout: 2000,
         validateStatus: (status) => status < 400,
       });
 
@@ -317,7 +328,7 @@ async function testCommonVulnerabilities(
   scanId: string
 ) {
   // Teste auf SQL Injection (nicht-destruktiv)
-  const testUrls = Array.from(context.visitedUrls).slice(0, 3); // Limit für Demo
+  const testUrls = Array.from(context.visitedUrls).slice(0, 1); // Limit für schnelle Scans
 
   for (const url of testUrls) {
     try {
@@ -330,7 +341,7 @@ async function testCommonVulnerabilities(
           testUrl.searchParams.set('id', param);
           
           const response = await axios.get(testUrl.toString(), {
-            timeout: 5000,
+            timeout: 2000,
             validateStatus: () => true,
           });
 
@@ -367,7 +378,7 @@ async function testCommonVulnerabilities(
         testUrl.searchParams.set('test', '<script>alert("xss")</script>');
         
         const response = await axios.get(testUrl.toString(), {
-          timeout: 5000,
+          timeout: 2000,
           validateStatus: () => true,
         });
 
@@ -411,11 +422,13 @@ async function checkSensitiveFiles(
     '/.idea/workspace.xml',
   ];
 
-  for (const file of sensitiveFiles) {
+  // Teste nur die wichtigsten Dateien für schnelle Scans
+  const priorityFiles = sensitiveFiles.slice(0, 5);
+  for (const file of priorityFiles) {
     try {
       const url = `${context.baseUrl}${file}`;
       const response = await axios.get(url, {
-        timeout: 5000,
+        timeout: 1500,
         validateStatus: (status) => status === 200,
       });
 

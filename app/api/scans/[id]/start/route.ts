@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { runSecurityScan } from '@/lib/scanner';
 
+// Vercel: Erhöhe Timeout für Scan-Route
+export const maxDuration = 60; // 60 Sekunden (benötigt Pro Plan, sonst 10s)
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -39,12 +42,7 @@ export async function POST(
       );
     }
 
-    // Starte Scan asynchron
-    runSecurityScan(scan.id, scan.domains.domain, supabase).catch((error) => {
-      console.error('Scan error:', error);
-    });
-
-    // Aktualisiere Scan-Status
+    // Aktualisiere Scan-Status auf running
     await supabase
       .from('scans')
       .update({
@@ -53,7 +51,10 @@ export async function POST(
       })
       .eq('id', params.id);
 
-    return NextResponse.json({ message: 'Scan gestartet' });
+    // Starte Scan SYNCHRON (wichtig für Vercel!)
+    await runSecurityScan(scan.id, scan.domains.domain, supabase);
+
+    return NextResponse.json({ message: 'Scan abgeschlossen' });
   } catch (error: any) {
     console.error('Start scan error:', error);
     return NextResponse.json(
