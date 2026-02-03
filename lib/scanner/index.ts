@@ -403,6 +403,7 @@ async function searchForSecrets(
   }
   
   console.log(`[searchForSecrets] Abgeschlossen`);
+}
 
 async function testCommonVulnerabilities(
   context: ScanContext,
@@ -495,6 +496,7 @@ async function testCommonVulnerabilities(
     }
   }
   
+  console.log(`[testCommonVulnerabilities] Abgeschlossen`);
 }
 
 async function checkSensitiveFiles(
