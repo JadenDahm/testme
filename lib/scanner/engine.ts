@@ -42,13 +42,11 @@ export class ScanEngine {
 
     try {
       // Update scan status to running
-      await (supabase
-        .from('scans') as any)
-        .update({
-          status: 'running',
-          started_at: new Date().toISOString(),
-        })
-        .eq('id', this.context.scanId)
+      const scanUpdate1 = supabase.from('scans') as any
+      await scanUpdate1.update({
+        status: 'running',
+        started_at: new Date().toISOString(),
+      }).eq('id', this.context.scanId)
 
       // Log scan start
       await this.log('info', 'Scan started', { scanType })
@@ -119,20 +117,18 @@ export class ScanEngine {
       await this.saveFindings()
 
       // Update scan status
-      await (supabase
-        .from('scans') as any)
-        .update({
-          status: 'completed',
-          completed_at: new Date().toISOString(),
-          progress_percentage: 100,
-          security_score: securityScore,
-          total_findings: this.findings.length,
-          critical_count: counts.critical,
-          high_count: counts.high,
-          medium_count: counts.medium,
-          low_count: counts.low,
-        })
-        .eq('id', this.context.scanId)
+      const scanUpdate2 = supabase.from('scans') as any
+      await scanUpdate2.update({
+        status: 'completed',
+        completed_at: new Date().toISOString(),
+        progress_percentage: 100,
+        security_score: securityScore,
+        total_findings: this.findings.length,
+        critical_count: counts.critical,
+        high_count: counts.high,
+        medium_count: counts.medium,
+        low_count: counts.low,
+      }).eq('id', this.context.scanId)
 
       await this.log('info', 'Scan completed successfully', {
         totalFindings: this.findings.length,
@@ -143,14 +139,12 @@ export class ScanEngine {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       
-      await (supabase
-        .from('scans') as any)
-        .update({
-          status: 'failed',
-          completed_at: new Date().toISOString(),
-          error_message: errorMessage,
-        })
-        .eq('id', this.context.scanId)
+      const scanUpdate3 = supabase.from('scans') as any
+      await scanUpdate3.update({
+        status: 'failed',
+        completed_at: new Date().toISOString(),
+        error_message: errorMessage,
+      }).eq('id', this.context.scanId)
 
       await this.log('error', 'Scan failed', { error: errorMessage })
       throw error
@@ -223,12 +217,10 @@ export class ScanEngine {
    */
   private async updateProgress(percentage: number, message: string): Promise<void> {
     const supabase = await createClient()
-    await (supabase
-      .from('scans') as any)
-      .update({
-        progress_percentage: Math.min(100, percentage),
-      })
-      .eq('id', this.context.scanId)
+    const scanUpdate4 = supabase.from('scans') as any
+    await scanUpdate4.update({
+      progress_percentage: Math.min(100, percentage),
+    }).eq('id', this.context.scanId)
   }
 
   /**
@@ -251,13 +243,11 @@ export class ScanEngine {
    */
   async cancel(): Promise<void> {
     const supabase = await createClient()
-    await (supabase
-      .from('scans') as any)
-      .update({
-        status: 'cancelled',
-        completed_at: new Date().toISOString(),
-      })
-      .eq('id', this.context.scanId)
+    const scanUpdate5 = supabase.from('scans') as any
+    await scanUpdate5.update({
+      status: 'cancelled',
+      completed_at: new Date().toISOString(),
+    }).eq('id', this.context.scanId)
     
     await this.log('info', 'Scan cancelled by user')
   }

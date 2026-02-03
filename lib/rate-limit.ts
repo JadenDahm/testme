@@ -39,9 +39,8 @@ export async function checkRateLimit(
   // Increment or create rate limit record
   if (allowed) {
     if (rateLimit) {
-      await (supabase
-        .from('rate_limits') as any)
-        .update({ count: currentCount + 1 })
+      const rateLimitUpdate = supabase.from('rate_limits') as any
+      await rateLimitUpdate.update({ count: currentCount + 1 })
         .eq('id', (rateLimit as any).id)
     } else {
       await supabase

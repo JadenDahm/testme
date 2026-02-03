@@ -94,23 +94,19 @@ export async function verifyDomain(
 
   // Update verification status if successful
   if (result.verified) {
-    await (supabase
-      .from('domain_verifications') as any)
-      .update({
-        verified: true,
-        verified_at: new Date().toISOString(),
-      })
-      .eq('id', verificationId)
+    const verificationUpdate = supabase.from('domain_verifications') as any
+    await verificationUpdate.update({
+      verified: true,
+      verified_at: new Date().toISOString(),
+    }).eq('id', verificationId)
 
     // Update domain verification status
-    await (supabase
-      .from('domains') as any)
-      .update({
-        is_verified: true,
-        verification_method: verificationData.verification_method,
-        verified_at: new Date().toISOString(),
-      })
-      .eq('id', domainId)
+    const domainUpdate = supabase.from('domains') as any
+    await domainUpdate.update({
+      is_verified: true,
+      verification_method: verificationData.verification_method,
+      verified_at: new Date().toISOString(),
+    }).eq('id', domainId)
   }
 
   return result
