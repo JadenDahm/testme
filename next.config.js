@@ -11,8 +11,19 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Disable source maps in production to avoid parsing issues
   productionBrowserSourceMaps: false,
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
+      }
+    }
+    return config
+  },
 }
 
 module.exports = nextConfig
