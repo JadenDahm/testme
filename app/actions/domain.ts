@@ -87,85 +87,31 @@ export async function addDomain(domain: string) {
 }
 
 export async function verifyDomainDNS(domainId: string) {
-  const supabase = await createClient()
-  
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return { success: false, error: 'Nicht authentifiziert' }
-  }
-
-  // Hole Domain
-  const { data: domain, error: domainError } = await supabase
-    .from('domains')
-    .select('*')
-    .eq('id', domainId)
-    .eq('user_id', user.id)
-    .single()
-
-  if (domainError || !domain) {
-    return { success: false, error: 'Domain nicht gefunden' }
-  }
-
-  if (domain.verification_status === 'verified') {
-    return { success: true, verified: true }
-  }
-
-  if (!domain.verification_token) {
-    return { success: false, error: 'Kein Verifizierungs-Token vorhanden' }
-  }
-
-  // DNS TXT Record Check
-  // WICHTIG: In Production sollte dies über einen externen DNS-Resolver erfolgen
-  // Hier vereinfachte Version - für Production: dns.promises.resolveTxt() oder externe API
+  // Verwende API-Route für DNS-Verifizierung, um Node.js-Module zu vermeiden
   try {
-    const dns = await import('dns/promises')
-    const txtRecords: string[][] = await dns.resolveTxt(domain.normalized_domain)
+    const response = await fetch('/api/verify-dns', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ domainId }),
+    })
+
+    const result = await response.json()
     
-    const expectedValue = `security-scanner-verification=${domain.verification_token}`
-    const found = txtRecords.some((record: string[]) =>
-      record.some((txt: string) => txt === expectedValue)
-    )
-
-    if (found) {
-      // Verifizierung erfolgreich
-      const { error: updateError } = await supabase
-        .from('domains')
-        .update({
-          verification_status: 'verified',
-          verification_method: 'dns_txt',
-          verified_at: new Date().toISOString(),
-        })
-        .eq('id', domainId)
-
-      if (updateError) {
-        return { success: false, error: 'Fehler beim Aktualisieren der Domain' }
+    if (result.success && result.verified) {
+      const supabase = await createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      
+      if (user) {
+        await logAuditEvent(user.id, 'domain_verified', 'domain', domainId)
+        revalidatePath('/dashboard')
       }
-
-      // Log Verifizierung
-      await supabase.from('domain_verifications').insert({
-        domain_id: domainId,
-        method: 'dns_txt',
-        status: 'verified',
-      })
-
-      await logAuditEvent(user.id, 'domain_verified', 'domain', domainId)
-
-      revalidatePath('/dashboard')
-      return { success: true, verified: true }
-    } else {
-      // Log fehlgeschlagene Verifizierung
-      await supabase.from('domain_verifications').insert({
-        domain_id: domainId,
-        method: 'dns_txt',
-        status: 'failed',
-        details: { reason: 'TXT record not found' },
-      })
-
-      return { success: true, verified: false }
     }
+    
+    return result
   } catch (error) {
     console.error('DNS verification error:', error)
     return { success: false, error: 'DNS-Abfrage fehlgeschlagen' }

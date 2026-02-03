@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { addDomain, getDomains, verifyDomainDNS, verifyDomainHTML } from '@/app/actions/domain'
+import { addDomain, getDomains, verifyDomainHTML } from '@/app/actions/domain'
 import { startScan, getScans } from '@/app/actions/scan'
 import Link from 'next/link'
 
@@ -77,7 +77,16 @@ export default function DashboardClient({ userId }: { userId: string }) {
   const handleVerifyDNS = async (domainId: string) => {
     setVerifyingDomain(domainId)
     try {
-      const result = await verifyDomainDNS(domainId)
+      // Verwende API-Route direkt
+      const response = await fetch('/api/verify-dns', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ domainId }),
+      })
+      
+      const result = await response.json()
       if (result.success && result.verified) {
         await loadData()
         alert('Domain erfolgreich verifiziert!')
