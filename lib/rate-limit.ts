@@ -39,8 +39,10 @@ export async function checkRateLimit(
   // Increment or create rate limit record
   if (allowed) {
     if (rateLimit) {
-      const rateLimitUpdate = supabase.from('rate_limits') as any
-      await rateLimitUpdate.update({ count: currentCount + 1 })
+      // @ts-expect-error - Supabase types don't match manual Database type definition
+      await supabase
+        .from('rate_limits')
+        .update({ count: currentCount + 1 })
         .eq('id', (rateLimit as any).id)
     } else {
       await supabase

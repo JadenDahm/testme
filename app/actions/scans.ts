@@ -105,12 +105,13 @@ async function processScan(
 
   try {
     // Update queue status
+    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scan_queue')
       .update({
         status: 'processing',
         started_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('scan_id', scanId)
 
     // Run scan
@@ -118,30 +119,33 @@ async function processScan(
     await engine.run(scanType)
 
     // Update queue status
+    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scan_queue')
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('scan_id', scanId)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scan_queue')
       .update({
         status: 'failed',
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('scan_id', scanId)
     
+    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scans')
       .update({
         status: 'failed',
         error_message: errorMessage,
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', scanId)
   }
 }
@@ -169,12 +173,13 @@ export async function cancelScan(scanId: string) {
       return { error: 'Scan cannot be cancelled' }
     }
 
+    // @ts-expect-error - Supabase types don't match manual Database type definition
     await supabase
       .from('scans')
       .update({
         status: 'cancelled',
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', scanId)
 
     revalidatePath('/dashboard/scans')
