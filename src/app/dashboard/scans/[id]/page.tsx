@@ -1,56 +1,92 @@
-export const dynamic = 'force-dynamic';
+'use client';
 
-import { notFound, redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { createServiceClient } from '@/lib/supabase/server';
-import { ArrowLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { ScanReport } from '@/components/scan/scan-report';
 import { ScanProgress } from '@/components/scan/scan-progress';
 import { DeleteScanButton } from '@/components/scan/delete-scan-button';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import type { Scan, ScanFinding } from '@/types';
 
-export default async function ScanDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export default function ScanDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params.id as string;
 
-  if (!user) {
-    redirect('/auth/login');
+  const [scan, setScan] = useState<Scan | null>(null);
+  const [findings, setFindings] = useState<ScanFinding[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchScan = async () => {
+      try {
+        const response = await fetch(`/api/scans/${id}`);
+
+        if (response.status === 401) {
+          router.push('/auth/login');
+          return;
+        }
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          setError(data.error || `Fehler beim Laden des Scans (HTTP ${response.status})`);
+          setLoading(false);
+          return;
+        }
+
+        const { data } = await response.json();
+
+        if (!data) {
+          setError('Scan-Daten sind leer');
+          setLoading(false);
+          return;
+        }
+
+        setScan(data as Scan);
+        setFindings((data.findings || []) as ScanFinding[]);
+        setLoading(false);
+      } catch (err) {
+        console.error('[ScanDetail] Fetch error:', err);
+        setError('Verbindungsfehler beim Laden des Scans');
+        setLoading(false);
+      }
+    };
+
+    fetchScan();
+  }, [id, router]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
+        <Loader2 className="h-8 w-8 text-accent-400 animate-spin mb-4" />
+        <p className="text-text-muted">Scan wird geladen...</p>
+      </div>
+    );
   }
 
-  // Use service client to bypass potential RLS/session issues
-  // We've already verified the user above, so we manually filter by user_id
-  const serviceClient = await createServiceClient();
-
-  const { data: scan, error: scanError } = await serviceClient
-    .from('scans')
-    .select('*, domains(domain_name)')
-    .eq('id', id)
-    .eq('user_id', user.id)
-    .single();
-
-  if (scanError) {
-    console.error('[ScanDetail] Error fetching scan:', scanError.message, { scanId: id, userId: user.id });
+  if (error || !scan) {
+    return (
+      <div className="max-w-md mx-auto py-20 animate-fade-in">
+        <Card className="text-center py-8">
+          <AlertCircle className="h-10 w-10 text-rose-400 mx-auto mb-4" />
+          <h2 className="text-lg font-semibold text-text-primary mb-2">Scan nicht gefunden</h2>
+          <p className="text-text-muted text-sm mb-6">{error || 'Der Scan konnte nicht geladen werden.'}</p>
+          <Link href="/dashboard/scans">
+            <Button variant="outline">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Zurück zu Scans
+            </Button>
+          </Link>
+        </Card>
+      </div>
+    );
   }
-
-  if (!scan) {
-    console.error('[ScanDetail] Scan not found:', { scanId: id, userId: user.id, error: scanError?.message });
-    notFound();
-  }
-
-  const { data: findings } = await serviceClient
-    .from('scan_findings')
-    .select('*')
-    .eq('scan_id', id)
-    .order('severity', { ascending: true });
-
-  const typedScan = scan as Scan;
-  const typedFindings = (findings || []) as ScanFinding[];
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -62,15 +98,15 @@ export default async function ScanDetailPage({
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Scans
         </Link>
-        {(typedScan.status === 'completed' || typedScan.status === 'failed' || typedScan.status === 'cancelled') && (
-          <DeleteScanButton scanId={typedScan.id} />
+        {(scan.status === 'completed' || scan.status === 'failed' || scan.status === 'cancelled') && (
+          <DeleteScanButton scanId={scan.id} />
         )}
       </div>
 
-      {(typedScan.status === 'running' || typedScan.status === 'pending') ? (
-        <ScanProgress scan={typedScan} />
+      {(scan.status === 'running' || scan.status === 'pending') ? (
+        <ScanProgress scan={scan} />
       ) : (
-        <ScanReport scan={typedScan} findings={typedFindings} />
+        <ScanReport scan={scan} findings={findings} />
       )}
     </div>
   );
