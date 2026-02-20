@@ -103,11 +103,11 @@ export function ScoreGauge({ score, size = 180 }: Props) {
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={`text-4xl font-black tracking-tight ${scoreColor(score)}`}>
+        <span className={`text-4xl font-medium tracking-tight ${scoreColor(score)}`}>
           {animatedScore}
         </span>
         <span className="text-xs text-text-faint font-medium mt-0.5">von 100</span>
-        <span className={`text-xs font-semibold mt-1 ${scoreColor(score)}`}>
+        <span className={`text-xs font-medium mt-1 ${scoreColor(score)}`}>
           {scoreLabel(score)}
         </span>
       </div>

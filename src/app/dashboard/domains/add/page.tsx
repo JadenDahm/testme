@@ -51,7 +51,7 @@ export default function AddDomainPage() {
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Domains
         </Link>
-        <h1 className="text-2xl font-bold text-text-primary">Domain hinzufügen</h1>
+        <h1 className="text-2xl font-medium text-text-primary">Domain hinzufügen</h1>
         <p className="text-text-muted mt-1">
           Gib die Domain ein, die du auf Sicherheitslücken prüfen möchtest.
         </p>

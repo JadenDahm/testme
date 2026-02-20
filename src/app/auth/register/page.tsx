@@ -55,7 +55,7 @@ export default function RegisterPage() {
     return (
       <div className="min-h-screen bg-surface-0 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-md text-center">
-          <h1 className="text-2xl font-bold text-text-primary mb-4">E-Mail bestätigen</h1>
+          <h1 className="text-2xl font-medium text-text-primary mb-4">E-Mail bestätigen</h1>
           <p className="text-text-secondary">
             Wir haben dir eine Bestätigungs-E-Mail an <strong className="text-text-primary">{email}</strong> geschickt.
             Klicke auf den Link in der E-Mail, um dein Konto zu aktivieren.
@@ -74,11 +74,11 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
             <Shield className="h-7 w-7 text-accent-400" />
-            <span className="text-2xl font-bold text-text-primary">
+            <span className="text-2xl font-medium text-text-primary">
               Test<span className="text-accent-400">Me</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-text-primary">Konto erstellen</h1>
+          <h1 className="text-2xl font-medium text-text-primary">Konto erstellen</h1>
           <p className="text-text-secondary mt-2">Starte kostenlos mit deiner Website-Prüfung</p>
         </div>
 

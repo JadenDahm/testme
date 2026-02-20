@@ -40,7 +40,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-text-primary">Dashboard</h1>
+        <h1 className="text-2xl font-medium text-text-primary">Dashboard</h1>
         <p className="text-text-muted mt-1">Willkommen zurück! Hier ist deine Übersicht.</p>
       </div>
 
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <div>
-            <p className="text-3xl font-bold text-text-primary">{totalDomains}</p>
+            <p className="text-3xl font-medium text-text-primary">{totalDomains}</p>
             <p className="text-sm text-text-secondary mt-1">Domains</p>
           </div>
         </Card>
@@ -70,7 +70,7 @@ export default async function DashboardPage() {
       {totalDomains === 0 && (
         <Card>
           <div className="text-center py-8">
-            <h3 className="text-lg font-semibold text-text-primary mb-2">Los geht&apos;s!</h3>
+            <h3 className="text-lg font-medium text-text-primary mb-2">Los geht&apos;s!</h3>
             <p className="text-text-secondary mb-6">
               Füge deine erste Domain hinzu und starte deinen ersten Sicherheitsscan.
             </p>
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
       {scans && scans.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-text-primary">Letzte Scans</h2>
+            <h2 className="text-lg font-medium text-text-primary">Letzte Scans</h2>
             <Link href="/dashboard/scans" className="text-sm text-accent-400 hover:text-accent-300 flex items-center gap-1 transition-colors">
               Alle anzeigen <ArrowRight className="h-4 w-4" />
             </Link>
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       {scan.score !== null && (
-                        <span className={`text-lg font-bold ${scoreColor(scan.score)}`}>
+                        <span className={`text-lg font-medium ${scoreColor(scan.score)}`}>
                           {scan.score}/100
                           <span className="text-xs font-normal ml-1.5 text-text-muted">{scoreLabel(scan.score)}</span>
                         </span>
@@ -139,7 +139,7 @@ export default async function DashboardPage() {
       {domains && domains.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-text-primary">Deine Domains</h2>
+            <h2 className="text-lg font-medium text-text-primary">Deine Domains</h2>
             <Link href="/dashboard/domains" className="text-sm text-accent-400 hover:text-accent-300 flex items-center gap-1 transition-colors">
               Alle anzeigen <ArrowRight className="h-4 w-4" />
             </Link>

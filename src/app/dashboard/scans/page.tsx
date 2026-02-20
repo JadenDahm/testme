@@ -27,7 +27,7 @@ export default async function ScansPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-text-primary">Scans</h1>
+        <h1 className="text-2xl font-medium text-text-primary">Scans</h1>
         <p className="text-text-muted mt-1">Übersicht aller durchgeführten Sicherheitsscans</p>
       </div>
 
@@ -59,7 +59,7 @@ export default async function ScansPage() {
                 <div className="flex items-center gap-4">
                   {scan.score !== null && (
                     <div className="text-right">
-                      <p className={`text-xl font-bold ${scoreColor(scan.score)}`}>
+                      <p className={`text-xl font-medium ${scoreColor(scan.score)}`}>
                         {scan.score}
                       </p>
                       <p className={`text-xs text-text-secondary ${scoreColor(scan.score)}`}>

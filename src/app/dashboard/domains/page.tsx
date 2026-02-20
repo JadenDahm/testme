@@ -27,7 +27,7 @@ export default async function DomainsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Domains</h1>
+          <h1 className="text-2xl font-medium text-text-primary">Domains</h1>
           <p className="text-text-muted mt-1">Verwalte deine Domains und starte Scans</p>
         </div>
         <Link href="/dashboard/domains/add">

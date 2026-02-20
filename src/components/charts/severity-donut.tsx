@@ -49,7 +49,7 @@ export function SeverityDonutChart({ counts }: Props) {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-sm font-semibold text-text-secondary mb-3">Schweregrad-Verteilung</h3>
+      <h3 className="text-sm font-medium text-text-secondary mb-3">Schweregrad-Verteilung</h3>
       <div className="w-full h-[220px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -79,7 +79,7 @@ export function SeverityDonutChart({ counts }: Props) {
               wrapperStyle={{ fontSize: '12px' }}
             />
             {/* Center text */}
-            <text x="50%" y="47%" textAnchor="middle" className="fill-text-primary text-2xl font-bold">
+            <text x="50%" y="47%" textAnchor="middle" className="fill-text-primary text-2xl font-medium">
               {total}
             </text>
             <text x="50%" y="57%" textAnchor="middle" className="fill-text-muted text-[10px]">

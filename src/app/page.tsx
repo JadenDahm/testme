@@ -18,7 +18,7 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative py-32 lg:py-48">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold text-text-primary max-w-5xl mx-auto leading-[1.05] tracking-tight">
+          <h1 className="text-5xl md:text-6xl lg:text-8xl font-medium text-text-primary max-w-5xl mx-auto leading-[1.05] tracking-tight">
             Finde Sicherheitslücken,{' '}
             <span className="text-accent-400">bevor es andere tun</span>
           </h1>
@@ -48,13 +48,13 @@ export default async function HomePage() {
       <section id="how-it-works" className="relative py-24 border-t border-border-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-text-primary">So funktioniert&apos;s</h2>
+            <h2 className="text-4xl md:text-5xl font-medium text-text-primary">So funktioniert&apos;s</h2>
             <p className="text-text-muted mt-4 max-w-2xl mx-auto text-lg">
               In drei einfachen Schritten zu deinem Sicherheitsbericht
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
                 step: '1',
@@ -76,7 +76,7 @@ export default async function HomePage() {
                 <div className="text-sm font-medium text-accent-400 uppercase tracking-wider mb-3">
                   Schritt {item.step}
                 </div>
-                <h3 className="text-2xl font-bold text-text-primary mb-4">{item.title}</h3>
+                <h3 className="text-2xl font-medium text-text-primary mb-4">{item.title}</h3>
                 <p className="text-text-secondary leading-relaxed">{item.desc}</p>
               </div>
             ))}
@@ -88,13 +88,13 @@ export default async function HomePage() {
       <section className="relative py-24 border-t border-border-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-text-primary">Was wird geprüft?</h2>
+            <h2 className="text-4xl md:text-5xl font-medium text-text-primary">Was wird geprüft?</h2>
             <p className="text-text-muted mt-4 max-w-2xl mx-auto text-lg">
               Über 80 Sicherheitschecks in 8 Kategorien für einen vollständigen Überblick
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[
               {
                 title: 'HTTP Security Headers',
@@ -133,7 +133,7 @@ export default async function HomePage() {
                 key={feature.title}
                 className="bg-surface-100 rounded border border-border-subtle p-6 hover:border-border-default transition-colors duration-200"
               >
-                <h3 className="font-semibold text-text-primary mb-2">{feature.title}</h3>
+                <h3 className="font-medium text-text-primary mb-2">{feature.title}</h3>
                 <p className="text-sm text-text-secondary leading-relaxed">{feature.desc}</p>
               </div>
             ))}
@@ -145,7 +145,7 @@ export default async function HomePage() {
       <section className="py-16 border-t border-border-subtle">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-surface-100 border border-border-default rounded p-8">
-            <h3 className="text-lg font-semibold text-text-primary mb-4">
+            <h3 className="text-lg font-medium text-text-primary mb-4">
               Wichtiger rechtlicher Hinweis
             </h3>
             <div className="text-sm text-text-secondary space-y-3 leading-relaxed">
@@ -169,7 +169,7 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="relative py-24 border-t border-border-subtle">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-6">
+          <h2 className="text-4xl md:text-5xl font-medium text-text-primary mb-6">
             Bereit, deine Website zu prüfen?
           </h2>
           <p className="text-text-secondary text-xl mb-10">

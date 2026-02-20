@@ -58,7 +58,7 @@ export function FindingsHeatmap({ findings }: Props) {
 
   return (
     <div className="flex flex-col">
-      <h3 className="text-sm font-semibold text-text-secondary mb-3">Ergebnis-Matrix</h3>
+      <h3 className="text-sm font-medium text-text-secondary mb-3">Ergebnis-Matrix</h3>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -82,7 +82,7 @@ export function FindingsHeatmap({ findings }: Props) {
                   return (
                     <td key={sev} className="p-0.5 text-center">
                       <div
-                        className={`w-9 h-9 mx-auto rounded border flex items-center justify-center text-xs font-bold transition-all ${getCellColor(sev, count)}`}
+                        className={`w-9 h-9 mx-auto rounded border flex items-center justify-center text-xs font-medium transition-all ${getCellColor(sev, count)}`}
                         title={`${categoryConfig[cat]} – ${severityConfig[sev].label}: ${count}`}
                       >
                         {count > 0 && (

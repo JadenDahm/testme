@@ -8,7 +8,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2.5">
             <Shield className="h-5 w-5 text-accent-400" />
-            <span className="text-sm font-semibold text-text-primary">
+            <span className="text-sm font-medium text-text-primary">
               Test<span className="text-accent-400">Me</span> Security
             </span>
           </div>

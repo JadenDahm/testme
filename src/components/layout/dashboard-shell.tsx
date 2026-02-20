@@ -31,7 +31,7 @@ export function DashboardShell({ user, children }: { user: User; children: React
         <div className="p-6 border-b border-border-subtle">
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <Shield className="h-6 w-6 text-accent-400" />
-            <span className="text-xl font-bold text-text-primary">
+            <span className="text-xl font-medium text-text-primary">
               Test<span className="text-accent-400">Me</span>
             </span>
           </Link>
@@ -76,7 +76,7 @@ export function DashboardShell({ user, children }: { user: User; children: React
         <div className="flex items-center justify-between px-4 h-14">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-accent-400" />
-            <span className="text-lg font-bold text-text-primary">
+            <span className="text-lg font-medium text-text-primary">
               Test<span className="text-accent-400">Me</span>
             </span>
           </Link>

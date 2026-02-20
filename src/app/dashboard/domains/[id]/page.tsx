@@ -55,7 +55,7 @@ export default async function DomainDetailPage({
         </Link>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">{typedDomain.domain_name}</h1>
+            <h1 className="text-2xl font-medium text-text-primary">{typedDomain.domain_name}</h1>
             <p className="text-text-secondary text-sm mt-1">
               Hinzugefügt am {formatDate(typedDomain.created_at)}
             </p>
@@ -90,7 +90,7 @@ export default async function DomainDetailPage({
       {/* Scans History */}
       {typedScans.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-text-primary mb-4">Scan-Verlauf</h2>
+          <h2 className="text-lg font-medium text-text-primary mb-4">Scan-Verlauf</h2>
           <div className="space-y-3">
             {typedScans.map((scan) => (
               <Link key={scan.id} href={`/dashboard/scans/${scan.id}`}>

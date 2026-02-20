@@ -44,9 +44,9 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   const d = payload[0].payload;
   return (
     <div className="bg-surface-200 border border-border-default rounded px-4 py-3 text-xs">
-      <p className="font-semibold text-text-primary mb-1.5">{d.displayName}</p>
+      <p className="font-medium text-text-primary mb-1.5">{d.displayName}</p>
       <p className="text-text-secondary">
-        Score: <span className="font-bold" style={{ color: getBarColor(d.score) }}>{d.score}/100</span>
+        Score: <span className="font-medium" style={{ color: getBarColor(d.score) }}>{d.score}/100</span>
       </p>
       <div className="mt-2 space-y-0.5 text-text-secondary">
         {d.criticalCount > 0 && <p>{d.criticalCount} kritisch</p>}
@@ -68,7 +68,7 @@ export function CategoryBarChart({ categoryScores }: Props) {
 
   return (
     <div className="flex flex-col">
-      <h3 className="text-sm font-semibold text-text-secondary mb-3">Kategorie-Bewertung</h3>
+      <h3 className="text-sm font-medium text-text-secondary mb-3">Kategorie-Bewertung</h3>
       <div className="w-full h-[220px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart

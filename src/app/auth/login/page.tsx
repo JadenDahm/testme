@@ -40,11 +40,11 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
             <Shield className="h-7 w-7 text-accent-400" />
-            <span className="text-2xl font-bold text-text-primary">
+            <span className="text-2xl font-medium text-text-primary">
               Test<span className="text-accent-400">Me</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-text-primary">Willkommen zurück</h1>
+          <h1 className="text-2xl font-medium text-text-primary">Willkommen zurück</h1>
           <p className="text-text-secondary mt-2">Melde dich an, um fortzufahren</p>
         </div>
 

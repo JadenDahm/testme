@@ -1,32 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-  /* ─── Accent: Warm Orange/Amber ─────────────────────── */
-  --color-accent-50: #fff7ed;
-  --color-accent-100: #ffedd5;
-  --color-accent-200: #fed7aa;
-  --color-accent-300: #fdba74;
-  --color-accent-400: #fb923c;
-  --color-accent-500: #f97316;
-  --color-accent-600: #ea580c;
-  --color-accent-700: #c2410c;
-  --color-accent-800: #9a3412;
-  --color-accent-900: #7c2d12;
+  /* ─── Accent: Grau/Weiß ─────────────────────────────── */
+  --color-accent-50: #fafafa;
+  --color-accent-100: #f5f5f5;
+  --color-accent-200: #e5e5e5;
+  --color-accent-300: #d4d4d4;
+  --color-accent-400: #a3a3a3;
+  --color-accent-500: #737373;
+  --color-accent-600: #525252;
+  --color-accent-700: #404040;
+  --color-accent-800: #262626;
+  --color-accent-900: #171717;
 
-  /* ─── Surfaces ──────────────────────────────────────── */
-  --color-surface-0: #03040a;
-  --color-surface-50: #070a12;
-  --color-surface-100: #0c1019;
-  --color-surface-200: #111620;
-  --color-surface-300: #181d2a;
-  --color-surface-400: #1f2535;
-  --color-surface-500: #272d3d;
+  /* ─── Surfaces: Schwarz/Dunkelgrau ──────────────────── */
+  --color-surface-0: #000000;
+  --color-surface-50: #0a0a0a;
+  --color-surface-100: #141414;
+  --color-surface-200: #1a1a1a;
+  --color-surface-300: #262626;
+  --color-surface-400: #333333;
+  --color-surface-500: #404040;
 
   /* ─── Text ──────────────────────────────────────────── */
-  --color-text-primary: #f0f2f5;
-  --color-text-secondary: #a0aec0;
-  --color-text-muted: #5a6578;
-  --color-text-faint: #3a4250;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a3a3a3;
+  --color-text-muted: #737373;
+  --color-text-faint: #525252;
 
   /* ─── Borders ───────────────────────────────────────── */
   --color-border-subtle: rgba(255, 255, 255, 0.06);
@@ -34,11 +34,11 @@
   --color-border-strong: rgba(255, 255, 255, 0.15);
 
   /* ─── Severity ──────────────────────────────────────── */
-  --color-severity-critical: #f43f5e;
-  --color-severity-high: #f97316;
-  --color-severity-medium: #eab308;
-  --color-severity-low: #fb923c;
-  --color-severity-info: #64748b;
+  --color-severity-critical: #dc2626;
+  --color-severity-high: #ea580c;
+  --color-severity-medium: #ca8a04;
+  --color-severity-low: #737373;
+  --color-severity-info: #525252;
 
   /* ─── Status ────────────────────────────────────────── */
   --color-success: #10b981;
@@ -46,17 +46,17 @@
   --color-danger: #ef4444;
 
   /* Keep legacy primary aliases for compatibility */
-  --color-primary-50: #fff7ed;
-  --color-primary-100: #ffedd5;
-  --color-primary-200: #fed7aa;
-  --color-primary-300: #fdba74;
-  --color-primary-400: #fb923c;
-  --color-primary-500: #f97316;
-  --color-primary-600: #ea580c;
-  --color-primary-700: #c2410c;
-  --color-primary-800: #9a3412;
-  --color-primary-900: #7c2d12;
-  --color-primary-950: #431407;
+  --color-primary-50: #fafafa;
+  --color-primary-100: #f5f5f5;
+  --color-primary-200: #e5e5e5;
+  --color-primary-300: #d4d4d4;
+  --color-primary-400: #a3a3a3;
+  --color-primary-500: #737373;
+  --color-primary-600: #525252;
+  --color-primary-700: #404040;
+  --color-primary-800: #262626;
+  --color-primary-900: #171717;
+  --color-primary-950: #0a0a0a;
 }
 
 /* ─── Base Styles ─────────────────────────────────────── */
@@ -65,16 +65,17 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
   background-color: var(--color-surface-0);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
 }
 
 ::selection {
   background-color: var(--color-accent-500);
-  color: white;
+  color: var(--color-text-primary);
 }
 
 /* scrollbar */

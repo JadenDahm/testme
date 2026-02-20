@@ -110,7 +110,7 @@ export function ScanReport({ scan, findings }: Props) {
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Sicherheitsbericht</h1>
+          <h1 className="text-2xl font-medium text-text-primary">Sicherheitsbericht</h1>
           <p className="text-text-secondary text-sm mt-1">
             {domain} · {formatDate(scan.created_at)}
           </p>
@@ -254,7 +254,7 @@ export function ScanReport({ scan, findings }: Props) {
 
           {/* Category Detail Cards */}
           <div>
-            <h3 className="text-sm font-semibold text-text-secondary mb-3">Kategoriedetails</h3>
+            <h3 className="text-sm font-medium text-text-secondary mb-3">Kategoriedetails</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {categoryScores.map((cat) => {
                 const catColorClasses =
@@ -278,9 +278,9 @@ export function ScanReport({ scan, findings }: Props) {
                     )}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-2xl font-bold text-text-primary">{cat.score}</span>
+                      <span className="text-2xl font-medium text-text-primary">{cat.score}</span>
                     </div>
-                    <h4 className="font-semibold text-sm text-text-primary">{cat.displayName}</h4>
+                    <h4 className="font-medium text-sm text-text-primary">{cat.displayName}</h4>
                     <p className="text-xs mt-1 text-text-secondary">
                       {cat.findings} {cat.findings === 1 ? 'Ergebnis' : 'Ergebnisse'}
                       {cat.criticalCount > 0 && ` · ${cat.criticalCount} kritisch`}
@@ -296,7 +296,7 @@ export function ScanReport({ scan, findings }: Props) {
           {findings.filter((f) => f.severity === 'critical' || f.severity === 'high').length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-text-secondary">Wichtigste Probleme</h3>
+                <h3 className="text-sm font-medium text-text-secondary">Wichtigste Probleme</h3>
                 <button
                   onClick={() => {
                     setViewMode('findings');
@@ -428,7 +428,7 @@ export function ScanReport({ scan, findings }: Props) {
                       <div className="px-4 pb-4 ml-8 space-y-4 border-t border-border-subtle pt-4 animate-fade-in">
                         {/* Description */}
                         <div>
-                          <h5 className="text-xs font-semibold uppercase text-text-faint mb-1 tracking-wide">Beschreibung</h5>
+                          <h5 className="text-xs font-medium uppercase text-text-faint mb-1 tracking-wide">Beschreibung</h5>
                           <p className="text-sm text-text-secondary leading-relaxed">{finding.description}</p>
                         </div>
 
@@ -451,7 +451,7 @@ export function ScanReport({ scan, findings }: Props) {
                         {/* Recommendation */}
                         {finding.recommendation && (
                           <div className="bg-emerald-500/8 border border-emerald-500/15 rounded p-4">
-                            <h5 className="text-xs font-semibold uppercase text-emerald-400 mb-1.5 tracking-wide flex items-center gap-1">
+                            <h5 className="text-xs font-medium uppercase text-emerald-400 mb-1.5 tracking-wide flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
                               Empfehlung
                             </h5>

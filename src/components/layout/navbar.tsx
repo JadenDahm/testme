@@ -28,7 +28,7 @@ export function Navbar({ user }: NavbarProps) {
         <div className="flex justify-between h-16 items-center">
           <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2.5">
             <Shield className="h-6 w-6 text-accent-400" />
-            <span className="text-xl font-bold text-text-primary">
+            <span className="text-xl font-medium text-text-primary">
               Test<span className="text-accent-400">Me</span>
             </span>
           </Link>

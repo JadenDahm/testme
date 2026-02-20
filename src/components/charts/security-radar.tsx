@@ -27,8 +27,8 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   const d = payload[0].payload;
   return (
     <div className="bg-surface-200 border border-border-default rounded px-4 py-3 text-xs">
-      <p className="font-semibold text-text-primary">{d.category}</p>
-      <p className="text-text-secondary mt-1">Score: <span className="font-bold text-accent-400">{d.score}/100</span></p>
+      <p className="font-medium text-text-primary">{d.category}</p>
+      <p className="text-text-secondary mt-1">Score: <span className="font-medium text-accent-400">{d.score}/100</span></p>
     </div>
   );
 }
@@ -46,7 +46,7 @@ export function SecurityRadarChart({ categoryScores }: Props) {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-sm font-semibold text-text-secondary mb-3">Sicherheitsprofil</h3>
+      <h3 className="text-sm font-medium text-text-secondary mb-3">Sicherheitsprofil</h3>
       <div className="w-full h-[260px]">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
