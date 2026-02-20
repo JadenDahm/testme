@@ -95,123 +95,17 @@ body {
 
 /* ─── Animations ──────────────────────────────────────── */
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
 }
 
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
-}
-
-.animate-glow-pulse {
-  animation: glow-pulse 3s ease-in-out infinite;
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 2s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-/* ─── Glow Effects ────────────────────────────────────── */
-.glow-accent {
-  box-shadow:
-    0 0 15px rgba(6, 182, 212, 0.15),
-    0 0 30px rgba(6, 182, 212, 0.05);
-}
-
-.glow-accent-strong {
-  box-shadow:
-    0 0 20px rgba(6, 182, 212, 0.25),
-    0 0 40px rgba(6, 182, 212, 0.1);
-}
-
-.glow-success {
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
-}
-
-.glow-danger {
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
-}
-
-.glow-warning {
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-}
-
-/* ─── Glass Effect ────────────────────────────────────── */
-.glass {
-  background: rgba(12, 16, 25, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.glass-strong {
-  background: rgba(12, 16, 25, 0.8);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: fade-in 0.4s ease-out forwards;
 }
 
 /* ─── Gradient Text ───────────────────────────────────── */
 .text-gradient-accent {
-  background: linear-gradient(135deg, var(--color-accent-400), var(--color-accent-300));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ─── Horizon Glow Background ─────────────────────────── */
-.bg-horizon-glow {
-  position: relative;
-}
-.bg-horizon-glow::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-accent-400), transparent);
-  opacity: 0.4;
+  color: var(--color-accent-400);
 }
 
 /* ─── Prose (legal pages) ─────────────────────────────── */

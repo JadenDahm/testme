@@ -35,23 +35,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-0 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.08)_0%,transparent_70%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
-      </div>
-
-      <div className="relative w-full max-w-md">
+    <div className="min-h-screen bg-surface-0 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2.5 mb-6 group">
-            <Shield className="h-8 w-8 text-accent-400 transition-all duration-300 group-hover:drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]" />
+          <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
+            <Shield className="h-7 w-7 text-accent-400" />
             <span className="text-2xl font-bold text-text-primary">
-              Test<span className="text-gradient-accent">Me</span>
+              Test<span className="text-accent-400">Me</span>
             </span>
           </Link>
           <h1 className="text-2xl font-bold text-text-primary">Willkommen zurück</h1>
-          <p className="text-text-muted mt-1">Melde dich an, um fortzufahren</p>
+          <p className="text-text-secondary mt-2">Melde dich an, um fortzufahren</p>
         </div>
 
         <Card padding="lg">

@@ -26,7 +26,7 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-surface-200 border border-border-default rounded-xl shadow-2xl px-4 py-3 text-xs backdrop-blur-sm">
+    <div className="bg-surface-200 border border-border-default rounded-lg px-4 py-3 text-xs">
       <p className="font-semibold text-text-primary">{d.category}</p>
       <p className="text-text-secondary mt-1">Score: <span className="font-bold text-accent-400">{d.score}/100</span></p>
     </div>

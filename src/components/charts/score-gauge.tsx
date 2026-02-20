@@ -15,12 +15,6 @@ function getGradientColors(score: number): [string, string] {
   return ['#f43f5e', '#e11d48'];
 }
 
-function getGlowColor(score: number): string {
-  if (score >= 80) return 'rgba(16, 185, 129, 0.3)';
-  if (score >= 60) return 'rgba(234, 179, 8, 0.3)';
-  if (score >= 40) return 'rgba(249, 115, 22, 0.3)';
-  return 'rgba(244, 63, 94, 0.3)';
-}
 
 export function ScoreGauge({ score, size = 180 }: Props) {
   const [animatedScore, setAnimatedScore] = useState(0);
@@ -49,10 +43,8 @@ export function ScoreGauge({ score, size = 180 }: Props) {
   const circumference = 2 * Math.PI * radius;
   const progressOffset = circumference - (animatedScore / 100) * circumference;
   const [color1, color2] = getGradientColors(score);
-  const glowColor = getGlowColor(score);
 
   const gradientId = `scoreGradient-${score}`;
-  const glowId = `scoreGlow-${score}`;
 
   return (
     <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
@@ -62,13 +54,6 @@ export function ScoreGauge({ score, size = 180 }: Props) {
             <stop offset="0%" stopColor={color1} />
             <stop offset="100%" stopColor={color2} />
           </linearGradient>
-          <filter id={glowId}>
-            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
         </defs>
 
         {/* Background track */}
@@ -113,25 +98,8 @@ export function ScoreGauge({ score, size = 180 }: Props) {
           strokeDasharray={circumference}
           strokeDashoffset={progressOffset}
           transform={`rotate(-90 ${center} ${center})`}
-          filter={`url(#${glowId})`}
           style={{ transition: 'stroke-dashoffset 0.1s ease-out' }}
         />
-
-        {/* End dot */}
-        {animatedScore > 0 && (() => {
-          const endAngle = ((animatedScore / 100) * 360 - 90) * (Math.PI / 180);
-          return (
-            <circle
-              cx={center + radius * Math.cos(endAngle)}
-              cy={center + radius * Math.sin(endAngle)}
-              r="5"
-              fill={color1}
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth="2"
-              style={{ filter: `drop-shadow(0 0 6px ${glowColor})` }}
-            />
-          );
-        })()}
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center">

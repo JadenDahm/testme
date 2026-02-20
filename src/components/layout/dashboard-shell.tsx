@@ -29,10 +29,10 @@ export function DashboardShell({ user, children }: { user: User; children: React
       {/* Sidebar */}
       <aside className="hidden lg:flex w-64 bg-surface-50 border-r border-border-subtle flex-col fixed inset-y-0">
         <div className="p-6 border-b border-border-subtle">
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <Shield className="h-7 w-7 text-accent-400 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
+          <Link href="/dashboard" className="flex items-center gap-2.5">
+            <Shield className="h-6 w-6 text-accent-400" />
             <span className="text-xl font-bold text-text-primary">
-              Test<span className="text-gradient-accent">Me</span>
+              Test<span className="text-accent-400">Me</span>
             </span>
           </Link>
         </div>
@@ -46,13 +46,13 @@ export function DashboardShell({ user, children }: { user: User; children: React
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200',
                   isActive
-                    ? 'bg-accent-500/10 text-accent-400 shadow-[0_0_15px_rgba(6,182,212,0.08)]'
-                    : 'text-text-secondary hover:bg-surface-200 hover:text-text-primary'
+                    ? 'bg-surface-200 text-text-primary'
+                    : 'text-text-secondary hover:bg-surface-100 hover:text-text-primary'
                 )}
               >
-                <item.icon className={cn('h-5 w-5', isActive && 'drop-shadow-[0_0_4px_rgba(6,182,212,0.5)]')} />
+                <item.icon className="h-5 w-5" />
                 {item.label}
               </Link>
             );
@@ -72,12 +72,12 @@ export function DashboardShell({ user, children }: { user: User; children: React
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 glass-strong border-b border-border-subtle">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-surface-50 border-b border-border-subtle">
         <div className="flex items-center justify-between px-4 h-14">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-accent-400" />
             <span className="text-lg font-bold text-text-primary">
-              Test<span className="text-gradient-accent">Me</span>
+              Test<span className="text-accent-400">Me</span>
             </span>
           </Link>
         </div>

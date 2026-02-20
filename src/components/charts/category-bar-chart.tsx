@@ -43,16 +43,16 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-surface-200 border border-border-default rounded-xl shadow-2xl px-4 py-3 text-xs backdrop-blur-sm">
+    <div className="bg-surface-200 border border-border-default rounded-lg px-4 py-3 text-xs">
       <p className="font-semibold text-text-primary mb-1.5">{d.displayName}</p>
       <p className="text-text-secondary">
         Score: <span className="font-bold" style={{ color: getBarColor(d.score) }}>{d.score}/100</span>
       </p>
-      <div className="mt-2 space-y-0.5 text-text-muted">
-        {d.criticalCount > 0 && <p className="text-rose-400">{d.criticalCount} kritisch</p>}
-        {d.highCount > 0 && <p className="text-orange-400">{d.highCount} hoch</p>}
-        {d.mediumCount > 0 && <p className="text-yellow-400">{d.mediumCount} mittel</p>}
-        {d.lowCount > 0 && <p className="text-cyan-400">{d.lowCount} niedrig</p>}
+      <div className="mt-2 space-y-0.5 text-text-secondary">
+        {d.criticalCount > 0 && <p>{d.criticalCount} kritisch</p>}
+        {d.highCount > 0 && <p>{d.highCount} hoch</p>}
+        {d.mediumCount > 0 && <p>{d.mediumCount} mittel</p>}
+        {d.lowCount > 0 && <p>{d.lowCount} niedrig</p>}
       </div>
     </div>
   );

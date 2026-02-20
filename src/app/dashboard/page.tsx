@@ -3,7 +3,7 @@ import { enrichScansWithDomain } from '@/lib/supabase/helpers';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Globe, Search, Shield, ArrowRight, Plus } from 'lucide-react';
+import { ArrowRight, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate, scoreColor, scoreLabel } from '@/lib/utils';
 import { redirect } from 'next/navigation';
@@ -46,50 +46,32 @@ export default async function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="group hover:border-accent-500/20 transition-all duration-300">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-accent-500/10 border border-accent-500/15 rounded-xl group-hover:shadow-[0_0_15px_rgba(6,182,212,0.1)] transition-all duration-300">
-              <Globe className="h-6 w-6 text-accent-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-text-primary">{totalDomains}</p>
-              <p className="text-sm text-text-muted">Domains</p>
-            </div>
+        <Card>
+          <div>
+            <p className="text-3xl font-bold text-text-primary">{totalDomains}</p>
+            <p className="text-sm text-text-secondary mt-1">Domains</p>
           </div>
         </Card>
-        <Card className="group hover:border-emerald-500/20 transition-all duration-300">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-emerald-500/10 border border-emerald-500/15 rounded-xl group-hover:shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all duration-300">
-              <Shield className="h-6 w-6 text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-text-primary">{verifiedDomains}</p>
-              <p className="text-sm text-text-muted">Verifiziert</p>
-            </div>
+        <Card>
+          <div>
+            <p className="text-3xl font-bold text-text-primary">{verifiedDomains}</p>
+            <p className="text-sm text-text-secondary mt-1">Verifiziert</p>
           </div>
         </Card>
-        <Card className="group hover:border-blue-500/20 transition-all duration-300">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-500/10 border border-blue-500/15 rounded-xl group-hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all duration-300">
-              <Search className="h-6 w-6 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-text-primary">{totalScans}</p>
-              <p className="text-sm text-text-muted">Scans</p>
-            </div>
+        <Card>
+          <div>
+            <p className="text-3xl font-bold text-text-primary">{totalScans}</p>
+            <p className="text-sm text-text-secondary mt-1">Scans</p>
           </div>
         </Card>
       </div>
 
       {/* Quick Actions */}
       {totalDomains === 0 && (
-        <Card className="border-accent-500/15 bg-accent-500/5">
-          <div className="text-center py-4">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-accent-500/10 border border-accent-500/20 mx-auto mb-4">
-              <Shield className="h-7 w-7 text-accent-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-text-primary mb-1">Los geht&apos;s!</h3>
-            <p className="text-text-secondary mb-5">
+        <Card>
+          <div className="text-center py-8">
+            <h3 className="text-lg font-semibold text-text-primary mb-2">Los geht&apos;s!</h3>
+            <p className="text-text-secondary mb-6">
               Füge deine erste Domain hinzu und starte deinen ersten Sicherheitsscan.
             </p>
             <Link href="/dashboard/domains/add">

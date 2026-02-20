@@ -7,9 +7,9 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2.5">
-            <Shield className="h-5 w-5 text-accent-500" />
+            <Shield className="h-5 w-5 text-accent-400" />
             <span className="text-sm font-semibold text-text-primary">
-              Test<span className="text-gradient-accent">Me</span> Security
+              Test<span className="text-accent-400">Me</span> Security
             </span>
           </div>
           <div className="flex gap-8 text-sm text-text-muted">

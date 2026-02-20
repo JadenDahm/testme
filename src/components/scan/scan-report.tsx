@@ -5,23 +5,15 @@ import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Shield,
-  AlertTriangle,
-  AlertCircle,
-  Info,
   ChevronDown,
   ChevronUp,
   ExternalLink,
   CheckCircle,
-  XCircle,
   Clock,
   Download,
   BarChart3,
   List,
   TrendingDown,
-  ShieldCheck,
-  ShieldAlert,
-  ShieldX,
 } from 'lucide-react';
 import { cn, formatDate, scoreColor, severityBadge } from '@/lib/utils';
 import { calculateCategoryScores } from '@/lib/scanner/scoring';
@@ -136,17 +128,10 @@ export function ScanReport({ scan, findings }: Props) {
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-accent-500/10 border border-accent-500/15">
-              <Shield className="h-6 w-6 text-accent-400" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-text-primary">Sicherheitsbericht</h1>
-              <p className="text-text-muted text-sm">
-                {domain} · {formatDate(scan.created_at)}
-              </p>
-            </div>
-          </div>
+          <h1 className="text-2xl font-bold text-text-primary">Sicherheitsbericht</h1>
+          <p className="text-text-secondary text-sm mt-1">
+            {domain} · {formatDate(scan.created_at)}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {(isFailed || isCancelled) && (
@@ -157,7 +142,7 @@ export function ScanReport({ scan, findings }: Props) {
           <a
             href={`/api/scans/${scan.id}/pdf`}
             download
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-500 text-white text-sm font-medium hover:bg-accent-400 transition-all duration-200 shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_25px_rgba(6,182,212,0.3)]"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-500 text-white text-sm font-medium hover:bg-accent-400 transition-colors duration-200"
           >
             <Download className="h-4 w-4" />
             PDF Report
@@ -167,11 +152,8 @@ export function ScanReport({ scan, findings }: Props) {
 
       {/* ── Score Hero Section ──────────────────────────────────────────── */}
       {scan.score !== null && (
-        <Card padding="lg" className="relative overflow-hidden border-border-default">
-          {/* Background glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(ellipse_at_top_right,rgba(6,182,212,0.06)_0%,transparent_70%)] pointer-events-none" />
-
-          <div className="relative flex flex-col lg:flex-row items-center gap-8">
+        <Card padding="lg">
+          <div className="flex flex-col lg:flex-row items-center gap-8">
             {/* Score Gauge */}
             <ScoreGauge score={scan.score} size={180} />
 
@@ -189,7 +171,7 @@ export function ScanReport({ scan, findings }: Props) {
                         setFilterSeverity(sev);
                       }}
                       className={cn(
-                        'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 cursor-pointer',
+                        'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 cursor-pointer',
                         severityBadge(sev)
                       )}
                     >
@@ -293,13 +275,12 @@ export function ScanReport({ scan, findings }: Props) {
             <h3 className="text-sm font-semibold text-text-secondary mb-3">Kategoriedetails</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {categoryScores.map((cat) => {
-                const Icon = categoryIcons[cat.name as FindingCategory] || Shield;
                 const catColorClasses =
-                  cat.score >= 90 ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/8' :
-                  cat.score >= 70 ? 'text-cyan-400 border-cyan-500/20 bg-cyan-500/8' :
-                  cat.score >= 50 ? 'text-yellow-400 border-yellow-500/20 bg-yellow-500/8' :
-                  cat.score >= 30 ? 'text-orange-400 border-orange-500/20 bg-orange-500/8' :
-                  'text-rose-400 border-rose-500/20 bg-rose-500/8';
+                  cat.score >= 90 ? 'border-emerald-500/20 bg-emerald-500/5' :
+                  cat.score >= 70 ? 'border-cyan-500/20 bg-cyan-500/5' :
+                  cat.score >= 50 ? 'border-yellow-500/20 bg-yellow-500/5' :
+                  cat.score >= 30 ? 'border-orange-500/20 bg-orange-500/5' :
+                  'border-rose-500/20 bg-rose-500/5';
 
                 return (
                   <button
@@ -310,16 +291,15 @@ export function ScanReport({ scan, findings }: Props) {
                       setFilterSeverity('all');
                     }}
                     className={cn(
-                      'text-left p-4 rounded-2xl border transition-all duration-300 hover:scale-[1.02] cursor-pointer',
+                      'text-left p-4 rounded-lg border transition-colors duration-200 cursor-pointer hover:border-border-default',
                       catColorClasses
                     )}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <Icon className="h-5 w-5" />
-                      <span className="text-2xl font-bold">{cat.score}</span>
+                      <span className="text-2xl font-bold text-text-primary">{cat.score}</span>
                     </div>
-                    <h4 className="font-semibold text-sm">{cat.displayName}</h4>
-                    <p className="text-xs mt-1 opacity-60">
+                    <h4 className="font-semibold text-sm text-text-primary">{cat.displayName}</h4>
+                    <p className="text-xs mt-1 text-text-secondary">
                       {cat.findings} {cat.findings === 1 ? 'Ergebnis' : 'Ergebnisse'}
                       {cat.criticalCount > 0 && ` · ${cat.criticalCount} kritisch`}
                       {cat.highCount > 0 && ` · ${cat.highCount} hoch`}
@@ -350,26 +330,19 @@ export function ScanReport({ scan, findings }: Props) {
                   .filter((f) => f.severity === 'critical' || f.severity === 'high')
                   .slice(0, 5)
                   .map((finding) => {
-                    const Icon = severityIcons[finding.severity];
                     return (
                       <Card key={finding.id} padding="sm">
-                        <div className="flex items-start gap-3 p-3">
-                          <Icon className={cn(
-                            'h-5 w-5 flex-shrink-0 mt-0.5',
-                            finding.severity === 'critical' ? 'text-rose-400' : 'text-orange-400'
-                          )} />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
-                              <h4 className="font-medium text-text-primary text-sm">{finding.title}</h4>
-                              <span className={cn(
-                                'px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0',
-                                severityBadge(finding.severity)
-                              )}>
-                                {severityLabels[finding.severity]}
-                              </span>
-                            </div>
-                            <p className="text-xs text-text-muted mt-0.5 line-clamp-1">{finding.description}</p>
+                        <div className="p-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="font-medium text-text-primary text-sm">{finding.title}</h4>
+                            <span className={cn(
+                              'px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0',
+                              severityBadge(finding.severity)
+                            )}>
+                              {severityLabels[finding.severity]}
+                            </span>
                           </div>
+                          <p className="text-xs text-text-secondary mt-1 line-clamp-1">{finding.description}</p>
                         </div>
                       </Card>
                     );
@@ -439,29 +412,14 @@ export function ScanReport({ scan, findings }: Props) {
                 const Icon = severityIcons[finding.severity];
 
                 return (
-                  <Card key={finding.id} padding="sm" className="overflow-hidden group">
+                  <Card key={finding.id} padding="sm" className="overflow-hidden">
                     <button
                       onClick={() => toggleFinding(finding.id)}
                       className="w-full text-left p-4 flex items-start gap-3 hover:bg-surface-200/50 transition-colors duration-200 cursor-pointer"
                     >
-                      <div className={cn(
-                        'p-1.5 rounded-lg flex-shrink-0 mt-0.5',
-                        finding.severity === 'critical' ? 'bg-rose-500/10' :
-                        finding.severity === 'high' ? 'bg-orange-500/10' :
-                        finding.severity === 'medium' ? 'bg-yellow-500/10' :
-                        finding.severity === 'low' ? 'bg-cyan-500/10' : 'bg-surface-300'
-                      )}>
-                        <Icon className={cn(
-                          'h-4 w-4',
-                          finding.severity === 'critical' ? 'text-rose-400' :
-                          finding.severity === 'high' ? 'text-orange-400' :
-                          finding.severity === 'medium' ? 'text-yellow-400' :
-                          finding.severity === 'low' ? 'text-cyan-400' : 'text-text-faint'
-                        )} />
-                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-medium text-text-primary text-sm group-hover:text-accent-400 transition-colors">
+                          <h4 className="font-medium text-text-primary text-sm">
                             {finding.title}
                           </h4>
                           <div className="flex items-center gap-2 flex-shrink-0">
@@ -471,17 +429,17 @@ export function ScanReport({ scan, findings }: Props) {
                             )}>
                               {severityLabels[finding.severity]}
                             </span>
-                            <span className="text-xs text-text-faint bg-surface-300 px-2 py-0.5 rounded-full">
+                            <span className="text-xs text-text-secondary bg-surface-200 px-2 py-0.5 rounded-full">
                               {categoryLabels[finding.category]}
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-text-muted mt-0.5 truncate">{finding.description}</p>
+                        <p className="text-sm text-text-secondary mt-1 truncate">{finding.description}</p>
                       </div>
                       {isExpanded ? (
-                        <ChevronUp className="h-5 w-5 text-text-faint flex-shrink-0" />
+                        <ChevronUp className="h-5 w-5 text-text-secondary flex-shrink-0" />
                       ) : (
-                        <ChevronDown className="h-5 w-5 text-text-faint flex-shrink-0" />
+                        <ChevronDown className="h-5 w-5 text-text-secondary flex-shrink-0" />
                       )}
                     </button>
 
@@ -556,11 +514,8 @@ export function ScanReport({ scan, findings }: Props) {
       {/* ── Empty State ─────────────────────────────────────────────────── */}
       {findings.length === 0 && (
         <Card className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/15 mb-4">
-            <Shield className="h-8 w-8 text-emerald-400" />
-          </div>
           <h3 className="text-lg font-medium text-text-primary">Keine Probleme gefunden</h3>
-          <p className="text-text-muted mt-1 max-w-md mx-auto">
+          <p className="text-text-secondary mt-2 max-w-md mx-auto">
             {isFailed
               ? 'Der Scan konnte nicht vollständig durchgeführt werden.'
               : 'Hervorragend! Bei diesem Scan wurden keine Sicherheitsprobleme erkannt.'}

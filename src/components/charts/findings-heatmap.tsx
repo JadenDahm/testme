@@ -86,7 +86,7 @@ export function FindingsHeatmap({ findings }: Props) {
                         title={`${categoryConfig[cat]} – ${severityConfig[sev].label}: ${count}`}
                       >
                         {count > 0 && (
-                          <span className="text-white drop-shadow-sm">
+                          <span className="text-white">
                             {count}
                           </span>
                         )}

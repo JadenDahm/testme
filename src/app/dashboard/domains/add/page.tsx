@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Globe, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AddDomainPage() {
@@ -65,24 +65,19 @@ export default function AddDomainPage() {
             </div>
           )}
 
-          <div className="flex items-start gap-3">
-            <div className="p-2.5 bg-accent-500/10 border border-accent-500/15 rounded-xl mt-6">
-              <Globe className="h-5 w-5 text-accent-400" />
-            </div>
-            <div className="flex-1">
-              <Input
-                id="domain"
-                label="Domain"
-                type="text"
-                placeholder="beispiel.de"
-                value={domain}
-                onChange={(e) => setDomain(e.target.value)}
-                required
-              />
-              <p className="text-xs text-text-faint mt-1.5">
-                Gib nur die Domain ein, ohne https:// oder www.
-              </p>
-            </div>
+          <div>
+            <Input
+              id="domain"
+              label="Domain"
+              type="text"
+              placeholder="beispiel.de"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              required
+            />
+            <p className="text-xs text-text-secondary mt-1.5">
+              Gib nur die Domain ein, ohne https:// oder www.
+            </p>
           </div>
 
           <div className="bg-amber-500/8 border border-amber-500/15 rounded-xl p-4 text-sm text-amber-200/70">

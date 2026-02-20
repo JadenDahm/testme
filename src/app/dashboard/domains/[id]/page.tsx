@@ -3,7 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, CheckCircle, Globe, Search, Trash2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate, scoreColor, scoreLabel } from '@/lib/utils';
 import { DomainVerification } from '@/components/domain/domain-verification';
@@ -54,16 +54,11 @@ export default async function DomainDetailPage({
           Zurück zu Domains
         </Link>
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-accent-500/10 border border-accent-500/15 rounded-xl">
-              <Globe className="h-6 w-6 text-accent-400" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-text-primary">{typedDomain.domain_name}</h1>
-              <p className="text-text-muted text-sm">
-                Hinzugefügt am {formatDate(typedDomain.created_at)}
-              </p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">{typedDomain.domain_name}</h1>
+            <p className="text-text-secondary text-sm mt-1">
+              Hinzugefügt am {formatDate(typedDomain.created_at)}
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <Badge variant={typedDomain.is_verified ? 'success' : 'warning'} className="text-sm py-1 px-3">
@@ -83,14 +78,9 @@ export default async function DomainDetailPage({
       {typedDomain.is_verified && (
         <Card>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/15 rounded-xl">
-                <CheckCircle className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <CardTitle className="text-base">Domain ist verifiziert</CardTitle>
-                <CardDescription>Du kannst jetzt einen Sicherheitsscan starten.</CardDescription>
-              </div>
+            <div>
+              <CardTitle className="text-base">Domain ist verifiziert</CardTitle>
+              <CardDescription>Du kannst jetzt einen Sicherheitsscan starten.</CardDescription>
             </div>
             <StartScanButton domainId={typedDomain.id} domainName={typedDomain.domain_name} />
           </div>
@@ -104,16 +94,13 @@ export default async function DomainDetailPage({
           <div className="space-y-3">
             {typedScans.map((scan) => (
               <Link key={scan.id} href={`/dashboard/scans/${scan.id}`}>
-                <Card className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200 cursor-pointer">
+                <Card className="hover:border-border-default transition-colors duration-200 cursor-pointer">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Search className="h-5 w-5 text-text-faint" />
-                      <div>
-                        <p className="font-medium text-text-primary text-sm">
-                          Scan vom {formatDate(scan.created_at)}
-                        </p>
-                        <p className="text-xs text-text-muted">{scan.current_step || scan.status}</p>
-                      </div>
+                    <div>
+                      <p className="font-medium text-text-primary text-sm">
+                        Scan vom {formatDate(scan.created_at)}
+                      </p>
+                      <p className="text-xs text-text-secondary mt-1">{scan.current_step || scan.status}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       {scan.score !== null && (

@@ -23,15 +23,13 @@ export function Navbar({ user }: NavbarProps) {
   };
 
   return (
-    <nav className="glass-strong sticky top-0 z-50 border-b border-border-subtle">
+    <nav className="sticky top-0 z-50 border-b border-border-subtle bg-surface-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2.5 group">
-            <div className="relative">
-              <Shield className="h-7 w-7 text-accent-400 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
-            </div>
+          <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2.5">
+            <Shield className="h-6 w-6 text-accent-400" />
             <span className="text-xl font-bold text-text-primary">
-              Test<span className="text-gradient-accent">Me</span>
+              Test<span className="text-accent-400">Me</span>
             </span>
           </Link>
 
@@ -103,7 +101,7 @@ export function Navbar({ user }: NavbarProps) {
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="block px-3 py-2.5 text-sm text-accent-400 font-medium hover:bg-accent-500/10 rounded-xl transition-colors"
+                  className="block px-3 py-2.5 text-sm text-text-primary font-medium hover:bg-surface-200 rounded-lg transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   Kostenlos starten

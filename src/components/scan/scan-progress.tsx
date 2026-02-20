@@ -137,9 +137,9 @@ export function ScanProgress({ scan: initialScan }: Props) {
 
           {/* Progress Bar */}
           <div className="w-full max-w-sm mx-auto">
-            <div className="bg-surface-300 rounded-full h-3 overflow-hidden">
+            <div className="bg-surface-200 rounded-full h-3 overflow-hidden">
               <div
-                className="bg-accent-500 rounded-full h-3 transition-all duration-700 ease-out shadow-[0_0_12px_rgba(6,182,212,0.4)]"
+                className="bg-accent-500 rounded-full h-3 transition-all duration-700 ease-out"
                 style={{ width: `${scan.progress}%` }}
               />
             </div>

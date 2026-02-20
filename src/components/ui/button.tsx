@@ -12,14 +12,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', loading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-250 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer relative overflow-hidden';
+    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer';
 
     const variants = {
-      primary: 'bg-accent-500 text-white hover:bg-accent-400 shadow-[0_0_20px_rgba(6,182,212,0.25)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] active:shadow-[0_0_10px_rgba(6,182,212,0.2)]',
-      secondary: 'bg-surface-300 text-text-primary hover:bg-surface-400 border border-border-default',
-      outline: 'border border-border-strong text-text-secondary hover:text-text-primary hover:bg-surface-200 hover:border-accent-500/30',
-      danger: 'bg-red-500/15 text-red-400 border border-red-500/20 hover:bg-red-500/25 hover:border-red-500/30',
-      ghost: 'text-text-secondary hover:text-text-primary hover:bg-surface-200',
+      primary: 'bg-accent-500 text-white hover:bg-accent-400',
+      secondary: 'bg-surface-200 text-text-primary hover:bg-surface-300 border border-border-default',
+      outline: 'border border-border-default text-text-secondary hover:text-text-primary hover:bg-surface-100 hover:border-border-strong',
+      danger: 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/15',
+      ghost: 'text-text-secondary hover:text-text-primary hover:bg-surface-100',
     };
 
     const sizes = {

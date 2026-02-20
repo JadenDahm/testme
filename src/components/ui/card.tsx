@@ -3,10 +3,9 @@ import { HTMLAttributes } from 'react';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: 'sm' | 'md' | 'lg';
-  glow?: boolean;
 }
 
-export function Card({ className, padding = 'md', glow = false, children, ...props }: CardProps) {
+export function Card({ className, padding = 'md', children, ...props }: CardProps) {
   const paddings = {
     sm: 'p-4',
     md: 'p-6',
@@ -16,9 +15,8 @@ export function Card({ className, padding = 'md', glow = false, children, ...pro
   return (
     <div
       className={cn(
-        'bg-surface-100/80 backdrop-blur-sm rounded-2xl border border-border-subtle',
-        'transition-all duration-300',
-        glow && 'glow-accent',
+        'bg-surface-100 rounded-lg border border-border-subtle',
+        'transition-colors duration-200',
         paddings[padding],
         className
       )}
