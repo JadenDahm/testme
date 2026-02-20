@@ -56,13 +56,14 @@ export async function POST(
         errorMessage = 'DNS TXT-Eintrag nicht gefunden oder Token stimmt nicht überein. Bitte prüfe, ob der Eintrag korrekt gesetzt wurde und warte ggf. auf DNS-Propagierung (kann bis zu 24h dauern).';
       }
       break;
-    case 'html_file':
-      verified = await verifyHtmlFile(domain.domain_name, domain.verification_token);
+    case 'html_file': {
+      const result = await verifyHtmlFile(domain.domain_name, domain.verification_token);
+      verified = result.verified;
       if (!verified) {
-        const verifyUrl = `https://${domain.domain_name}/.well-known/testme-verify.txt`;
-        errorMessage = `Die Datei konnte nicht verifiziert werden. Bitte prüfe:\n1. Ist die Datei unter ${verifyUrl} erreichbar?\n2. Enthält die Datei exakt den Token: ${domain.verification_token}\n3. Gibt es keine zusätzlichen Zeichen oder Leerzeichen in der Datei?`;
+        errorMessage = result.debug || 'Die HTML-Datei konnte nicht verifiziert werden.';
       }
       break;
+    }
   }
 
   if (verified) {

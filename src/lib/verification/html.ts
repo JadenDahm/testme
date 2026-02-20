@@ -1,35 +1,58 @@
-export async function verifyHtmlFile(domain: string, expectedToken: string): Promise<boolean> {
+interface VerifyHtmlResult {
+  verified: boolean;
+  debug?: string;
+}
+
+export async function verifyHtmlFile(domain: string, expectedToken: string): Promise<VerifyHtmlResult> {
   const url = `https://${domain}/.well-known/testme-verify.txt`;
 
   try {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(10000),
+      redirect: 'follow',
       headers: {
-        'User-Agent': 'TestMe-Security-Verifier/1.0',
+        'User-Agent': 'Mozilla/5.0 (compatible; TestMe-Security-Verifier/1.0)',
+        'Accept': 'text/plain, */*',
       },
     });
 
     if (!response.ok) {
-      console.error(`[verifyHtmlFile] HTTP ${response.status} for ${url}`);
-      return false;
+      return {
+        verified: false,
+        debug: `HTTP ${response.status} ${response.statusText} beim Abruf von ${url}`,
+      };
     }
 
+    const contentType = response.headers.get('content-type') || '';
     const text = await response.text();
-    // Normalize: trim whitespace and remove any BOM or invisible characters
-    const normalizedText = text.trim().replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    
+    // Check if we got HTML back instead of plain text (middleware redirect)
+    if (text.includes('<!DOCTYPE') || text.includes('<html') || text.includes('<head')) {
+      return {
+        verified: false,
+        debug: `Die URL ${url} gibt HTML zurück statt der Textdatei. Wahrscheinlich fängt eine Middleware oder ein Router die Anfrage ab. Bitte stelle sicher, dass .well-known Pfade nicht von der App-Middleware abgefangen werden.`,
+      };
+    }
+
+    // Normalize: trim whitespace, remove BOM, normalize line breaks
+    const normalizedText = text.trim().replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n/g, '');
     const normalizedToken = expectedToken.trim();
     
-    const matches = normalizedText === normalizedToken;
-    
-    if (!matches) {
-      console.error(`[verifyHtmlFile] Token mismatch. Expected: "${normalizedToken}", Got: "${normalizedText}"`);
-      console.error(`[verifyHtmlFile] Expected length: ${normalizedToken.length}, Got length: ${normalizedText.length}`);
+    if (normalizedText === normalizedToken) {
+      return { verified: true };
     }
-    
-    return matches;
+
+    // Token mismatch - provide debug info
+    return {
+      verified: false,
+      debug: `Token stimmt nicht überein.\nErwartet (${normalizedToken.length} Zeichen): "${normalizedToken}"\nErhalten (${normalizedText.length} Zeichen): "${normalizedText.substring(0, 100)}"${normalizedText.length > 100 ? '...' : ''}\nContent-Type: ${contentType}`,
+    };
   } catch (error) {
-    console.error(`[verifyHtmlFile] Error fetching ${url}:`, error);
-    return false;
+    const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
+    return {
+      verified: false,
+      debug: `Netzwerkfehler beim Abruf von ${url}: ${message}`,
+    };
   }
 }
 
