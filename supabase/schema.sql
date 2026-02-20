@@ -1,121 +1,158 @@
+-- =============================================
+-- TestMe - Database Schema
+-- =============================================
+
 -- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+create extension if not exists "uuid-ossp";
 
--- Domains table
-CREATE TABLE IF NOT EXISTS domains (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  domain TEXT NOT NULL,
-  verified BOOLEAN DEFAULT FALSE,
-  verification_method TEXT CHECK (verification_method IN ('dns_txt', 'html_file')),
-  verification_token TEXT,
-  verified_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, domain)
+-- =============================================
+-- Domains Table
+-- =============================================
+create table public.domains (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  domain text not null,
+  verification_method text, -- 'dns_txt' | 'html_file' | 'meta_tag'
+  verification_token text not null,
+  verified boolean default false,
+  verified_at timestamptz,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null,
+  
+  unique(user_id, domain)
 );
 
--- Scans table
-CREATE TABLE IF NOT EXISTS scans (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  domain_id UUID NOT NULL REFERENCES domains(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'running', 'completed', 'failed', 'cancelled')),
-  started_at TIMESTAMPTZ,
-  completed_at TIMESTAMPTZ,
-  error_message TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- =============================================
+-- Scans Table
+-- =============================================
+create table public.scans (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  domain_id uuid references public.domains(id) on delete cascade not null,
+  status text default 'pending' not null check (status in ('pending', 'running', 'completed', 'failed', 'cancelled')),
+  consent_given boolean default false not null,
+  consent_given_at timestamptz,
+  progress integer default 0 check (progress >= 0 and progress <= 100),
+  current_step text,
+  score integer check (score >= 0 and score <= 100),
+  summary text,
+  started_at timestamptz,
+  completed_at timestamptz,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
 );
 
--- Vulnerabilities table
-CREATE TABLE IF NOT EXISTS vulnerabilities (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  scan_id UUID NOT NULL REFERENCES scans(id) ON DELETE CASCADE,
-  type TEXT NOT NULL,
-  severity TEXT NOT NULL CHECK (severity IN ('critical', 'high', 'medium', 'low', 'info')),
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  affected_url TEXT,
-  recommendation TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+-- =============================================
+-- Scan Findings Table
+-- =============================================
+create table public.scan_findings (
+  id uuid default uuid_generate_v4() primary key,
+  scan_id uuid references public.scans(id) on delete cascade not null,
+  category text not null, -- 'headers' | 'secrets' | 'sensitive_files' | 'vulnerability' | 'ssl' | 'info'
+  severity text not null check (severity in ('critical', 'high', 'medium', 'low', 'info')),
+  title text not null,
+  description text not null,
+  affected_url text,
+  recommendation text,
+  details jsonb,
+  created_at timestamptz default now() not null
 );
 
--- Indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_domains_user_id ON domains(user_id);
-CREATE INDEX IF NOT EXISTS idx_domains_domain ON domains(domain);
-CREATE INDEX IF NOT EXISTS idx_scans_domain_id ON scans(domain_id);
-CREATE INDEX IF NOT EXISTS idx_scans_user_id ON scans(user_id);
-CREATE INDEX IF NOT EXISTS idx_scans_status ON scans(status);
-CREATE INDEX IF NOT EXISTS idx_vulnerabilities_scan_id ON vulnerabilities(scan_id);
-CREATE INDEX IF NOT EXISTS idx_vulnerabilities_severity ON vulnerabilities(severity);
+-- =============================================
+-- Scan Logs Table
+-- =============================================
+create table public.scan_logs (
+  id uuid default uuid_generate_v4() primary key,
+  scan_id uuid references public.scans(id) on delete cascade not null,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  action text not null,
+  details text,
+  created_at timestamptz default now() not null
+);
 
--- Row Level Security (RLS) Policies
-ALTER TABLE domains ENABLE ROW LEVEL SECURITY;
-ALTER TABLE scans ENABLE ROW LEVEL SECURITY;
-ALTER TABLE vulnerabilities ENABLE ROW LEVEL SECURITY;
+-- =============================================
+-- Row Level Security Policies
+-- =============================================
 
--- Domains: Users can only see their own domains
-CREATE POLICY "Users can view their own domains"
-  ON domains FOR SELECT
-  USING (auth.uid() = user_id);
+-- Enable RLS on all tables
+alter table public.domains enable row level security;
+alter table public.scans enable row level security;
+alter table public.scan_findings enable row level security;
+alter table public.scan_logs enable row level security;
 
-CREATE POLICY "Users can insert their own domains"
-  ON domains FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+-- Domains: Users can only access their own domains
+create policy "Users can view own domains"
+  on public.domains for select
+  using (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own domains"
-  ON domains FOR UPDATE
-  USING (auth.uid() = user_id);
+create policy "Users can insert own domains"
+  on public.domains for insert
+  with check (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own domains"
-  ON domains FOR DELETE
-  USING (auth.uid() = user_id);
+create policy "Users can update own domains"
+  on public.domains for update
+  using (auth.uid() = user_id);
 
--- Scans: Users can only see their own scans
-CREATE POLICY "Users can view their own scans"
-  ON scans FOR SELECT
-  USING (auth.uid() = user_id);
+create policy "Users can delete own domains"
+  on public.domains for delete
+  using (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert their own scans"
-  ON scans FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+-- Scans: Users can only access their own scans
+create policy "Users can view own scans"
+  on public.scans for select
+  using (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own scans"
-  ON scans FOR UPDATE
-  USING (auth.uid() = user_id);
+create policy "Users can insert own scans"
+  on public.scans for insert
+  with check (auth.uid() = user_id);
 
--- Vulnerabilities: Users can only see vulnerabilities from their own scans
-CREATE POLICY "Users can view vulnerabilities from their own scans"
-  ON vulnerabilities FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM scans
-      WHERE scans.id = vulnerabilities.scan_id
-      AND scans.user_id = auth.uid()
+create policy "Users can update own scans"
+  on public.scans for update
+  using (auth.uid() = user_id);
+
+-- Scan Findings: Users can view findings of their own scans
+create policy "Users can view own scan findings"
+  on public.scan_findings for select
+  using (
+    exists (
+      select 1 from public.scans
+      where scans.id = scan_findings.scan_id
+      and scans.user_id = auth.uid()
     )
   );
 
-CREATE POLICY "Service role can insert vulnerabilities"
-  ON vulnerabilities FOR INSERT
-  WITH CHECK (true);
+-- Scan Logs: Users can view logs of their own scans
+create policy "Users can view own scan logs"
+  on public.scan_logs for select
+  using (auth.uid() = user_id);
 
--- Function to update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ language 'plpgsql';
+-- =============================================
+-- Indexes
+-- =============================================
+create index idx_domains_user_id on public.domains(user_id);
+create index idx_domains_domain on public.domains(domain);
+create index idx_scans_user_id on public.scans(user_id);
+create index idx_scans_domain_id on public.scans(domain_id);
+create index idx_scans_status on public.scans(status);
+create index idx_scan_findings_scan_id on public.scan_findings(scan_id);
+create index idx_scan_findings_severity on public.scan_findings(severity);
+create index idx_scan_logs_scan_id on public.scan_logs(scan_id);
 
--- Triggers to automatically update updated_at
-CREATE TRIGGER update_domains_updated_at
-  BEFORE UPDATE ON domains
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
+-- =============================================
+-- Updated At Trigger
+-- =============================================
+create or replace function public.handle_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
 
-CREATE TRIGGER update_scans_updated_at
-  BEFORE UPDATE ON scans
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
+create trigger handle_domains_updated_at
+  before update on public.domains
+  for each row execute function public.handle_updated_at();
+
+create trigger handle_scans_updated_at
+  before update on public.scans
+  for each row execute function public.handle_updated_at();
