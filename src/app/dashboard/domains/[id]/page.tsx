@@ -44,19 +44,19 @@ export default async function DomainDetailPage({
       <div>
         <Link
           href="/dashboard/domains"
-          className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1 mb-4"
+          className="text-sm text-text-muted hover:text-text-secondary flex items-center gap-1 mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Domains
         </Link>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-primary-50 rounded-xl">
-              <Globe className="h-6 w-6 text-primary-600" />
+            <div className="p-3 bg-accent-500/10 border border-accent-500/15 rounded-xl">
+              <Globe className="h-6 w-6 text-accent-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{typedDomain.domain_name}</h1>
-              <p className="text-gray-500 text-sm">
+              <h1 className="text-2xl font-bold text-text-primary">{typedDomain.domain_name}</h1>
+              <p className="text-text-muted text-sm">
                 Hinzugefügt am {formatDate(typedDomain.created_at)}
               </p>
             </div>
@@ -80,8 +80,8 @@ export default async function DomainDetailPage({
         <Card>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-green-50 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+              <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/15 rounded-xl">
+                <CheckCircle className="h-5 w-5 text-emerald-400" />
               </div>
               <div>
                 <CardTitle className="text-base">Domain ist verifiziert</CardTitle>
@@ -96,19 +96,19 @@ export default async function DomainDetailPage({
       {/* Scans History */}
       {typedScans.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Scan-Verlauf</h2>
+          <h2 className="text-lg font-semibold text-text-primary mb-4">Scan-Verlauf</h2>
           <div className="space-y-3">
             {typedScans.map((scan) => (
               <Link key={scan.id} href={`/dashboard/scans/${scan.id}`}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <Card className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Search className="h-5 w-5 text-gray-400" />
+                      <Search className="h-5 w-5 text-text-faint" />
                       <div>
-                        <p className="font-medium text-gray-900 text-sm">
+                        <p className="font-medium text-text-primary text-sm">
                           Scan vom {formatDate(scan.created_at)}
                         </p>
-                        <p className="text-xs text-gray-500">{scan.current_step || scan.status}</p>
+                        <p className="text-xs text-text-muted">{scan.current_step || scan.status}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">

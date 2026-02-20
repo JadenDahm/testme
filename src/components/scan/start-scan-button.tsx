@@ -44,13 +44,13 @@ export function StartScanButton({ domainId, domainName }: Props) {
 
   if (showConsent) {
     return (
-      <div className="w-full mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg space-y-3">
+      <div className="w-full mt-4 p-5 bg-amber-500/8 border border-amber-500/15 rounded-2xl space-y-4">
         <div className="flex gap-3">
-          <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-800 space-y-2">
-            <p className="font-semibold">Zustimmung zum Sicherheitsscan</p>
+          <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-amber-200/70 space-y-2">
+            <p className="font-semibold text-amber-300">Zustimmung zum Sicherheitsscan</p>
             <p>
-              Ich bestätige, dass <strong>{domainName}</strong> mir gehört und ich berechtigt bin,
+              Ich bestätige, dass <strong className="text-amber-200">{domainName}</strong> mir gehört und ich berechtigt bin,
               einen Sicherheitsscan durchführen zu lassen.
             </p>
             <p>
@@ -61,7 +61,7 @@ export function StartScanButton({ domainId, domainName }: Props) {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
+          <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-3 py-2 rounded-xl text-sm">
             {error}
           </div>
         )}

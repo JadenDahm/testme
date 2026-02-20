@@ -25,14 +25,14 @@ export function DashboardShell({ user, children }: { user: User; children: React
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-surface-0 flex">
       {/* Sidebar */}
-      <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 flex-col fixed inset-y-0">
-        <div className="p-6 border-b border-gray-100">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <Shield className="h-7 w-7 text-primary-600" />
-            <span className="text-xl font-bold text-gray-900">
-              Test<span className="text-primary-600">Me</span>
+      <aside className="hidden lg:flex w-64 bg-surface-50 border-r border-border-subtle flex-col fixed inset-y-0">
+        <div className="p-6 border-b border-border-subtle">
+          <Link href="/dashboard" className="flex items-center gap-2.5 group">
+            <Shield className="h-7 w-7 text-accent-400 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
+            <span className="text-xl font-bold text-text-primary">
+              Test<span className="text-gradient-accent">Me</span>
             </span>
           </Link>
         </div>
@@ -46,24 +46,24 @@ export function DashboardShell({ user, children }: { user: User; children: React
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-accent-500/10 text-accent-400 shadow-[0_0_15px_rgba(6,182,212,0.08)]'
+                    : 'text-text-secondary hover:bg-surface-200 hover:text-text-primary'
                 )}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className={cn('h-5 w-5', isActive && 'drop-shadow-[0_0_4px_rgba(6,182,212,0.5)]')} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-100">
-          <div className="text-xs text-gray-500 truncate mb-2 px-3">{user.email}</div>
+        <div className="p-4 border-t border-border-subtle">
+          <div className="text-xs text-text-faint truncate mb-2 px-3">{user.email}</div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:bg-surface-200 hover:text-text-primary w-full transition-all duration-200"
           >
             <LogOut className="h-5 w-5" />
             Abmelden
@@ -72,16 +72,16 @@ export function DashboardShell({ user, children }: { user: User; children: React
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 glass-strong border-b border-border-subtle">
         <div className="flex items-center justify-between px-4 h-14">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary-600" />
-            <span className="text-lg font-bold">
-              Test<span className="text-primary-600">Me</span>
+            <Shield className="h-6 w-6 text-accent-400" />
+            <span className="text-lg font-bold text-text-primary">
+              Test<span className="text-gradient-accent">Me</span>
             </span>
           </Link>
         </div>
-        <div className="flex border-t border-gray-100">
+        <div className="flex border-t border-border-subtle">
           {navItems.map((item) => {
             const isActive = pathname === item.href ||
               (item.href !== '/dashboard' && pathname.startsWith(item.href));
@@ -90,8 +90,8 @@ export function DashboardShell({ user, children }: { user: User; children: React
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium',
-                  isActive ? 'text-primary-600' : 'text-gray-500'
+                  'flex-1 flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors duration-200',
+                  isActive ? 'text-accent-400' : 'text-text-muted'
                 )}
               >
                 <item.icon className="h-4 w-4" />

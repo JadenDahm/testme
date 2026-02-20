@@ -19,15 +19,17 @@ export default async function ScansPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Scans</h1>
-        <p className="text-gray-500 mt-1">Übersicht aller durchgeführten Sicherheitsscans</p>
+        <h1 className="text-2xl font-bold text-text-primary">Scans</h1>
+        <p className="text-text-muted mt-1">Übersicht aller durchgeführten Sicherheitsscans</p>
       </div>
 
       {(!scans || scans.length === 0) ? (
         <Card className="text-center py-12">
-          <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-1">Keine Scans</h3>
-          <p className="text-gray-500">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-surface-200 border border-border-subtle mx-auto mb-4">
+            <Search className="h-7 w-7 text-text-faint" />
+          </div>
+          <h3 className="text-lg font-medium text-text-primary mb-1">Keine Scans</h3>
+          <p className="text-text-muted">
             Füge eine Domain hinzu und starte deinen ersten Scan.
           </p>
         </Card>
@@ -35,20 +37,20 @@ export default async function ScansPage() {
         <div className="space-y-3">
           {(scans as Scan[]).map((scan) => (
             <Link key={scan.id} href={`/dashboard/scans/${scan.id}`}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <Card className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200 cursor-pointer">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="p-2.5 bg-gray-100 rounded-lg">
-                      <Search className="h-5 w-5 text-gray-600" />
+                    <div className="p-2.5 bg-surface-200 border border-border-subtle rounded-xl">
+                      <Search className="h-5 w-5 text-text-muted" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-text-primary">
                         {scan.domains?.domain_name || 'Unbekannt'}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-text-muted">
                         {formatDate(scan.created_at)}
                         {scan.current_step && scan.status === 'running' && (
-                          <span className="ml-2 text-primary-600">· {scan.current_step}</span>
+                          <span className="ml-2 text-accent-400">· {scan.current_step}</span>
                         )}
                       </p>
                     </div>
@@ -66,13 +68,13 @@ export default async function ScansPage() {
                     )}
                     {scan.status === 'running' && (
                       <div className="w-24">
-                        <div className="bg-gray-200 rounded-full h-2">
+                        <div className="bg-surface-300 rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-primary-500 rounded-full h-2 transition-all duration-500"
+                            className="bg-accent-500 rounded-full h-2 transition-all duration-500 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
                             style={{ width: `${scan.progress}%` }}
                           />
                         </div>
-                        <p className="text-xs text-gray-500 text-center mt-1">{scan.progress}%</p>
+                        <p className="text-xs text-text-muted text-center mt-1">{scan.progress}%</p>
                       </div>
                     )}
                     <Badge

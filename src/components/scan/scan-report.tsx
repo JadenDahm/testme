@@ -137,12 +137,12 @@ export function ScanReport({ scan, findings }: Props) {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100">
-              <Shield className="h-6 w-6 text-primary-600" />
+            <div className="p-2.5 rounded-xl bg-accent-500/10 border border-accent-500/15">
+              <Shield className="h-6 w-6 text-accent-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Sicherheitsbericht</h1>
-              <p className="text-gray-500 text-sm">
+              <h1 className="text-2xl font-bold text-text-primary">Sicherheitsbericht</h1>
+              <p className="text-text-muted text-sm">
                 {domain} · {formatDate(scan.created_at)}
               </p>
             </div>
@@ -157,7 +157,7 @@ export function ScanReport({ scan, findings }: Props) {
           <a
             href={`/api/scans/${scan.id}/pdf`}
             download
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-500 text-white text-sm font-medium hover:bg-accent-400 transition-all duration-200 shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_25px_rgba(6,182,212,0.3)]"
           >
             <Download className="h-4 w-4" />
             PDF Report
@@ -167,16 +167,19 @@ export function ScanReport({ scan, findings }: Props) {
 
       {/* ── Score Hero Section ──────────────────────────────────────────── */}
       {scan.score !== null && (
-        <Card padding="lg" className="bg-gradient-to-br from-white via-gray-50/50 to-primary-50/30 border-gray-200/80">
-          <div className="flex flex-col lg:flex-row items-center gap-8">
+        <Card padding="lg" className="relative overflow-hidden border-border-default">
+          {/* Background glow */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(ellipse_at_top_right,rgba(6,182,212,0.06)_0%,transparent_70%)] pointer-events-none" />
+
+          <div className="relative flex flex-col lg:flex-row items-center gap-8">
             {/* Score Gauge */}
             <ScoreGauge score={scan.score} size={180} />
 
             <div className="flex-1 text-center lg:text-left">
-              <p className="text-gray-600 max-w-lg leading-relaxed">{scan.summary}</p>
+              <p className="text-text-secondary max-w-lg leading-relaxed">{scan.summary}</p>
 
               {/* Quick Stats */}
-              <div className="flex flex-wrap gap-3 mt-5 justify-center lg:justify-start">
+              <div className="flex flex-wrap gap-2 mt-5 justify-center lg:justify-start">
                 {severityOrder.map((sev) => (
                   counts[sev] > 0 && (
                     <button
@@ -186,7 +189,7 @@ export function ScanReport({ scan, findings }: Props) {
                         setFilterSeverity(sev);
                       }}
                       className={cn(
-                        'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105 cursor-pointer',
+                        'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 cursor-pointer',
                         severityBadge(sev)
                       )}
                     >
@@ -197,7 +200,7 @@ export function ScanReport({ scan, findings }: Props) {
               </div>
 
               {/* Meta Info */}
-              <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-gray-400 justify-center lg:justify-start">
+              <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-text-faint justify-center lg:justify-start">
                 {scan.started_at && (
                   <div className="flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" />
@@ -228,14 +231,14 @@ export function ScanReport({ scan, findings }: Props) {
 
       {/* ── View Mode Toggle ────────────────────────────────────────────── */}
       {findings.length > 0 && (
-        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 w-fit">
+        <div className="flex items-center gap-1 bg-surface-200 rounded-xl p-1 w-fit border border-border-subtle">
           <button
             onClick={() => setViewMode('overview')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all',
+              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
               viewMode === 'overview'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-surface-400 text-text-primary shadow-sm'
+                : 'text-text-muted hover:text-text-secondary'
             )}
           >
             <BarChart3 className="h-4 w-4" />
@@ -244,10 +247,10 @@ export function ScanReport({ scan, findings }: Props) {
           <button
             onClick={() => setViewMode('findings')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all',
+              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
               viewMode === 'findings'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-surface-400 text-text-primary shadow-sm'
+                : 'text-text-muted hover:text-text-secondary'
             )}
           >
             <List className="h-4 w-4" />
@@ -287,16 +290,16 @@ export function ScanReport({ scan, findings }: Props) {
 
           {/* Category Detail Cards */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Kategoriedetails</h3>
+            <h3 className="text-sm font-semibold text-text-secondary mb-3">Kategoriedetails</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {categoryScores.map((cat) => {
                 const Icon = categoryIcons[cat.name as FindingCategory] || Shield;
-                const catColor =
-                  cat.score >= 90 ? 'text-green-600 bg-green-50 border-green-200' :
-                  cat.score >= 70 ? 'text-lime-600 bg-lime-50 border-lime-200' :
-                  cat.score >= 50 ? 'text-yellow-600 bg-yellow-50 border-yellow-200' :
-                  cat.score >= 30 ? 'text-orange-600 bg-orange-50 border-orange-200' :
-                  'text-red-600 bg-red-50 border-red-200';
+                const catColorClasses =
+                  cat.score >= 90 ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/8' :
+                  cat.score >= 70 ? 'text-cyan-400 border-cyan-500/20 bg-cyan-500/8' :
+                  cat.score >= 50 ? 'text-yellow-400 border-yellow-500/20 bg-yellow-500/8' :
+                  cat.score >= 30 ? 'text-orange-400 border-orange-500/20 bg-orange-500/8' :
+                  'text-rose-400 border-rose-500/20 bg-rose-500/8';
 
                 return (
                   <button
@@ -307,8 +310,8 @@ export function ScanReport({ scan, findings }: Props) {
                       setFilterSeverity('all');
                     }}
                     className={cn(
-                      'text-left p-4 rounded-xl border transition-all hover:shadow-md cursor-pointer',
-                      catColor
+                      'text-left p-4 rounded-2xl border transition-all duration-300 hover:scale-[1.02] cursor-pointer',
+                      catColorClasses
                     )}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -316,7 +319,7 @@ export function ScanReport({ scan, findings }: Props) {
                       <span className="text-2xl font-bold">{cat.score}</span>
                     </div>
                     <h4 className="font-semibold text-sm">{cat.displayName}</h4>
-                    <p className="text-xs mt-1 opacity-70">
+                    <p className="text-xs mt-1 opacity-60">
                       {cat.findings} {cat.findings === 1 ? 'Ergebnis' : 'Ergebnisse'}
                       {cat.criticalCount > 0 && ` · ${cat.criticalCount} kritisch`}
                       {cat.highCount > 0 && ` · ${cat.highCount} hoch`}
@@ -331,13 +334,13 @@ export function ScanReport({ scan, findings }: Props) {
           {findings.filter((f) => f.severity === 'critical' || f.severity === 'high').length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-gray-700">Wichtigste Probleme</h3>
+                <h3 className="text-sm font-semibold text-text-secondary">Wichtigste Probleme</h3>
                 <button
                   onClick={() => {
                     setViewMode('findings');
                     setFilterSeverity('all');
                   }}
-                  className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-xs text-accent-400 hover:text-accent-300 font-medium transition-colors"
                 >
                   Alle anzeigen →
                 </button>
@@ -353,11 +356,11 @@ export function ScanReport({ scan, findings }: Props) {
                         <div className="flex items-start gap-3 p-3">
                           <Icon className={cn(
                             'h-5 w-5 flex-shrink-0 mt-0.5',
-                            finding.severity === 'critical' ? 'text-red-600' : 'text-orange-500'
+                            finding.severity === 'critical' ? 'text-rose-400' : 'text-orange-400'
                           )} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
-                              <h4 className="font-medium text-gray-900 text-sm">{finding.title}</h4>
+                              <h4 className="font-medium text-text-primary text-sm">{finding.title}</h4>
                               <span className={cn(
                                 'px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0',
                                 severityBadge(finding.severity)
@@ -365,7 +368,7 @@ export function ScanReport({ scan, findings }: Props) {
                                 {severityLabels[finding.severity]}
                               </span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{finding.description}</p>
+                            <p className="text-xs text-text-muted mt-0.5 line-clamp-1">{finding.description}</p>
                           </div>
                         </div>
                       </Card>
@@ -405,7 +408,7 @@ export function ScanReport({ scan, findings }: Props) {
 
               {categories.length > 1 && (
                 <>
-                  <div className="w-px bg-gray-200 mx-1" />
+                  <div className="w-px bg-border-default mx-1" />
                   <Button
                     variant={filterCategory === 'all' ? 'secondary' : 'ghost'}
                     size="sm"
@@ -439,26 +442,26 @@ export function ScanReport({ scan, findings }: Props) {
                   <Card key={finding.id} padding="sm" className="overflow-hidden group">
                     <button
                       onClick={() => toggleFinding(finding.id)}
-                      className="w-full text-left p-4 flex items-start gap-3 hover:bg-gray-50/80 transition-colors cursor-pointer"
+                      className="w-full text-left p-4 flex items-start gap-3 hover:bg-surface-200/50 transition-colors duration-200 cursor-pointer"
                     >
                       <div className={cn(
                         'p-1.5 rounded-lg flex-shrink-0 mt-0.5',
-                        finding.severity === 'critical' ? 'bg-red-50' :
-                        finding.severity === 'high' ? 'bg-orange-50' :
-                        finding.severity === 'medium' ? 'bg-yellow-50' :
-                        finding.severity === 'low' ? 'bg-blue-50' : 'bg-gray-50'
+                        finding.severity === 'critical' ? 'bg-rose-500/10' :
+                        finding.severity === 'high' ? 'bg-orange-500/10' :
+                        finding.severity === 'medium' ? 'bg-yellow-500/10' :
+                        finding.severity === 'low' ? 'bg-cyan-500/10' : 'bg-surface-300'
                       )}>
                         <Icon className={cn(
                           'h-4 w-4',
-                          finding.severity === 'critical' ? 'text-red-600' :
-                          finding.severity === 'high' ? 'text-orange-500' :
-                          finding.severity === 'medium' ? 'text-yellow-500' :
-                          finding.severity === 'low' ? 'text-blue-500' : 'text-gray-400'
+                          finding.severity === 'critical' ? 'text-rose-400' :
+                          finding.severity === 'high' ? 'text-orange-400' :
+                          finding.severity === 'medium' ? 'text-yellow-400' :
+                          finding.severity === 'low' ? 'text-cyan-400' : 'text-text-faint'
                         )} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-medium text-gray-900 text-sm group-hover:text-primary-700 transition-colors">
+                          <h4 className="font-medium text-text-primary text-sm group-hover:text-accent-400 transition-colors">
                             {finding.title}
                           </h4>
                           <div className="flex items-center gap-2 flex-shrink-0">
@@ -468,37 +471,37 @@ export function ScanReport({ scan, findings }: Props) {
                             )}>
                               {severityLabels[finding.severity]}
                             </span>
-                            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                            <span className="text-xs text-text-faint bg-surface-300 px-2 py-0.5 rounded-full">
                               {categoryLabels[finding.category]}
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-500 mt-0.5 truncate">{finding.description}</p>
+                        <p className="text-sm text-text-muted mt-0.5 truncate">{finding.description}</p>
                       </div>
                       {isExpanded ? (
-                        <ChevronUp className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                        <ChevronUp className="h-5 w-5 text-text-faint flex-shrink-0" />
                       ) : (
-                        <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                        <ChevronDown className="h-5 w-5 text-text-faint flex-shrink-0" />
                       )}
                     </button>
 
                     {isExpanded && (
-                      <div className="px-4 pb-4 ml-8 space-y-4 border-t border-gray-100 pt-4 animate-fade-in">
+                      <div className="px-4 pb-4 ml-8 space-y-4 border-t border-border-subtle pt-4 animate-fade-in">
                         {/* Description */}
                         <div>
-                          <h5 className="text-xs font-semibold uppercase text-gray-400 mb-1 tracking-wide">Beschreibung</h5>
-                          <p className="text-sm text-gray-700 leading-relaxed">{finding.description}</p>
+                          <h5 className="text-xs font-semibold uppercase text-text-faint mb-1 tracking-wide">Beschreibung</h5>
+                          <p className="text-sm text-text-secondary leading-relaxed">{finding.description}</p>
                         </div>
 
                         {/* Affected URL */}
                         {finding.affected_url && (
                           <div>
-                            <h5 className="text-xs font-semibold uppercase text-gray-400 mb-1 tracking-wide">Betroffene URL</h5>
+                            <h5 className="text-xs font-semibold uppercase text-text-faint mb-1 tracking-wide">Betroffene URL</h5>
                             <a
                               href={finding.affected_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1 break-all"
+                              className="text-sm text-accent-400 hover:text-accent-300 flex items-center gap-1 break-all transition-colors"
                             >
                               {finding.affected_url}
                               <ExternalLink className="h-3 w-3 flex-shrink-0" />
@@ -508,22 +511,22 @@ export function ScanReport({ scan, findings }: Props) {
 
                         {/* Recommendation */}
                         {finding.recommendation && (
-                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
-                            <h5 className="text-xs font-semibold uppercase text-green-700 mb-1.5 tracking-wide flex items-center gap-1">
+                          <div className="bg-emerald-500/8 border border-emerald-500/15 rounded-xl p-4">
+                            <h5 className="text-xs font-semibold uppercase text-emerald-400 mb-1.5 tracking-wide flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
                               Empfehlung
                             </h5>
-                            <p className="text-sm text-green-800 leading-relaxed">{finding.recommendation}</p>
+                            <p className="text-sm text-emerald-300/80 leading-relaxed">{finding.recommendation}</p>
                           </div>
                         )}
 
                         {/* Technical Details */}
                         {finding.details && Object.keys(finding.details).length > 0 && (
                           <div>
-                            <h5 className="text-xs font-semibold uppercase text-gray-400 mb-1 tracking-wide">
+                            <h5 className="text-xs font-semibold uppercase text-text-faint mb-1 tracking-wide">
                               Technische Details
                             </h5>
-                            <pre className="bg-gray-900 text-gray-100 rounded-lg p-4 text-xs overflow-x-auto leading-relaxed">
+                            <pre className="bg-surface-0 border border-border-subtle text-accent-300 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed">
                               {JSON.stringify(finding.details, null, 2)}
                             </pre>
                           </div>
@@ -536,7 +539,7 @@ export function ScanReport({ scan, findings }: Props) {
             </div>
           ) : findings.length > 0 ? (
             <Card className="text-center py-8">
-              <p className="text-gray-500">Keine Ergebnisse für den ausgewählten Filter.</p>
+              <p className="text-text-muted">Keine Ergebnisse für den ausgewählten Filter.</p>
               <Button
                 variant="ghost"
                 size="sm"
@@ -553,11 +556,11 @@ export function ScanReport({ scan, findings }: Props) {
       {/* ── Empty State ─────────────────────────────────────────────────── */}
       {findings.length === 0 && (
         <Card className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 mb-4">
-            <Shield className="h-8 w-8 text-green-500" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/15 mb-4">
+            <Shield className="h-8 w-8 text-emerald-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900">Keine Probleme gefunden</h3>
-          <p className="text-gray-500 mt-1 max-w-md mx-auto">
+          <h3 className="text-lg font-medium text-text-primary">Keine Probleme gefunden</h3>
+          <p className="text-text-muted mt-1 max-w-md mx-auto">
             {isFailed
               ? 'Der Scan konnte nicht vollständig durchgeführt werden.'
               : 'Hervorragend! Bei diesem Scan wurden keine Sicherheitsprobleme erkannt.'}

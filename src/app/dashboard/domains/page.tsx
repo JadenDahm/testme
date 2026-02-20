@@ -21,8 +21,8 @@ export default async function DomainsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Domains</h1>
-          <p className="text-gray-500 mt-1">Verwalte deine Domains und starte Scans</p>
+          <h1 className="text-2xl font-bold text-text-primary">Domains</h1>
+          <p className="text-text-muted mt-1">Verwalte deine Domains und starte Scans</p>
         </div>
         <Link href="/dashboard/domains/add">
           <Button>
@@ -34,22 +34,24 @@ export default async function DomainsPage() {
 
       {(!domains || domains.length === 0) ? (
         <Card className="text-center py-12">
-          <Globe className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-1">Keine Domains</h3>
-          <p className="text-gray-500 mb-4">Füge deine erste Domain hinzu, um sie zu prüfen.</p>
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-surface-200 border border-border-subtle mx-auto mb-4">
+            <Globe className="h-7 w-7 text-text-faint" />
+          </div>
+          <h3 className="text-lg font-medium text-text-primary mb-1">Keine Domains</h3>
+          <p className="text-text-muted mb-5">Füge deine erste Domain hinzu, um sie zu prüfen.</p>
           <Link href="/dashboard/domains/add">
             <Button>Domain hinzufügen</Button>
           </Link>
         </Card>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-3">
           {(domains as Domain[]).map((domain) => (
             <Link key={domain.id} href={`/dashboard/domains/${domain.id}`}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <Card className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200 cursor-pointer">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="p-2.5 bg-gray-100 rounded-lg">
-                      <Globe className="h-5 w-5 text-gray-600" />
+                    <div className="p-2.5 bg-surface-200 border border-border-subtle rounded-xl">
+                      <Globe className="h-5 w-5 text-text-muted" />
                     </div>
                     <div>
                       <CardTitle className="text-base">{domain.domain_name}</CardTitle>

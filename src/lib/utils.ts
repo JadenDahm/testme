@@ -34,31 +34,31 @@ export function isValidDomain(domain: string): boolean {
 
 export function severityColor(severity: string): string {
   switch (severity) {
-    case 'critical': return 'text-red-600 bg-red-50 border-red-200';
-    case 'high': return 'text-orange-600 bg-orange-50 border-orange-200';
-    case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-    case 'low': return 'text-blue-600 bg-blue-50 border-blue-200';
-    case 'info': return 'text-gray-600 bg-gray-50 border-gray-200';
-    default: return 'text-gray-600 bg-gray-50 border-gray-200';
+    case 'critical': return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+    case 'high': return 'text-orange-400 bg-orange-500/10 border-orange-500/20';
+    case 'medium': return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
+    case 'low': return 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20';
+    case 'info': return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+    default: return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
   }
 }
 
 export function severityBadge(severity: string): string {
   switch (severity) {
-    case 'critical': return 'bg-red-100 text-red-800';
-    case 'high': return 'bg-orange-100 text-orange-800';
-    case 'medium': return 'bg-yellow-100 text-yellow-800';
-    case 'low': return 'bg-blue-100 text-blue-800';
-    case 'info': return 'bg-gray-100 text-gray-800';
-    default: return 'bg-gray-100 text-gray-800';
+    case 'critical': return 'bg-rose-500/15 text-rose-300 border border-rose-500/20';
+    case 'high': return 'bg-orange-500/15 text-orange-300 border border-orange-500/20';
+    case 'medium': return 'bg-yellow-500/15 text-yellow-300 border border-yellow-500/20';
+    case 'low': return 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/20';
+    case 'info': return 'bg-slate-500/15 text-slate-300 border border-slate-500/20';
+    default: return 'bg-slate-500/15 text-slate-300 border border-slate-500/20';
   }
 }
 
 export function scoreColor(score: number): string {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 60) return 'text-yellow-600';
-  if (score >= 40) return 'text-orange-600';
-  return 'text-red-600';
+  if (score >= 80) return 'text-emerald-400';
+  if (score >= 60) return 'text-yellow-400';
+  if (score >= 40) return 'text-orange-400';
+  return 'text-rose-400';
 }
 
 export function scoreLabel(score: number): string {

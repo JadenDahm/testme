@@ -35,23 +35,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-surface-0 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.08)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      </div>
+
+      <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <Shield className="h-8 w-8 text-primary-600" />
-            <span className="text-2xl font-bold">
-              Test<span className="text-primary-600">Me</span>
+          <Link href="/" className="inline-flex items-center gap-2.5 mb-6 group">
+            <Shield className="h-8 w-8 text-accent-400 transition-all duration-300 group-hover:drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]" />
+            <span className="text-2xl font-bold text-text-primary">
+              Test<span className="text-gradient-accent">Me</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Willkommen zurück</h1>
-          <p className="text-gray-500 mt-1">Melde dich an, um fortzufahren</p>
+          <h1 className="text-2xl font-bold text-text-primary">Willkommen zurück</h1>
+          <p className="text-text-muted mt-1">Melde dich an, um fortzufahren</p>
         </div>
 
-        <Card>
-          <form onSubmit={handleLogin} className="space-y-4">
+        <Card padding="lg">
+          <form onSubmit={handleLogin} className="space-y-5">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl text-sm">
                 {error}
               </div>
             )}
@@ -82,9 +88,9 @@ export default function LoginPage() {
           </form>
         </Card>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-sm text-text-muted mt-6">
           Noch kein Konto?{' '}
-          <Link href="/auth/register" className="text-primary-600 hover:text-primary-700 font-medium">
+          <Link href="/auth/register" className="text-accent-400 hover:text-accent-300 font-medium transition-colors">
             Jetzt registrieren
           </Link>
         </p>

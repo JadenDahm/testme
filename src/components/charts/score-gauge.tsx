@@ -9,10 +9,17 @@ interface Props {
 }
 
 function getGradientColors(score: number): [string, string] {
-  if (score >= 80) return ['#22c55e', '#16a34a'];
+  if (score >= 80) return ['#10b981', '#059669'];
   if (score >= 60) return ['#eab308', '#ca8a04'];
   if (score >= 40) return ['#f97316', '#ea580c'];
-  return ['#ef4444', '#dc2626'];
+  return ['#f43f5e', '#e11d48'];
+}
+
+function getGlowColor(score: number): string {
+  if (score >= 80) return 'rgba(16, 185, 129, 0.3)';
+  if (score >= 60) return 'rgba(234, 179, 8, 0.3)';
+  if (score >= 40) return 'rgba(249, 115, 22, 0.3)';
+  return 'rgba(244, 63, 94, 0.3)';
 }
 
 export function ScoreGauge({ score, size = 180 }: Props) {
@@ -42,8 +49,10 @@ export function ScoreGauge({ score, size = 180 }: Props) {
   const circumference = 2 * Math.PI * radius;
   const progressOffset = circumference - (animatedScore / 100) * circumference;
   const [color1, color2] = getGradientColors(score);
+  const glowColor = getGlowColor(score);
 
   const gradientId = `scoreGradient-${score}`;
+  const glowId = `scoreGlow-${score}`;
 
   return (
     <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
@@ -53,8 +62,8 @@ export function ScoreGauge({ score, size = 180 }: Props) {
             <stop offset="0%" stopColor={color1} />
             <stop offset="100%" stopColor={color2} />
           </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+          <filter id={glowId}>
+            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
             <feMerge>
               <feMergeNode in="coloredBlur" />
               <feMergeNode in="SourceGraphic" />
@@ -68,16 +77,16 @@ export function ScoreGauge({ score, size = 180 }: Props) {
           cy={center}
           r={radius}
           fill="none"
-          stroke="#f1f5f9"
-          strokeWidth="12"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth="10"
         />
 
         {/* Subtle tick marks */}
         {[0, 25, 50, 75, 100].map((tick) => {
           const angle = (tick / 100) * 360 - 90;
           const rad = (angle * Math.PI) / 180;
-          const innerR = radius - 8;
-          const outerR = radius + 8;
+          const innerR = radius - 7;
+          const outerR = radius + 7;
           return (
             <line
               key={tick}
@@ -85,7 +94,7 @@ export function ScoreGauge({ score, size = 180 }: Props) {
               y1={center + innerR * Math.sin(rad)}
               x2={center + outerR * Math.cos(rad)}
               y2={center + outerR * Math.sin(rad)}
-              stroke="#e2e8f0"
+              stroke="rgba(255,255,255,0.1)"
               strokeWidth="1.5"
               strokeLinecap="round"
             />
@@ -99,12 +108,12 @@ export function ScoreGauge({ score, size = 180 }: Props) {
           r={radius}
           fill="none"
           stroke={`url(#${gradientId})`}
-          strokeWidth="12"
+          strokeWidth="10"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={progressOffset}
           transform={`rotate(-90 ${center} ${center})`}
-          filter="url(#glow)"
+          filter={`url(#${glowId})`}
           style={{ transition: 'stroke-dashoffset 0.1s ease-out' }}
         />
 
@@ -115,10 +124,11 @@ export function ScoreGauge({ score, size = 180 }: Props) {
             <circle
               cx={center + radius * Math.cos(endAngle)}
               cy={center + radius * Math.sin(endAngle)}
-              r="6"
-              fill="white"
-              stroke={color2}
-              strokeWidth="3"
+              r="5"
+              fill={color1}
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth="2"
+              style={{ filter: `drop-shadow(0 0 6px ${glowColor})` }}
             />
           );
         })()}
@@ -128,7 +138,7 @@ export function ScoreGauge({ score, size = 180 }: Props) {
         <span className={`text-4xl font-black tracking-tight ${scoreColor(score)}`}>
           {animatedScore}
         </span>
-        <span className="text-xs text-gray-400 font-medium mt-0.5">von 100</span>
+        <span className="text-xs text-text-faint font-medium mt-0.5">von 100</span>
         <span className={`text-xs font-semibold mt-1 ${scoreColor(score)}`}>
           {scoreLabel(score)}
         </span>

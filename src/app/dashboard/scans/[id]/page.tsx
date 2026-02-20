@@ -33,7 +33,7 @@ export default async function ScanDetailPage({
     <div className="space-y-6 animate-fade-in">
       <Link
         href="/dashboard/scans"
-        className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+        className="text-sm text-text-muted hover:text-text-secondary flex items-center gap-1 transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         Zurück zu Scans

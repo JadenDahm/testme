@@ -46,28 +46,28 @@ export default function AddDomainPage() {
       <div>
         <Link
           href="/dashboard/domains"
-          className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1 mb-4"
+          className="text-sm text-text-muted hover:text-text-secondary flex items-center gap-1 mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Domains
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Domain hinzufügen</h1>
-        <p className="text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-text-primary">Domain hinzufügen</h1>
+        <p className="text-text-muted mt-1">
           Gib die Domain ein, die du auf Sicherheitslücken prüfen möchtest.
         </p>
       </div>
 
-      <Card>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <Card padding="lg">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-start gap-3">
-            <div className="p-2.5 bg-primary-50 rounded-lg mt-6">
-              <Globe className="h-5 w-5 text-primary-600" />
+            <div className="p-2.5 bg-accent-500/10 border border-accent-500/15 rounded-xl mt-6">
+              <Globe className="h-5 w-5 text-accent-400" />
             </div>
             <div className="flex-1">
               <Input
@@ -79,14 +79,14 @@ export default function AddDomainPage() {
                 onChange={(e) => setDomain(e.target.value)}
                 required
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-text-faint mt-1.5">
                 Gib nur die Domain ein, ohne https:// oder www.
               </p>
             </div>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
-            <strong>Wichtig:</strong> Du musst im nächsten Schritt nachweisen, dass diese Domain dir gehört, 
+          <div className="bg-amber-500/8 border border-amber-500/15 rounded-xl p-4 text-sm text-amber-200/70">
+            <strong className="text-amber-300">Wichtig:</strong> Du musst im nächsten Schritt nachweisen, dass diese Domain dir gehört,
             bevor ein Scan gestartet werden kann.
           </div>
 

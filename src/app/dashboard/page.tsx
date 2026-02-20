@@ -32,42 +32,42 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Willkommen zurück! Hier ist deine Übersicht.</p>
+        <h1 className="text-2xl font-bold text-text-primary">Dashboard</h1>
+        <p className="text-text-muted mt-1">Willkommen zurück! Hier ist deine Übersicht.</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
+        <Card className="group hover:border-accent-500/20 transition-all duration-300">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-primary-50 rounded-xl">
-              <Globe className="h-6 w-6 text-primary-600" />
+            <div className="p-3 bg-accent-500/10 border border-accent-500/15 rounded-xl group-hover:shadow-[0_0_15px_rgba(6,182,212,0.1)] transition-all duration-300">
+              <Globe className="h-6 w-6 text-accent-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{totalDomains}</p>
-              <p className="text-sm text-gray-500">Domains</p>
+              <p className="text-2xl font-bold text-text-primary">{totalDomains}</p>
+              <p className="text-sm text-text-muted">Domains</p>
             </div>
           </div>
         </Card>
-        <Card>
+        <Card className="group hover:border-emerald-500/20 transition-all duration-300">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-50 rounded-xl">
-              <Shield className="h-6 w-6 text-green-600" />
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/15 rounded-xl group-hover:shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all duration-300">
+              <Shield className="h-6 w-6 text-emerald-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{verifiedDomains}</p>
-              <p className="text-sm text-gray-500">Verifiziert</p>
+              <p className="text-2xl font-bold text-text-primary">{verifiedDomains}</p>
+              <p className="text-sm text-text-muted">Verifiziert</p>
             </div>
           </div>
         </Card>
-        <Card>
+        <Card className="group hover:border-blue-500/20 transition-all duration-300">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-50 rounded-xl">
-              <Search className="h-6 w-6 text-blue-600" />
+            <div className="p-3 bg-blue-500/10 border border-blue-500/15 rounded-xl group-hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all duration-300">
+              <Search className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{totalScans}</p>
-              <p className="text-sm text-gray-500">Scans</p>
+              <p className="text-2xl font-bold text-text-primary">{totalScans}</p>
+              <p className="text-sm text-text-muted">Scans</p>
             </div>
           </div>
         </Card>
@@ -75,11 +75,13 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       {totalDomains === 0 && (
-        <Card className="bg-primary-50 border-primary-200">
+        <Card className="border-accent-500/15 bg-accent-500/5">
           <div className="text-center py-4">
-            <Shield className="h-12 w-12 text-primary-600 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">Los geht&apos;s!</h3>
-            <p className="text-gray-600 mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-accent-500/10 border border-accent-500/20 mx-auto mb-4">
+              <Shield className="h-7 w-7 text-accent-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-text-primary mb-1">Los geht&apos;s!</h3>
+            <p className="text-text-secondary mb-5">
               Füge deine erste Domain hinzu und starte deinen ersten Sicherheitsscan.
             </p>
             <Link href="/dashboard/domains/add">
@@ -96,29 +98,29 @@ export default async function DashboardPage() {
       {scans && scans.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Letzte Scans</h2>
-            <Link href="/dashboard/scans" className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
+            <h2 className="text-lg font-semibold text-text-primary">Letzte Scans</h2>
+            <Link href="/dashboard/scans" className="text-sm text-accent-400 hover:text-accent-300 flex items-center gap-1 transition-colors">
               Alle anzeigen <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="space-y-3">
             {(scans as Scan[]).map((scan) => (
               <Link key={scan.id} href={`/dashboard/scans/${scan.id}`}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <Card className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-text-primary">
                           {scan.domains?.domain_name || 'Unbekannt'}
                         </p>
-                        <p className="text-sm text-gray-500">{formatDate(scan.created_at)}</p>
+                        <p className="text-sm text-text-muted">{formatDate(scan.created_at)}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       {scan.score !== null && (
                         <span className={`text-lg font-bold ${scoreColor(scan.score)}`}>
                           {scan.score}/100
-                          <span className="text-xs font-normal ml-1">{scoreLabel(scan.score)}</span>
+                          <span className="text-xs font-normal ml-1.5 text-text-muted">{scoreLabel(scan.score)}</span>
                         </span>
                       )}
                       <Badge
@@ -147,15 +149,15 @@ export default async function DashboardPage() {
       {domains && domains.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Deine Domains</h2>
-            <Link href="/dashboard/domains" className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
+            <h2 className="text-lg font-semibold text-text-primary">Deine Domains</h2>
+            <Link href="/dashboard/domains" className="text-sm text-accent-400 hover:text-accent-300 flex items-center gap-1 transition-colors">
               Alle anzeigen <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {(domains as Domain[]).map((domain) => (
               <Link key={domain.id} href={`/dashboard/domains/${domain.id}`}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <Card className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-base">{domain.domain_name}</CardTitle>

@@ -116,13 +116,13 @@ export function ScanProgress({ scan: initialScan }: Props) {
     <div className="max-w-xl mx-auto space-y-6">
       <Card padding="lg" className="text-center">
         <div className="space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-50 mx-auto">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mx-auto border border-border-subtle bg-surface-200">
             {isActive ? (
-              <Loader2 className="h-8 w-8 text-primary-600 animate-spin" />
+              <Loader2 className="h-8 w-8 text-accent-400 animate-spin" />
             ) : scan.status === 'completed' ? (
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
+              <CheckCircle2 className="h-8 w-8 text-emerald-400" />
             ) : (
-              <AlertCircle className="h-8 w-8 text-red-600" />
+              <AlertCircle className="h-8 w-8 text-rose-400" />
             )}
           </div>
 
@@ -131,21 +131,21 @@ export function ScanProgress({ scan: initialScan }: Props) {
               {isActive ? 'Tiefenanalyse läuft' : scan.status === 'completed' ? 'Scan abgeschlossen' : 'Scan fehlgeschlagen'}
             </CardTitle>
             <CardDescription className="mt-1">
-              <strong>{domain}</strong> wird gerade professionell auf Sicherheitslücken analysiert.
+              <strong className="text-text-primary">{domain}</strong> wird gerade professionell auf Sicherheitslücken analysiert.
             </CardDescription>
           </div>
 
           {/* Progress Bar */}
           <div className="w-full max-w-sm mx-auto">
-            <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div className="bg-surface-300 rounded-full h-3 overflow-hidden">
               <div
-                className="bg-primary-500 rounded-full h-3 transition-all duration-700 ease-out"
+                className="bg-accent-500 rounded-full h-3 transition-all duration-700 ease-out shadow-[0_0_12px_rgba(6,182,212,0.4)]"
                 style={{ width: `${scan.progress}%` }}
               />
             </div>
-            <div className="flex justify-between items-center mt-2">
-              <p className="text-sm text-gray-500">{currentStepLabel}</p>
-              <p className="text-sm font-medium text-primary-600">{scan.progress}%</p>
+            <div className="flex justify-between items-center mt-2.5">
+              <p className="text-sm text-text-muted">{currentStepLabel}</p>
+              <p className="text-sm font-medium text-accent-400">{scan.progress}%</p>
             </div>
           </div>
 
@@ -160,15 +160,15 @@ export function ScanProgress({ scan: initialScan }: Props) {
                 <div key={step.id} className="flex items-center gap-3">
                   <div className="flex-shrink-0 w-5 h-5">
                     {isCompleted ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                     ) : isRunning ? (
-                      <Loader2 className="w-5 h-5 text-primary-500 animate-spin" />
+                      <Loader2 className="w-5 h-5 text-accent-400 animate-spin" />
                     ) : (
-                      <div className="w-3 h-3 rounded-full bg-gray-200 ml-1" />
+                      <div className="w-3 h-3 rounded-full bg-surface-400 ml-1" />
                     )}
                   </div>
                   <span className={`text-sm ${
-                    isCompleted ? 'text-green-700 font-medium' : isRunning ? 'text-primary-700 font-medium' : 'text-gray-400'
+                    isCompleted ? 'text-emerald-400 font-medium' : isRunning ? 'text-accent-400 font-medium' : 'text-text-faint'
                   }`}>
                     {step.label}
                   </span>
@@ -179,7 +179,7 @@ export function ScanProgress({ scan: initialScan }: Props) {
 
           {/* Info text */}
           {isActive && (
-            <p className="text-xs text-gray-400 max-w-sm mx-auto">
+            <p className="text-xs text-text-faint max-w-sm mx-auto leading-relaxed">
               Der Scan testet SSL/TLS, HTTP-Header, CORS, E-Mail-Sicherheit, crawlt bis zu 25 Seiten,
               prüft 80+ sensible Dateipfade, sucht nach 30+ Secret-Patterns, testet auf SQL-Injection,
               XSS, CSRF und viele weitere Schwachstellen – alles nicht-destruktiv.

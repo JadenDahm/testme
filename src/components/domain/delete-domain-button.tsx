@@ -26,7 +26,7 @@ export function DeleteDomainButton({ domainId }: { domainId: string }) {
   if (confirming) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-xs text-red-600">Wirklich löschen?</span>
+        <span className="text-xs text-rose-400">Wirklich löschen?</span>
         <Button variant="danger" size="sm" onClick={handleDelete} loading={loading}>
           Ja, löschen
         </Button>
@@ -39,7 +39,7 @@ export function DeleteDomainButton({ domainId }: { domainId: string }) {
 
   return (
     <Button variant="ghost" size="sm" onClick={() => setConfirming(true)}>
-      <Trash2 className="h-4 w-4 text-gray-400 hover:text-red-500" />
+      <Trash2 className="h-4 w-4 text-text-faint hover:text-rose-400 transition-colors" />
     </Button>
   );
 }
