@@ -110,6 +110,10 @@ create policy "Users can update own scans"
   on public.scans for update
   using (auth.uid() = user_id);
 
+create policy "Users can delete own scans"
+  on public.scans for delete
+  using (auth.uid() = user_id);
+
 -- Scan Findings: Users can view findings of their own scans
 create policy "Users can view own scan findings"
   on public.scan_findings for select

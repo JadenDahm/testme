@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
+import { DeleteDomainButton } from '@/components/domain/delete-domain-button';
 import type { Domain } from '@/types';
 
 export default async function DomainsPage() {
@@ -46,27 +47,30 @@ export default async function DomainsPage() {
       ) : (
         <div className="grid gap-3">
           {(domains as Domain[]).map((domain) => (
-            <Link key={domain.id} href={`/dashboard/domains/${domain.id}`}>
-              <Card className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200 cursor-pointer">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2.5 bg-surface-200 border border-border-subtle rounded-xl">
-                      <Globe className="h-5 w-5 text-text-muted" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">{domain.domain_name}</CardTitle>
-                      <CardDescription>
-                        Hinzugefügt am {formatDate(domain.created_at)}
-                        {domain.last_verified_at && ` · Verifiziert am ${formatDate(domain.last_verified_at)}`}
-                      </CardDescription>
-                    </div>
+            <Card key={domain.id} className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <Link href={`/dashboard/domains/${domain.id}`} className="flex-1 flex items-center gap-4 cursor-pointer">
+                  <div className="p-2.5 bg-surface-200 border border-border-subtle rounded-xl">
+                    <Globe className="h-5 w-5 text-text-muted" />
                   </div>
+                  <div className="flex-1">
+                    <CardTitle className="text-base">{domain.domain_name}</CardTitle>
+                    <CardDescription>
+                      Hinzugefügt am {formatDate(domain.created_at)}
+                      {domain.last_verified_at && ` · Verifiziert am ${formatDate(domain.last_verified_at)}`}
+                    </CardDescription>
+                  </div>
+                </Link>
+                <div className="flex items-center gap-3">
                   <Badge variant={domain.is_verified ? 'success' : 'warning'}>
                     {domain.is_verified ? 'Verifiziert' : 'Nicht verifiziert'}
                   </Badge>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <DeleteDomainButton domainId={domain.id} />
+                  </div>
                 </div>
-              </Card>
-            </Link>
+              </div>
+            </Card>
           ))}
         </div>
       )}

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate, scoreColor, scoreLabel } from '@/lib/utils';
+import { DeleteScanButton } from '@/components/scan/delete-scan-button';
 import type { Scan } from '@/types';
 
 export default async function ScansPage() {
@@ -36,64 +37,67 @@ export default async function ScansPage() {
       ) : (
         <div className="space-y-3">
           {(scans as Scan[]).map((scan) => (
-            <Link key={scan.id} href={`/dashboard/scans/${scan.id}`}>
-              <Card className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200 cursor-pointer">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2.5 bg-surface-200 border border-border-subtle rounded-xl">
-                      <Search className="h-5 w-5 text-text-muted" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-text-primary">
-                        {scan.domains?.domain_name || 'Unbekannt'}
-                      </p>
-                      <p className="text-sm text-text-muted">
-                        {formatDate(scan.created_at)}
-                        {scan.current_step && scan.status === 'running' && (
-                          <span className="ml-2 text-accent-400">· {scan.current_step}</span>
-                        )}
-                      </p>
-                    </div>
+            <Card key={scan.id} className="hover:border-border-strong hover:bg-surface-200/50 transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <Link href={`/dashboard/scans/${scan.id}`} className="flex-1 flex items-center gap-4 cursor-pointer">
+                  <div className="p-2.5 bg-surface-200 border border-border-subtle rounded-xl">
+                    <Search className="h-5 w-5 text-text-muted" />
                   </div>
-                  <div className="flex items-center gap-4">
-                    {scan.score !== null && (
-                      <div className="text-right">
-                        <p className={`text-xl font-bold ${scoreColor(scan.score)}`}>
-                          {scan.score}
-                        </p>
-                        <p className={`text-xs ${scoreColor(scan.score)}`}>
-                          {scoreLabel(scan.score)}
-                        </p>
-                      </div>
-                    )}
-                    {scan.status === 'running' && (
-                      <div className="w-24">
-                        <div className="bg-surface-300 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-accent-500 rounded-full h-2 transition-all duration-500 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
-                            style={{ width: `${scan.progress}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-text-muted text-center mt-1">{scan.progress}%</p>
-                      </div>
-                    )}
-                    <Badge
-                      variant={
-                        scan.status === 'completed' ? 'success' :
-                        scan.status === 'running' ? 'info' :
-                        scan.status === 'failed' ? 'danger' :
-                        scan.status === 'cancelled' ? 'warning' : 'default'
-                      }
-                    >
-                      {scan.status === 'completed' ? 'Abgeschlossen' :
-                       scan.status === 'running' ? 'Läuft' :
-                       scan.status === 'failed' ? 'Fehlgeschlagen' :
-                       scan.status === 'cancelled' ? 'Abgebrochen' : 'Ausstehend'}
-                    </Badge>
+                  <div className="flex-1">
+                    <p className="font-medium text-text-primary">
+                      {scan.domains?.domain_name || 'Unbekannt'}
+                    </p>
+                    <p className="text-sm text-text-muted">
+                      {formatDate(scan.created_at)}
+                      {scan.current_step && scan.status === 'running' && (
+                        <span className="ml-2 text-accent-400">· {scan.current_step}</span>
+                      )}
+                    </p>
                   </div>
+                </Link>
+                <div className="flex items-center gap-4">
+                  {scan.score !== null && (
+                    <div className="text-right">
+                      <p className={`text-xl font-bold ${scoreColor(scan.score)}`}>
+                        {scan.score}
+                      </p>
+                      <p className={`text-xs ${scoreColor(scan.score)}`}>
+                        {scoreLabel(scan.score)}
+                      </p>
+                    </div>
+                  )}
+                  {scan.status === 'running' && (
+                    <div className="w-24">
+                      <div className="bg-surface-300 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-accent-500 rounded-full h-2 transition-all duration-500 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
+                          style={{ width: `${scan.progress}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-text-muted text-center mt-1">{scan.progress}%</p>
+                    </div>
+                  )}
+                  <Badge
+                    variant={
+                      scan.status === 'completed' ? 'success' :
+                      scan.status === 'running' ? 'info' :
+                      scan.status === 'failed' ? 'danger' :
+                      scan.status === 'cancelled' ? 'warning' : 'default'
+                    }
+                  >
+                    {scan.status === 'completed' ? 'Abgeschlossen' :
+                     scan.status === 'running' ? 'Läuft' :
+                     scan.status === 'failed' ? 'Fehlgeschlagen' :
+                     scan.status === 'cancelled' ? 'Abgebrochen' : 'Ausstehend'}
+                  </Badge>
+                  {(scan.status === 'completed' || scan.status === 'failed' || scan.status === 'cancelled') && (
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <DeleteScanButton scanId={scan.id} />
+                    </div>
+                  )}
                 </div>
-              </Card>
-            </Link>
+              </div>
+            </Card>
           ))}
         </div>
       )}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export function DeleteDomainButton({ domainId }: { domainId: string }) {
+export function DeleteScanButton({ scanId }: { scanId: string }) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -13,13 +13,17 @@ export function DeleteDomainButton({ domainId }: { domainId: string }) {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/domains/${domainId}`, { method: 'DELETE' });
+      const response = await fetch(`/api/scans/${scanId}`, { method: 'DELETE' });
       if (response.ok) {
+        router.push('/dashboard/scans');
         router.refresh();
       } else {
+        const data = await response.json();
+        alert(data.error || 'Fehler beim Löschen des Scans');
         setLoading(false);
       }
-    } catch {
+    } catch (error) {
+      alert('Fehler beim Löschen des Scans');
       setLoading(false);
     }
   };

@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ScanReport } from '@/components/scan/scan-report';
 import { ScanProgress } from '@/components/scan/scan-progress';
+import { DeleteScanButton } from '@/components/scan/delete-scan-button';
 
 export default async function ScanDetailPage({
   params,
@@ -31,13 +32,18 @@ export default async function ScanDetailPage({
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Link
-        href="/dashboard/scans"
-        className="text-sm text-text-muted hover:text-text-secondary flex items-center gap-1 transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Zurück zu Scans
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link
+          href="/dashboard/scans"
+          className="text-sm text-text-muted hover:text-text-secondary flex items-center gap-1 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Zurück zu Scans
+        </Link>
+        {(scan.status === 'completed' || scan.status === 'failed' || scan.status === 'cancelled') && (
+          <DeleteScanButton scanId={scan.id} />
+        )}
+      </div>
 
       {(scan.status === 'running' || scan.status === 'pending') ? (
         <ScanProgress scan={scan} />

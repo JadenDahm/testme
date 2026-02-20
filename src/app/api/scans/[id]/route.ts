@@ -47,3 +47,49 @@ export async function GET(
     },
   });
 }
+
+// DELETE: Remove a scan
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
+  }
+
+  // Verify ownership
+  const { data: scan } = await supabase
+    .from('scans')
+    .select('id, status')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single();
+
+  if (!scan) {
+    return NextResponse.json({ error: 'Scan nicht gefunden' }, { status: 404 });
+  }
+
+  // Prevent deletion of running scans (they should be cancelled first)
+  if (scan.status === 'running' || scan.status === 'pending') {
+    return NextResponse.json(
+      { error: 'Laufende oder ausstehende Scans können nicht gelöscht werden. Bitte breche den Scan zuerst ab.' },
+      { status: 400 }
+    );
+  }
+
+  const { error } = await supabase
+    .from('scans')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', user.id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ data: { success: true } });
+}
