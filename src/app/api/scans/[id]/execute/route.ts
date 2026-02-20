@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { executeScanStep, SCAN_STEPS } from '@/lib/scanner';
 
 // Max duration for Vercel serverless function (60s for Hobby, 300s for Pro)
@@ -18,8 +18,11 @@ export async function POST(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
+  // Use service client to bypass potential RLS/session issues
+  const serviceClient = await createServiceClient();
+
   // Get scan and verify ownership
-  const { data: scan, error: scanError } = await supabase
+  const { data: scan, error: scanError } = await serviceClient
     .from('scans')
     .select('*, domains(domain_name)')
     .eq('id', scanId)
@@ -27,6 +30,7 @@ export async function POST(
     .single();
 
   if (scanError || !scan) {
+    console.error('[Execute] Scan not found:', { scanId, userId: user.id, error: scanError?.message });
     return NextResponse.json({ error: 'Scan nicht gefunden' }, { status: 404 });
   }
 
@@ -55,8 +59,8 @@ export async function POST(
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
 
-    // Mark scan as failed
-    await supabase
+    // Mark scan as failed using service client
+    await serviceClient
       .from('scans')
       .update({ status: 'failed', completed_at: new Date().toISOString() })
       .eq('id', scanId);

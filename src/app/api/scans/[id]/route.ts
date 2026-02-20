@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 // GET: Get scan details with findings
 export async function GET(
@@ -14,7 +14,10 @@ export async function GET(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
-  const { data: scan, error } = await supabase
+  // Use service client to bypass potential RLS/session issues
+  const serviceClient = await createServiceClient();
+
+  const { data: scan, error } = await serviceClient
     .from('scans')
     .select('*, domains(domain_name)')
     .eq('id', id)
@@ -22,18 +25,19 @@ export async function GET(
     .single();
 
   if (error || !scan) {
+    console.error('[API/Scans/GET] Scan not found:', { scanId: id, userId: user.id, error: error?.message });
     return NextResponse.json({ error: 'Scan nicht gefunden' }, { status: 404 });
   }
 
   // Get findings
-  const { data: findings } = await supabase
+  const { data: findings } = await serviceClient
     .from('scan_findings')
     .select('*')
     .eq('scan_id', id)
     .order('severity', { ascending: true });
 
   // Get logs
-  const { data: logs } = await supabase
+  const { data: logs } = await serviceClient
     .from('scan_logs')
     .select('*')
     .eq('scan_id', id)
@@ -61,8 +65,11 @@ export async function DELETE(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
+  // Use service client
+  const serviceClient = await createServiceClient();
+
   // Verify ownership
-  const { data: scan } = await supabase
+  const { data: scan } = await serviceClient
     .from('scans')
     .select('id, status')
     .eq('id', id)
@@ -81,7 +88,7 @@ export async function DELETE(
     );
   }
 
-  const { error } = await supabase
+  const { error } = await serviceClient
     .from('scans')
     .delete()
     .eq('id', id)

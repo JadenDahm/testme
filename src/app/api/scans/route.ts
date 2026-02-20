@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
 const startScanSchema = z.object({
@@ -16,7 +16,9 @@ export async function GET() {
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
-  const { data, error } = await supabase
+  const serviceClient = await createServiceClient();
+
+  const { data, error } = await serviceClient
     .from('scans')
     .select('*, domains(domain_name)')
     .eq('user_id', user.id)
@@ -47,8 +49,10 @@ export async function POST(request: Request) {
 
   const { domain_id, consent } = parsed.data;
 
+  const serviceClient = await createServiceClient();
+
   // Verify domain ownership and verification status
-  const { data: domain, error: domainError } = await supabase
+  const { data: domain, error: domainError } = await serviceClient
     .from('domains')
     .select('*')
     .eq('id', domain_id)
@@ -67,7 +71,7 @@ export async function POST(request: Request) {
   }
 
   // Check for running scans on same domain
-  const { data: runningScans } = await supabase
+  const { data: runningScans } = await serviceClient
     .from('scans')
     .select('id')
     .eq('domain_id', domain_id)
@@ -81,7 +85,7 @@ export async function POST(request: Request) {
   }
 
   // Create scan record with 'pending' status
-  const { data: scan, error: scanError } = await supabase
+  const { data: scan, error: scanError } = await serviceClient
     .from('scans')
     .insert({
       user_id: user.id,
@@ -96,11 +100,12 @@ export async function POST(request: Request) {
     .single();
 
   if (scanError || !scan) {
+    console.error('[API/Scans/POST] Error creating scan:', scanError?.message);
     return NextResponse.json({ error: 'Scan konnte nicht erstellt werden' }, { status: 500 });
   }
 
   // Log the scan creation
-  await supabase.from('scan_logs').insert({
+  await serviceClient.from('scan_logs').insert({
     scan_id: scan.id,
     user_id: user.id,
     action: 'scan_created',

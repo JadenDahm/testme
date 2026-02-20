@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 export async function POST(
   _request: Request,
@@ -13,8 +13,11 @@ export async function POST(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
+  // Use service client to bypass potential RLS/session issues
+  const serviceClient = await createServiceClient();
+
   // Verify ownership
-  const { data: scan } = await supabase
+  const { data: scan } = await serviceClient
     .from('scans')
     .select('status')
     .eq('id', id)
@@ -29,7 +32,7 @@ export async function POST(
     return NextResponse.json({ error: 'Scan kann nicht abgebrochen werden' }, { status: 400 });
   }
 
-  const { error } = await supabase
+  const { error } = await serviceClient
     .from('scans')
     .update({
       status: 'cancelled',
@@ -43,7 +46,7 @@ export async function POST(
   }
 
   // Log cancellation
-  await supabase.from('scan_logs').insert({
+  await serviceClient.from('scan_logs').insert({
     scan_id: id,
     user_id: user.id,
     action: 'scan_cancelled',

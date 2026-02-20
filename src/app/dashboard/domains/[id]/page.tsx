@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { notFound, redirect } from 'next/navigation';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,16 +20,20 @@ export default async function DomainDetailPage({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: domain } = await supabase
+  if (!user) redirect('/auth/login');
+
+  const serviceClient = await createServiceClient();
+
+  const { data: domain } = await serviceClient
     .from('domains')
     .select('*')
     .eq('id', id)
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .single();
 
   if (!domain) notFound();
 
-  const { data: scans } = await supabase
+  const { data: scans } = await serviceClient
     .from('scans')
     .select('*')
     .eq('domain_id', id)

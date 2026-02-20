@@ -1,8 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { formatDate, scoreColor, scoreLabel } from '@/lib/utils';
 import { DeleteScanWrapper } from '@/components/scan/delete-scan-wrapper';
 import type { Scan } from '@/types';
@@ -11,10 +12,14 @@ export default async function ScansPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: scans } = await supabase
+  if (!user) redirect('/auth/login');
+
+  const serviceClient = await createServiceClient();
+
+  const { data: scans } = await serviceClient
     .from('scans')
     .select('*, domains(domain_name)')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
   return (

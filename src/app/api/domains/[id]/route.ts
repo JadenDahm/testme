@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 // GET: Get a single domain
 export async function GET(
@@ -14,7 +14,9 @@ export async function GET(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
-  const { data, error } = await supabase
+  const serviceClient = await createServiceClient();
+
+  const { data, error } = await serviceClient
     .from('domains')
     .select('*')
     .eq('id', id)
@@ -41,7 +43,9 @@ export async function DELETE(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
-  const { error } = await supabase
+  const serviceClient = await createServiceClient();
+
+  const { error } = await serviceClient
     .from('domains')
     .delete()
     .eq('id', id)

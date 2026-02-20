@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { verifyDnsTxt } from '@/lib/verification/dns';
 import { verifyHtmlFile } from '@/lib/verification/html';
 import { z } from 'zod';
@@ -29,9 +29,10 @@ export async function POST(
   }
 
   const method: VerificationMethod = parsed.data.method;
+  const serviceClient = await createServiceClient();
 
   // Get domain
-  const { data: domain, error: domainError } = await supabase
+  const { data: domain, error: domainError } = await serviceClient
     .from('domains')
     .select('*')
     .eq('id', id)
@@ -67,7 +68,7 @@ export async function POST(
   }
 
   if (verified) {
-    await supabase
+    await serviceClient
       .from('domains')
       .update({
         is_verified: true,

@@ -1,27 +1,32 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Globe, Search, Shield, ArrowRight, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate, scoreColor, scoreLabel } from '@/lib/utils';
+import { redirect } from 'next/navigation';
 import type { Domain, Scan } from '@/types';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: domains } = await supabase
+  if (!user) redirect('/auth/login');
+
+  const serviceClient = await createServiceClient();
+
+  const { data: domains } = await serviceClient
     .from('domains')
     .select('*')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(5);
 
-  const { data: scans } = await supabase
+  const { data: scans } = await serviceClient
     .from('scans')
     .select('*, domains(domain_name)')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(5);
 

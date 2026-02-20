@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { normalizeDomain, isValidDomain, generateVerificationToken } from '@/lib/utils';
 import { z } from 'zod';
 
@@ -16,7 +16,9 @@ export async function GET() {
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
-  const { data, error } = await supabase
+  const serviceClient = await createServiceClient();
+
+  const { data, error } = await serviceClient
     .from('domains')
     .select('*')
     .eq('user_id', user.id)
@@ -51,8 +53,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Ungültiges Domain-Format' }, { status: 400 });
   }
 
+  const serviceClient = await createServiceClient();
+
   // Check if domain already exists for this user
-  const { data: existing } = await supabase
+  const { data: existing } = await serviceClient
     .from('domains')
     .select('id')
     .eq('user_id', user.id)
@@ -65,7 +69,7 @@ export async function POST(request: Request) {
 
   const verificationToken = generateVerificationToken();
 
-  const { data, error } = await supabase
+  const { data, error } = await serviceClient
     .from('domains')
     .insert({
       user_id: user.id,
