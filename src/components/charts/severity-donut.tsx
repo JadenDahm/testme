@@ -24,9 +24,9 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null;
   const { name, value, fill } = payload[0].payload;
   return (
-    <div className="bg-surface-200 border border-border-default rounded-lg px-4 py-3 text-xs">
+    <div className="bg-surface-200 border border-border-default rounded px-4 py-3 text-xs">
       <div className="flex items-center gap-2">
-        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: fill }} />
+        <div className="w-2.5 h-2.5 rounded" style={{ backgroundColor: fill }} />
         <span className="font-medium text-text-primary">{name}</span>
       </div>
       <p className="text-text-secondary mt-1">{value} {value === 1 ? 'Ergebnis' : 'Ergebnisse'}</p>

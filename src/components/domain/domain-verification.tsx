@@ -76,7 +76,7 @@ export function DomainVerification({ domain }: Props) {
               key={method.id}
               onClick={() => { setSelectedMethod(method.id); setResult(null); }}
               className={cn(
-                'flex flex-col items-start p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer',
+                'flex flex-col items-start p-4 rounded border text-left transition-all duration-200 cursor-pointer',
                 selectedMethod === method.id
                   ? 'border-accent-500/40 bg-accent-500/8 ring-2 ring-accent-500/20'
                   : 'border-border-default hover:border-border-strong bg-surface-200/50'
@@ -93,15 +93,15 @@ export function DomainVerification({ domain }: Props) {
         </div>
 
         {/* Instructions */}
-        <div className="bg-surface-200/80 rounded-xl p-5 space-y-3 border border-border-subtle">
+        <div className="bg-surface-200 rounded p-5 space-y-3 border border-border-subtle">
           <h4 className="text-sm font-semibold text-text-primary">Anleitung</h4>
 
           {selectedMethod === 'dns_txt' && (
             <div className="space-y-2 text-sm text-text-secondary">
               <p>1. Öffne die DNS-Verwaltung deines Domain-Anbieters.</p>
-              <p>2. Erstelle einen neuen <strong className="text-text-primary">TXT-Eintrag</strong> für <code className="bg-surface-300 px-1.5 py-0.5 rounded text-xs text-accent-300">{domain.domain_name}</code></p>
+              <p>2. Erstelle einen neuen <strong className="text-text-primary">TXT-Eintrag</strong> für <code className="bg-surface-300 px-1.5 py-0.5 rounded text-xs text-accent-400">{domain.domain_name}</code></p>
               <p>3. Setze den Wert auf:</p>
-              <div className="bg-surface-0 border border-border-default rounded-xl p-3 font-mono text-xs break-all select-all text-accent-300">
+              <div className="bg-surface-0 border border-border-default rounded p-3 font-mono text-xs break-all select-all text-accent-400">
                 {domain.verification_token}
               </div>
               <p className="text-xs text-text-faint">Hinweis: DNS-Änderungen können bis zu 24 Stunden dauern.</p>
@@ -110,13 +110,13 @@ export function DomainVerification({ domain }: Props) {
 
           {selectedMethod === 'html_file' && (
             <div className="space-y-2 text-sm text-text-secondary">
-              <p>1. Erstelle eine Datei mit dem Namen <code className="bg-surface-300 px-1.5 py-0.5 rounded text-xs text-accent-300">testme-verify.txt</code></p>
+              <p>1. Erstelle eine Datei mit dem Namen <code className="bg-surface-300 px-1.5 py-0.5 rounded text-xs text-accent-400">testme-verify.txt</code></p>
               <p>2. Der Inhalt der Datei muss exakt folgender sein:</p>
-              <div className="bg-surface-0 border border-border-default rounded-xl p-3 font-mono text-xs break-all select-all text-accent-300">
+              <div className="bg-surface-0 border border-border-default rounded p-3 font-mono text-xs break-all select-all text-accent-400">
                 {domain.verification_token}
               </div>
               <p>3. Lade die Datei hoch unter:</p>
-              <div className="bg-surface-0 border border-border-default rounded-xl p-3 font-mono text-xs break-all text-text-secondary">
+              <div className="bg-surface-0 border border-border-default rounded p-3 font-mono text-xs break-all text-text-secondary">
                 https://{domain.domain_name}/.well-known/testme-verify.txt
               </div>
             </div>
@@ -127,7 +127,7 @@ export function DomainVerification({ domain }: Props) {
         {/* Result */}
         {result && (
           <div className={cn(
-            'flex items-center gap-3 p-4 rounded-xl border',
+            'flex items-center gap-3 p-4 rounded border',
             result.verified
               ? 'bg-emerald-500/8 border-emerald-500/15 text-emerald-300'
               : 'bg-rose-500/8 border-rose-500/15 text-rose-300'

@@ -131,7 +131,7 @@ export default async function HomePage() {
             ].map((feature) => (
               <div
                 key={feature.title}
-                className="bg-surface-100 rounded-lg border border-border-subtle p-6 hover:border-border-default transition-colors duration-200"
+                className="bg-surface-100 rounded border border-border-subtle p-6 hover:border-border-default transition-colors duration-200"
               >
                 <h3 className="font-semibold text-text-primary mb-2">{feature.title}</h3>
                 <p className="text-sm text-text-secondary leading-relaxed">{feature.desc}</p>
@@ -144,7 +144,7 @@ export default async function HomePage() {
       {/* Legal Notice */}
       <section className="py-16 border-t border-border-subtle">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-surface-100 border border-border-default rounded-lg p-8">
+          <div className="bg-surface-100 border border-border-default rounded p-8">
             <h3 className="text-lg font-semibold text-text-primary mb-4">
               Wichtiger rechtlicher Hinweis
             </h3>

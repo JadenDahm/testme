@@ -124,7 +124,7 @@ export function ScanReport({ scan, findings }: Props) {
           <a
             href={`/api/scans/${scan.id}/pdf`}
             download
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-500 text-white text-sm font-medium hover:bg-accent-400 transition-colors duration-200"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-accent-500 text-white text-sm font-medium hover:bg-accent-400 transition-colors duration-200"
           >
             <Download className="h-4 w-4" />
             PDF Report
@@ -153,7 +153,7 @@ export function ScanReport({ scan, findings }: Props) {
                         setFilterSeverity(sev);
                       }}
                       className={cn(
-                        'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 cursor-pointer',
+                        'flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-200 cursor-pointer',
                         severityBadge(sev)
                       )}
                     >
@@ -195,11 +195,11 @@ export function ScanReport({ scan, findings }: Props) {
 
       {/* ── View Mode Toggle ────────────────────────────────────────────── */}
       {findings.length > 0 && (
-        <div className="flex items-center gap-1 bg-surface-200 rounded-xl p-1 w-fit border border-border-subtle">
+        <div className="flex items-center gap-1 bg-surface-200 rounded p-1 w-fit border border-border-subtle">
           <button
             onClick={() => setViewMode('overview')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+              'flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition-all duration-200',
               viewMode === 'overview'
                 ? 'bg-surface-400 text-text-primary shadow-sm'
                 : 'text-text-muted hover:text-text-secondary'
@@ -211,7 +211,7 @@ export function ScanReport({ scan, findings }: Props) {
           <button
             onClick={() => setViewMode('findings')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+              'flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition-all duration-200',
               viewMode === 'findings'
                 ? 'bg-surface-400 text-text-primary shadow-sm'
                 : 'text-text-muted hover:text-text-secondary'
@@ -273,7 +273,7 @@ export function ScanReport({ scan, findings }: Props) {
                       setFilterSeverity('all');
                     }}
                     className={cn(
-                      'text-left p-4 rounded-lg border transition-colors duration-200 cursor-pointer hover:border-border-default',
+                      'text-left p-4 rounded border transition-colors duration-200 cursor-pointer hover:border-border-default',
                       catColorClasses
                     )}
                   >
@@ -318,7 +318,7 @@ export function ScanReport({ scan, findings }: Props) {
                           <div className="flex items-start justify-between gap-2">
                             <h4 className="font-medium text-text-primary text-sm">{finding.title}</h4>
                             <span className={cn(
-                              'px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0',
+                              'px-2 py-0.5 rounded text-xs font-medium flex-shrink-0',
                               severityBadge(finding.severity)
                             )}>
                               {severityLabels[finding.severity]}
@@ -405,12 +405,12 @@ export function ScanReport({ scan, findings }: Props) {
                           </h4>
                           <div className="flex items-center gap-2 flex-shrink-0">
                             <span className={cn(
-                              'px-2 py-0.5 rounded-full text-xs font-medium',
+                              'px-2 py-0.5 rounded text-xs font-medium',
                               severityBadge(finding.severity)
                             )}>
                               {severityLabels[finding.severity]}
                             </span>
-                            <span className="text-xs text-text-secondary bg-surface-200 px-2 py-0.5 rounded-full">
+                            <span className="text-xs text-text-secondary bg-surface-200 px-2 py-0.5 rounded">
                               {categoryLabels[finding.category]}
                             </span>
                           </div>
@@ -450,7 +450,7 @@ export function ScanReport({ scan, findings }: Props) {
 
                         {/* Recommendation */}
                         {finding.recommendation && (
-                          <div className="bg-emerald-500/8 border border-emerald-500/15 rounded-xl p-4">
+                          <div className="bg-emerald-500/8 border border-emerald-500/15 rounded p-4">
                             <h5 className="text-xs font-semibold uppercase text-emerald-400 mb-1.5 tracking-wide flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
                               Empfehlung
@@ -465,7 +465,7 @@ export function ScanReport({ scan, findings }: Props) {
                             <h5 className="text-xs font-semibold uppercase text-text-faint mb-1 tracking-wide">
                               Technische Details
                             </h5>
-                            <pre className="bg-surface-0 border border-border-subtle text-accent-300 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed">
+                            <pre className="bg-surface-0 border border-border-subtle text-accent-400 rounded p-4 text-xs overflow-x-auto leading-relaxed">
                               {JSON.stringify(finding.details, null, 2)}
                             </pre>
                           </div>

@@ -44,7 +44,7 @@ export function StartScanButton({ domainId, domainName }: Props) {
 
   if (showConsent) {
     return (
-      <div className="w-full mt-4 p-5 bg-amber-500/8 border border-amber-500/15 rounded-2xl space-y-4">
+      <div className="w-full mt-4 p-5 bg-amber-500/8 border border-amber-500/15 rounded space-y-4">
         <div className="flex gap-3">
           <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-amber-200/70 space-y-2">
@@ -61,7 +61,7 @@ export function StartScanButton({ domainId, domainName }: Props) {
         </div>
 
         {error && (
-          <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-3 py-2 rounded-xl text-sm">
+          <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-3 py-2 rounded text-sm">
             {error}
           </div>
         )}

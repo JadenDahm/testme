@@ -78,7 +78,7 @@ export function Navbar({ user }: NavbarProps) {
               <>
                 <Link
                   href="/dashboard"
-                  className="block px-3 py-2.5 text-sm text-text-secondary hover:bg-surface-200 hover:text-text-primary rounded-xl transition-colors"
+                  className="block px-3 py-2.5 text-sm text-text-secondary hover:bg-surface-200 hover:text-text-primary rounded transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   Dashboard
@@ -94,14 +94,14 @@ export function Navbar({ user }: NavbarProps) {
               <>
                 <Link
                   href="/auth/login"
-                  className="block px-3 py-2.5 text-sm text-text-secondary hover:bg-surface-200 hover:text-text-primary rounded-xl transition-colors"
+                  className="block px-3 py-2.5 text-sm text-text-secondary hover:bg-surface-200 hover:text-text-primary rounded transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   Anmelden
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="block px-3 py-2.5 text-sm text-text-primary font-medium hover:bg-surface-200 rounded-lg transition-colors"
+                  className="block px-3 py-2.5 text-sm text-text-primary font-medium hover:bg-surface-200 rounded transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   Kostenlos starten

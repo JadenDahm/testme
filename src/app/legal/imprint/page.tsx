@@ -34,7 +34,7 @@ export default async function ImprintPage() {
             [Adresse]
           </p>
 
-          <div className="bg-amber-500/8 border border-amber-500/15 rounded-2xl p-5 mt-8">
+          <div className="bg-amber-500/8 border border-amber-500/15 rounded p-5 mt-8">
             <p className="text-sm text-amber-200/70">
               <strong className="text-amber-300">Hinweis:</strong> Bitte ersetze die Platzhalter durch deine echten Angaben
               bevor du die Website veröffentlichst. Ein vollständiges Impressum ist in Deutschland

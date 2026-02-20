@@ -35,7 +35,7 @@ function getCellColor(severity: Severity, count: number): string {
     critical: 'bg-rose-500 border-rose-400/30',
     high: 'bg-orange-500 border-orange-400/30',
     medium: 'bg-yellow-500 border-yellow-400/30',
-    low: 'bg-cyan-500 border-cyan-400/30',
+    low: 'bg-accent-500 border-accent-400/30',
     info: 'bg-slate-500 border-slate-400/30',
   };
   return `${colors[severity]} ${opacity}`;
@@ -82,7 +82,7 @@ export function FindingsHeatmap({ findings }: Props) {
                   return (
                     <td key={sev} className="p-0.5 text-center">
                       <div
-                        className={`w-9 h-9 mx-auto rounded-lg border flex items-center justify-center text-xs font-bold transition-all ${getCellColor(sev, count)}`}
+                        className={`w-9 h-9 mx-auto rounded border flex items-center justify-center text-xs font-bold transition-all ${getCellColor(sev, count)}`}
                         title={`${categoryConfig[cat]} – ${severityConfig[sev].label}: ${count}`}
                       >
                         {count > 0 && (

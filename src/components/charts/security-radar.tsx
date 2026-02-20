@@ -26,7 +26,7 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-surface-200 border border-border-default rounded-lg px-4 py-3 text-xs">
+    <div className="bg-surface-200 border border-border-default rounded px-4 py-3 text-xs">
       <p className="font-semibold text-text-primary">{d.category}</p>
       <p className="text-text-secondary mt-1">Score: <span className="font-bold text-accent-400">{d.score}/100</span></p>
     </div>
@@ -66,11 +66,11 @@ export function SecurityRadarChart({ categoryScores }: Props) {
             <Radar
               name="Score"
               dataKey="score"
-              stroke="#22d3ee"
-              fill="#06b6d4"
+              stroke="#fb923c"
+              fill="#f97316"
               fillOpacity={0.12}
               strokeWidth={2}
-              dot={{ r: 3, fill: '#22d3ee', stroke: '#06b6d4', strokeWidth: 1 }}
+              dot={{ r: 3, fill: '#fb923c', stroke: '#f97316', strokeWidth: 1 }}
               animationDuration={800}
             />
             <Tooltip content={<CustomTooltip />} />

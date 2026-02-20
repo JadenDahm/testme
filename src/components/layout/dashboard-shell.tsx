@@ -46,7 +46,7 @@ export function DashboardShell({ user, children }: { user: User; children: React
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200',
+                  'flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-colors duration-200',
                   isActive
                     ? 'bg-surface-200 text-text-primary'
                     : 'text-text-secondary hover:bg-surface-100 hover:text-text-primary'
@@ -63,7 +63,7 @@ export function DashboardShell({ user, children }: { user: User; children: React
           <div className="text-xs text-text-faint truncate mb-2 px-3">{user.email}</div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:bg-surface-200 hover:text-text-primary w-full transition-all duration-200"
+            className="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium text-text-secondary hover:bg-surface-200 hover:text-text-primary w-full transition-all duration-200"
           >
             <LogOut className="h-5 w-5" />
             Abmelden

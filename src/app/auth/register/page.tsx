@@ -85,7 +85,7 @@ export default function RegisterPage() {
         <Card padding="lg">
           <form onSubmit={handleRegister} className="space-y-5">
             {error && (
-              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl text-sm">
+              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded text-sm">
                 {error}
               </div>
             )}

@@ -37,7 +37,7 @@ export function severityColor(severity: string): string {
     case 'critical': return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
     case 'high': return 'text-orange-400 bg-orange-500/10 border-orange-500/20';
     case 'medium': return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
-    case 'low': return 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20';
+    case 'low': return 'text-accent-400 bg-accent-500/10 border-accent-500/20';
     case 'info': return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
     default: return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
   }
@@ -48,7 +48,7 @@ export function severityBadge(severity: string): string {
     case 'critical': return 'bg-rose-500/15 text-rose-300 border border-rose-500/20';
     case 'high': return 'bg-orange-500/15 text-orange-300 border border-orange-500/20';
     case 'medium': return 'bg-yellow-500/15 text-yellow-300 border border-yellow-500/20';
-    case 'low': return 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/20';
+    case 'low': return 'bg-accent-500/15 text-accent-300 border border-accent-500/20';
     case 'info': return 'bg-slate-500/15 text-slate-300 border border-slate-500/20';
     default: return 'bg-slate-500/15 text-slate-300 border border-slate-500/20';
   }

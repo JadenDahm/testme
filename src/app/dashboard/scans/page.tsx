@@ -69,9 +69,9 @@ export default async function ScansPage() {
                   )}
                   {scan.status === 'running' && (
                     <div className="w-24">
-                      <div className="bg-surface-200 rounded-full h-2 overflow-hidden">
+                      <div className="bg-surface-200 rounded h-2 overflow-hidden">
                         <div
-                          className="bg-accent-500 rounded-full h-2 transition-all duration-500"
+                          className="bg-accent-500 rounded h-2 transition-all duration-500"
                           style={{ width: `${scan.progress}%` }}
                         />
                       </div>

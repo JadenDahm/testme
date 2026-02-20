@@ -116,7 +116,7 @@ export function ScanProgress({ scan: initialScan }: Props) {
     <div className="max-w-xl mx-auto space-y-6">
       <Card padding="lg" className="text-center">
         <div className="space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mx-auto border border-border-subtle bg-surface-200">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded mx-auto border border-border-subtle bg-surface-200">
             {isActive ? (
               <Loader2 className="h-8 w-8 text-accent-400 animate-spin" />
             ) : scan.status === 'completed' ? (
@@ -137,9 +137,9 @@ export function ScanProgress({ scan: initialScan }: Props) {
 
           {/* Progress Bar */}
           <div className="w-full max-w-sm mx-auto">
-            <div className="bg-surface-200 rounded-full h-3 overflow-hidden">
+            <div className="bg-surface-200 rounded h-3 overflow-hidden">
               <div
-                className="bg-accent-500 rounded-full h-3 transition-all duration-700 ease-out"
+                className="bg-accent-500 rounded h-3 transition-all duration-700 ease-out"
                 style={{ width: `${scan.progress}%` }}
               />
             </div>
@@ -164,7 +164,7 @@ export function ScanProgress({ scan: initialScan }: Props) {
                     ) : isRunning ? (
                       <Loader2 className="w-5 h-5 text-accent-400 animate-spin" />
                     ) : (
-                      <div className="w-3 h-3 rounded-full bg-surface-400 ml-1" />
+                      <div className="w-3 h-3 rounded bg-surface-400 ml-1" />
                     )}
                   </div>
                   <span className={`text-sm ${

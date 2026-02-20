@@ -19,7 +19,7 @@ interface Props {
 
 function getBarColor(score: number): string {
   if (score >= 90) return '#10b981';
-  if (score >= 70) return '#22d3ee';
+  if (score >= 70) return '#fb923c';
   if (score >= 50) return '#eab308';
   if (score >= 30) return '#f97316';
   return '#f43f5e';
@@ -43,7 +43,7 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-surface-200 border border-border-default rounded-lg px-4 py-3 text-xs">
+    <div className="bg-surface-200 border border-border-default rounded px-4 py-3 text-xs">
       <p className="font-semibold text-text-primary mb-1.5">{d.displayName}</p>
       <p className="text-text-secondary">
         Score: <span className="font-bold" style={{ color: getBarColor(d.score) }}>{d.score}/100</span>

@@ -60,7 +60,7 @@ export default function AddDomainPage() {
       <Card padding="lg">
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl text-sm">
+            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded text-sm">
               {error}
             </div>
           )}
@@ -80,7 +80,7 @@ export default function AddDomainPage() {
             </p>
           </div>
 
-          <div className="bg-amber-500/8 border border-amber-500/15 rounded-xl p-4 text-sm text-amber-200/70">
+          <div className="bg-amber-500/8 border border-amber-500/15 rounded p-4 text-sm text-amber-200/70">
             <strong className="text-amber-300">Wichtig:</strong> Du musst im nächsten Schritt nachweisen, dass diese Domain dir gehört,
             bevor ein Scan gestartet werden kann.
           </div>
