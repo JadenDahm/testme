@@ -9,11 +9,26 @@ export async function verifyHtmlFile(domain: string, expectedToken: string): Pro
       },
     });
 
-    if (!response.ok) return false;
+    if (!response.ok) {
+      console.error(`[verifyHtmlFile] HTTP ${response.status} for ${url}`);
+      return false;
+    }
 
     const text = await response.text();
-    return text.trim() === expectedToken;
-  } catch {
+    // Normalize: trim whitespace and remove any BOM or invisible characters
+    const normalizedText = text.trim().replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const normalizedToken = expectedToken.trim();
+    
+    const matches = normalizedText === normalizedToken;
+    
+    if (!matches) {
+      console.error(`[verifyHtmlFile] Token mismatch. Expected: "${normalizedToken}", Got: "${normalizedText}"`);
+      console.error(`[verifyHtmlFile] Expected length: ${normalizedToken.length}, Got length: ${normalizedText.length}`);
+    }
+    
+    return matches;
+  } catch (error) {
+    console.error(`[verifyHtmlFile] Error fetching ${url}:`, error);
     return false;
   }
 }

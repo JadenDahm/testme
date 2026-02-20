@@ -47,13 +47,21 @@ export async function POST(
   }
 
   let verified = false;
+  let errorMessage = '';
 
   switch (method) {
     case 'dns_txt':
       verified = await verifyDnsTxt(domain.domain_name, domain.verification_token);
+      if (!verified) {
+        errorMessage = 'DNS TXT-Eintrag nicht gefunden oder Token stimmt nicht überein. Bitte prüfe, ob der Eintrag korrekt gesetzt wurde und warte ggf. auf DNS-Propagierung (kann bis zu 24h dauern).';
+      }
       break;
     case 'html_file':
       verified = await verifyHtmlFile(domain.domain_name, domain.verification_token);
+      if (!verified) {
+        const verifyUrl = `https://${domain.domain_name}/.well-known/testme-verify.txt`;
+        errorMessage = `Die Datei konnte nicht verifiziert werden. Bitte prüfe:\n1. Ist die Datei unter ${verifyUrl} erreichbar?\n2. Enthält die Datei exakt den Token: ${domain.verification_token}\n3. Gibt es keine zusätzlichen Zeichen oder Leerzeichen in der Datei?`;
+      }
       break;
   }
 
@@ -75,7 +83,7 @@ export async function POST(
   return NextResponse.json({
     data: {
       verified: false,
-      message: 'Verifizierung fehlgeschlagen. Bitte prüfe die Konfiguration und versuche es erneut.',
+      message: errorMessage || 'Verifizierung fehlgeschlagen. Bitte prüfe die Konfiguration und versuche es erneut.',
     },
   });
 }
