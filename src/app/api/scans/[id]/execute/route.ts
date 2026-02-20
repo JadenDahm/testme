@@ -18,13 +18,12 @@ export async function POST(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
-  // Use service client to bypass potential RLS/session issues
   const serviceClient = await createServiceClient();
 
   // Get scan and verify ownership
   const { data: scan, error: scanError } = await serviceClient
     .from('scans')
-    .select('*, domains(domain_name)')
+    .select('*')
     .eq('id', scanId)
     .eq('user_id', user.id)
     .single();
@@ -41,8 +40,13 @@ export async function POST(
     });
   }
 
-  // Check if domain is still verified
-  const domain = scan.domains as { domain_name: string } | null;
+  // Get domain name separately
+  const { data: domain } = await serviceClient
+    .from('domains')
+    .select('domain_name')
+    .eq('id', scan.domain_id)
+    .single();
+
   if (!domain?.domain_name) {
     return NextResponse.json({ error: 'Domain nicht gefunden' }, { status: 404 });
   }
@@ -59,7 +63,6 @@ export async function POST(
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
 
-    // Mark scan as failed using service client
     await serviceClient
       .from('scans')
       .update({ status: 'failed', completed_at: new Date().toISOString() })

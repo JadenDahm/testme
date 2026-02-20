@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { enrichScansWithDomain } from '@/lib/supabase/helpers';
 import { z } from 'zod';
 
 const startScanSchema = z.object({
@@ -18,9 +19,9 @@ export async function GET() {
 
   const serviceClient = await createServiceClient();
 
-  const { data, error } = await serviceClient
+  const { data: scans, error } = await serviceClient
     .from('scans')
-    .select('*, domains(domain_name)')
+    .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
@@ -28,10 +29,13 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ data });
+  // Enrich with domain names (separate query)
+  const enrichedScans = await enrichScansWithDomain(serviceClient, scans || []);
+
+  return NextResponse.json({ data: enrichedScans });
 }
 
-// POST: Start a new scan (creates the scan record, execution happens via /execute endpoint)
+// POST: Start a new scan
 export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -51,7 +55,6 @@ export async function POST(request: Request) {
 
   const serviceClient = await createServiceClient();
 
-  // Verify domain ownership and verification status
   const { data: domain, error: domainError } = await serviceClient
     .from('domains')
     .select('*')
@@ -70,7 +73,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Check for running scans on same domain
   const { data: runningScans } = await serviceClient
     .from('scans')
     .select('id')
@@ -84,7 +86,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Create scan record with 'pending' status
   const { data: scan, error: scanError } = await serviceClient
     .from('scans')
     .insert({
@@ -104,7 +105,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Scan konnte nicht erstellt werden' }, { status: 500 });
   }
 
-  // Log the scan creation
   await serviceClient.from('scan_logs').insert({
     scan_id: scan.id,
     user_id: user.id,

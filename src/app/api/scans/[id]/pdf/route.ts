@@ -45,16 +45,26 @@ export async function GET(
   const { id: scanId } = await params;
   const supabase = getSupabaseAdmin();
 
-  // Get scan data
+  // Get scan data (separate queries to avoid PostgREST schema cache issues)
   const { data: scan, error: scanError } = await supabase
     .from('scans')
-    .select('*, domains(domain_name)')
+    .select('*')
     .eq('id', scanId)
     .single();
 
   if (scanError || !scan) {
     return NextResponse.json({ error: 'Scan nicht gefunden' }, { status: 404 });
   }
+
+  // Get domain name separately
+  const { data: domainData } = await supabase
+    .from('domains')
+    .select('domain_name')
+    .eq('id', scan.domain_id)
+    .single();
+
+  // Attach domain info to scan object
+  scan.domains = { domain_name: domainData?.domain_name || 'Unbekannt' };
 
   // Get findings
   const { data: findings } = await supabase

@@ -1,4 +1,5 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { enrichScansWithDomain } from '@/lib/supabase/helpers';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,12 +24,14 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(5);
 
-  const { data: scans } = await serviceClient
+  const { data: rawScans } = await serviceClient
     .from('scans')
-    .select('*, domains(domain_name)')
+    .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(5);
+
+  const scans = await enrichScansWithDomain(serviceClient, rawScans || []);
 
   const totalDomains = (domains as Domain[] | null)?.length ?? 0;
   const verifiedDomains = (domains as Domain[] | null)?.filter((d) => d.is_verified).length ?? 0;

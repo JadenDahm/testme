@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { enrichScanWithDomain } from '@/lib/supabase/helpers';
 
 // GET: Get scan details with findings
 export async function GET(
@@ -14,12 +15,11 @@ export async function GET(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
-  // Use service client to bypass potential RLS/session issues
   const serviceClient = await createServiceClient();
 
   const { data: scan, error } = await serviceClient
     .from('scans')
-    .select('*, domains(domain_name)')
+    .select('*')
     .eq('id', id)
     .eq('user_id', user.id)
     .single();
@@ -28,6 +28,9 @@ export async function GET(
     console.error('[API/Scans/GET] Scan not found:', { scanId: id, userId: user.id, error: error?.message });
     return NextResponse.json({ error: 'Scan nicht gefunden' }, { status: 404 });
   }
+
+  // Enrich with domain name (separate query to avoid PostgREST schema cache issues)
+  const enrichedScan = await enrichScanWithDomain(serviceClient, scan);
 
   // Get findings
   const { data: findings } = await serviceClient
@@ -45,7 +48,7 @@ export async function GET(
 
   return NextResponse.json({
     data: {
-      ...scan,
+      ...enrichedScan,
       findings: findings || [],
       logs: logs || [],
     },
@@ -65,10 +68,8 @@ export async function DELETE(
     return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
   }
 
-  // Use service client
   const serviceClient = await createServiceClient();
 
-  // Verify ownership
   const { data: scan } = await serviceClient
     .from('scans')
     .select('id, status')
@@ -80,10 +81,9 @@ export async function DELETE(
     return NextResponse.json({ error: 'Scan nicht gefunden' }, { status: 404 });
   }
 
-  // Prevent deletion of running scans (they should be cancelled first)
   if (scan.status === 'running' || scan.status === 'pending') {
     return NextResponse.json(
-      { error: 'Laufende oder ausstehende Scans können nicht gelöscht werden. Bitte breche den Scan zuerst ab.' },
+      { error: 'Laufende oder ausstehende Scans können nicht gelöscht werden.' },
       { status: 400 }
     );
   }

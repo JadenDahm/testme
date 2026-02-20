@@ -1,4 +1,5 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { enrichScansWithDomain } from '@/lib/supabase/helpers';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
@@ -16,11 +17,13 @@ export default async function ScansPage() {
 
   const serviceClient = await createServiceClient();
 
-  const { data: scans } = await serviceClient
+  const { data: rawScans } = await serviceClient
     .from('scans')
-    .select('*, domains(domain_name)')
+    .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
+
+  const scans = await enrichScansWithDomain(serviceClient, rawScans || []);
 
   return (
     <div className="space-y-6 animate-fade-in">
