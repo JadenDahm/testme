@@ -1,10 +1,11 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ScanReport } from '@/components/scan/scan-report';
 import { ScanProgress } from '@/components/scan/scan-progress';
 import { DeleteScanButton } from '@/components/scan/delete-scan-button';
+import type { Scan, ScanFinding } from '@/types';
 
 export default async function ScanDetailPage({
   params,
@@ -15,11 +16,15 @@ export default async function ScanDetailPage({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  if (!user) {
+    redirect('/auth/login');
+  }
+
   const { data: scan } = await supabase
     .from('scans')
     .select('*, domains(domain_name)')
     .eq('id', id)
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .single();
 
   if (!scan) notFound();
@@ -30,25 +35,28 @@ export default async function ScanDetailPage({
     .eq('scan_id', id)
     .order('severity', { ascending: true });
 
+  const typedScan = scan as Scan;
+  const typedFindings = (findings || []) as ScanFinding[];
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <Link
           href="/dashboard/scans"
-          className="text-sm text-text-muted hover:text-text-secondary flex items-center gap-1 transition-colors"
+          className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Scans
         </Link>
-        {(scan.status === 'completed' || scan.status === 'failed' || scan.status === 'cancelled') && (
-          <DeleteScanButton scanId={scan.id} />
+        {(typedScan.status === 'completed' || typedScan.status === 'failed' || typedScan.status === 'cancelled') && (
+          <DeleteScanButton scanId={typedScan.id} />
         )}
       </div>
 
-      {(scan.status === 'running' || scan.status === 'pending') ? (
-        <ScanProgress scan={scan} />
+      {(typedScan.status === 'running' || typedScan.status === 'pending') ? (
+        <ScanProgress scan={typedScan} />
       ) : (
-        <ScanReport scan={scan} findings={findings || []} />
+        <ScanReport scan={typedScan} findings={typedFindings} />
       )}
     </div>
   );
