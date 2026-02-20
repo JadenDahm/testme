@@ -49,24 +49,6 @@ const categoryLabels: Record<FindingCategory, string> = {
   email: 'E-Mail Security',
 };
 
-const categoryIcons: Record<FindingCategory, typeof Shield> = {
-  ssl: ShieldCheck,
-  headers: BarChart3,
-  vulnerability: ShieldAlert,
-  secrets: ShieldX,
-  sensitive_files: AlertTriangle,
-  info: Info,
-  cors: Shield,
-  email: Shield,
-};
-
-const severityIcons: Record<Severity, typeof AlertTriangle> = {
-  critical: XCircle,
-  high: AlertTriangle,
-  medium: AlertCircle,
-  low: Info,
-  info: Info,
-};
 
 type ViewMode = 'overview' | 'findings';
 
@@ -409,7 +391,6 @@ export function ScanReport({ scan, findings }: Props) {
             <div className="space-y-3">
               {filteredFindings.map((finding) => {
                 const isExpanded = expandedFindings.has(finding.id);
-                const Icon = severityIcons[finding.severity];
 
                 return (
                   <Card key={finding.id} padding="sm" className="overflow-hidden">
