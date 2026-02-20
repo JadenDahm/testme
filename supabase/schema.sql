@@ -11,15 +11,15 @@ create extension if not exists "uuid-ossp";
 create table public.domains (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
-  domain text not null,
-  verification_method text, -- 'dns_txt' | 'html_file' | 'meta_tag'
+  domain_name text not null,
+  verification_method text, -- 'dns_txt' | 'html_file'
   verification_token text not null,
-  verified boolean default false,
-  verified_at timestamptz,
+  is_verified boolean default false,
+  last_verified_at timestamptz,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null,
   
-  unique(user_id, domain)
+  unique(user_id, domain_name)
 );
 
 -- =============================================
@@ -130,7 +130,7 @@ create policy "Users can view own scan logs"
 -- Indexes
 -- =============================================
 create index idx_domains_user_id on public.domains(user_id);
-create index idx_domains_domain on public.domains(domain);
+create index idx_domains_domain_name on public.domains(domain_name);
 create index idx_scans_user_id on public.scans(user_id);
 create index idx_scans_domain_id on public.scans(domain_id);
 create index idx_scans_status on public.scans(status);

@@ -55,15 +55,15 @@ export default async function DomainDetailPage({
               <Globe className="h-6 w-6 text-primary-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{typedDomain.domain}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{typedDomain.domain_name}</h1>
               <p className="text-gray-500 text-sm">
                 Hinzugefügt am {formatDate(typedDomain.created_at)}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Badge variant={typedDomain.verified ? 'success' : 'warning'} className="text-sm py-1 px-3">
-              {typedDomain.verified ? 'Verifiziert' : 'Nicht verifiziert'}
+            <Badge variant={typedDomain.is_verified ? 'success' : 'warning'} className="text-sm py-1 px-3">
+              {typedDomain.is_verified ? 'Verifiziert' : 'Nicht verifiziert'}
             </Badge>
             <DeleteDomainButton domainId={typedDomain.id} />
           </div>
@@ -71,12 +71,12 @@ export default async function DomainDetailPage({
       </div>
 
       {/* Verification Section */}
-      {!typedDomain.verified && (
+      {!typedDomain.is_verified && (
         <DomainVerification domain={typedDomain} />
       )}
 
       {/* Start Scan */}
-      {typedDomain.verified && (
+      {typedDomain.is_verified && (
         <Card>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -88,7 +88,7 @@ export default async function DomainDetailPage({
                 <CardDescription>Du kannst jetzt einen Sicherheitsscan starten.</CardDescription>
               </div>
             </div>
-            <StartScanButton domainId={typedDomain.id} domainName={typedDomain.domain} />
+            <StartScanButton domainId={typedDomain.id} domainName={typedDomain.domain_name} />
           </div>
         </Card>
       )}

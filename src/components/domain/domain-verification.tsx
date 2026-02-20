@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, FileText, Globe, Code } from 'lucide-react';
+import { CheckCircle, XCircle, FileText, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Domain, VerificationMethod } from '@/types';
 
@@ -24,12 +24,6 @@ const methods: { id: VerificationMethod; label: string; icon: typeof Globe; desc
     label: 'HTML-Datei',
     icon: FileText,
     description: 'Lade eine Textdatei in das .well-known Verzeichnis hoch.',
-  },
-  {
-    id: 'meta_tag',
-    label: 'Meta-Tag',
-    icon: Code,
-    description: 'Füge ein Meta-Tag in den <head> deiner Startseite ein.',
   },
 ];
 
@@ -71,7 +65,7 @@ export function DomainVerification({ domain }: Props) {
         <div>
           <CardTitle>Domain verifizieren</CardTitle>
           <CardDescription>
-            Beweise, dass <strong>{domain.domain}</strong> dir gehört. Wähle eine Methode:
+            Beweise, dass <strong>{domain.domain_name}</strong> dir gehört. Wähle eine Methode:
           </CardDescription>
         </div>
 
@@ -105,7 +99,7 @@ export function DomainVerification({ domain }: Props) {
           {selectedMethod === 'dns_txt' && (
             <div className="space-y-2 text-sm text-gray-600">
               <p>1. Öffne die DNS-Verwaltung deines Domain-Anbieters.</p>
-              <p>2. Erstelle einen neuen <strong>TXT-Eintrag</strong> für <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">{domain.domain}</code></p>
+              <p>2. Erstelle einen neuen <strong>TXT-Eintrag</strong> für <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">{domain.domain_name}</code></p>
               <p>3. Setze den Wert auf:</p>
               <div className="bg-white border border-gray-200 rounded-lg p-3 font-mono text-xs break-all select-all">
                 {domain.verification_token}
@@ -123,21 +117,11 @@ export function DomainVerification({ domain }: Props) {
               </div>
               <p>3. Lade die Datei hoch unter:</p>
               <div className="bg-white border border-gray-200 rounded-lg p-3 font-mono text-xs break-all">
-                https://{domain.domain}/.well-known/testme-verify.txt
+                https://{domain.domain_name}/.well-known/testme-verify.txt
               </div>
             </div>
           )}
 
-          {selectedMethod === 'meta_tag' && (
-            <div className="space-y-2 text-sm text-gray-600">
-              <p>1. Öffne den HTML-Quellcode deiner Startseite.</p>
-              <p>2. Füge folgenden Meta-Tag in den <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">&lt;head&gt;</code>-Bereich ein:</p>
-              <div className="bg-white border border-gray-200 rounded-lg p-3 font-mono text-xs break-all select-all">
-                {`<meta name="testme-verify" content="${domain.verification_token}">`}
-              </div>
-              <p>3. Stelle sicher, dass die Seite öffentlich erreichbar ist.</p>
-            </div>
-          )}
         </div>
 
         {/* Result */}

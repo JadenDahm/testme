@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { verifyDnsTxt } from '@/lib/verification/dns';
-import { verifyHtmlFile, verifyMetaTag } from '@/lib/verification/html';
+import { verifyHtmlFile } from '@/lib/verification/html';
 import { z } from 'zod';
 import type { VerificationMethod } from '@/types';
 
 const verifySchema = z.object({
-  method: z.enum(['dns_txt', 'html_file', 'meta_tag']),
+  method: z.enum(['dns_txt', 'html_file']),
 });
 
 export async function POST(
@@ -42,7 +42,7 @@ export async function POST(
     return NextResponse.json({ error: 'Domain nicht gefunden' }, { status: 404 });
   }
 
-  if (domain.verified) {
+  if (domain.is_verified) {
     return NextResponse.json({ data: { verified: true, message: 'Domain ist bereits verifiziert' } });
   }
 
@@ -50,13 +50,10 @@ export async function POST(
 
   switch (method) {
     case 'dns_txt':
-      verified = await verifyDnsTxt(domain.domain, domain.verification_token);
+      verified = await verifyDnsTxt(domain.domain_name, domain.verification_token);
       break;
     case 'html_file':
-      verified = await verifyHtmlFile(domain.domain, domain.verification_token);
-      break;
-    case 'meta_tag':
-      verified = await verifyMetaTag(domain.domain, domain.verification_token);
+      verified = await verifyHtmlFile(domain.domain_name, domain.verification_token);
       break;
   }
 
@@ -64,8 +61,8 @@ export async function POST(
     await supabase
       .from('domains')
       .update({
-        verified: true,
-        verified_at: new Date().toISOString(),
+        is_verified: true,
+        last_verified_at: new Date().toISOString(),
         verification_method: method,
       })
       .eq('id', id);

@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     .from('domains')
     .select('id')
     .eq('user_id', user.id)
-    .eq('domain', domain)
+    .eq('domain_name', domain)
     .single();
 
   if (existing) {
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     .from('domains')
     .insert({
       user_id: user.id,
-      domain,
+      domain_name: domain,
       verification_token: verificationToken,
     })
     .select()

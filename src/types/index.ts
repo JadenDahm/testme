@@ -5,16 +5,16 @@
 export interface Domain {
   id: string;
   user_id: string;
-  domain: string;
+  domain_name: string;
+  is_verified: boolean;
   verification_method: VerificationMethod | null;
   verification_token: string;
-  verified: boolean;
-  verified_at: string | null;
+  last_verified_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export type VerificationMethod = 'dns_txt' | 'html_file' | 'meta_tag';
+export type VerificationMethod = 'dns_txt' | 'html_file';
 
 export interface Scan {
   id: string;
@@ -32,7 +32,7 @@ export interface Scan {
   created_at: string;
   updated_at: string;
   // Joined
-  domains?: Domain;
+  domains?: { domain_name: string };
 }
 
 export type ScanStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -50,7 +50,7 @@ export interface ScanFinding {
   created_at: string;
 }
 
-export type FindingCategory = 'headers' | 'secrets' | 'sensitive_files' | 'vulnerability' | 'ssl' | 'info';
+export type FindingCategory = 'headers' | 'secrets' | 'sensitive_files' | 'vulnerability' | 'ssl' | 'info' | 'cors' | 'email';
 
 export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 

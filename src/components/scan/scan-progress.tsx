@@ -1,46 +1,105 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Shield, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import type { Scan } from '@/types';
 
 interface Props {
   scan: Scan;
 }
 
+const SCAN_DISPLAY_STEPS = [
+  { id: 'recon', label: 'SSL, Header, CORS & Technologie', progressThreshold: 0 },
+  { id: 'email', label: 'E-Mail-Sicherheit (SPF/DKIM/DMARC)', progressThreshold: 20 },
+  { id: 'crawl', label: 'Seiten-Crawling & Sensible Dateien', progressThreshold: 30 },
+  { id: 'analysis', label: 'Schwachstellen, Secrets & SQLi', progressThreshold: 50 },
+  { id: 'scoring', label: 'Score-Berechnung & Bericht', progressThreshold: 80 },
+];
+
 export function ScanProgress({ scan: initialScan }: Props) {
   const router = useRouter();
   const [scan, setScan] = useState(initialScan);
   const [cancelling, setCancelling] = useState(false);
+  const [currentStepLabel, setCurrentStepLabel] = useState('Scan wird vorbereitet...');
+  const executingRef = useRef(false);
+  const abortRef = useRef(false);
 
-  useEffect(() => {
-    if (scan.status !== 'running' && scan.status !== 'pending') return;
+  // Execute scan steps sequentially
+  const executeNextStep = useCallback(async () => {
+    if (executingRef.current || abortRef.current) return;
+    executingRef.current = true;
 
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/scans/${scan.id}`);
-        if (response.ok) {
-          const { data } = await response.json();
-          setScan(data);
+    try {
+      const response = await fetch(`/api/scans/${scan.id}/execute`, {
+        method: 'POST',
+      });
 
-          if (data.status === 'completed' || data.status === 'failed' || data.status === 'cancelled') {
-            clearInterval(interval);
-            router.refresh();
-          }
-        }
-      } catch {
-        // Ignore polling errors
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Scan step error:', error);
+        // Refresh to show error state
+        router.refresh();
+        return;
       }
-    }, 3000);
 
-    return () => clearInterval(interval);
-  }, [scan.id, scan.status, router]);
+      const { data } = await response.json();
+
+      // Update step label
+      if (data.steps) {
+        const currentStep = data.steps.find((s: { id: string }) => s.id === data.step);
+        if (currentStep) {
+          setCurrentStepLabel(currentStep.displayName);
+        }
+      }
+
+      // Refresh scan state
+      const statusResponse = await fetch(`/api/scans/${scan.id}`);
+      if (statusResponse.ok) {
+        const { data: scanData } = await statusResponse.json();
+        setScan(scanData);
+      }
+
+      if (data.completed) {
+        // Scan is done
+        router.refresh();
+        return;
+      }
+
+      // Schedule next step execution
+      if (!abortRef.current) {
+        executingRef.current = false;
+        setTimeout(() => executeNextStep(), 500);
+      }
+    } catch (error) {
+      console.error('Execute error:', error);
+      // Retry after delay
+      if (!abortRef.current) {
+        executingRef.current = false;
+        setTimeout(() => executeNextStep(), 3000);
+      }
+    } finally {
+      executingRef.current = false;
+    }
+  }, [scan.id, router]);
+
+  // Start execution when component mounts
+  useEffect(() => {
+    if (scan.status === 'pending' || scan.status === 'running') {
+      abortRef.current = false;
+      executeNextStep();
+    }
+
+    return () => {
+      abortRef.current = true;
+    };
+  }, [scan.status, executeNextStep]);
 
   const handleCancel = async () => {
     setCancelling(true);
+    abortRef.current = true;
     try {
       await fetch(`/api/scans/${scan.id}/cancel`, { method: 'POST' });
       router.refresh();
@@ -49,20 +108,30 @@ export function ScanProgress({ scan: initialScan }: Props) {
     }
   };
 
-  const domain = scan.domains?.domain || 'Unbekannt';
+  const domain = (scan as unknown as { domains?: { domain_name?: string } }).domains?.domain_name || 'Unbekannt';
+
+  const isActive = scan.status === 'running' || scan.status === 'pending';
 
   return (
     <div className="max-w-xl mx-auto space-y-6">
       <Card padding="lg" className="text-center">
         <div className="space-y-6">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-50 mx-auto">
-            <Loader2 className="h-8 w-8 text-primary-600 animate-spin" />
+            {isActive ? (
+              <Loader2 className="h-8 w-8 text-primary-600 animate-spin" />
+            ) : scan.status === 'completed' ? (
+              <CheckCircle2 className="h-8 w-8 text-green-600" />
+            ) : (
+              <AlertCircle className="h-8 w-8 text-red-600" />
+            )}
           </div>
 
           <div>
-            <CardTitle className="text-xl">Scan läuft</CardTitle>
+            <CardTitle className="text-xl">
+              {isActive ? 'Tiefenanalyse läuft' : scan.status === 'completed' ? 'Scan abgeschlossen' : 'Scan fehlgeschlagen'}
+            </CardTitle>
             <CardDescription className="mt-1">
-              <strong>{domain}</strong> wird gerade auf Sicherheitslücken geprüft.
+              <strong>{domain}</strong> wird gerade professionell auf Sicherheitslücken analysiert.
             </CardDescription>
           </div>
 
@@ -75,43 +144,54 @@ export function ScanProgress({ scan: initialScan }: Props) {
               />
             </div>
             <div className="flex justify-between items-center mt-2">
-              <p className="text-sm text-gray-500">{scan.current_step || 'Vorbereitung...'}</p>
+              <p className="text-sm text-gray-500">{currentStepLabel}</p>
               <p className="text-sm font-medium text-primary-600">{scan.progress}%</p>
             </div>
           </div>
 
           {/* Steps */}
-          <div className="text-left max-w-xs mx-auto space-y-2">
-            {[
-              { label: 'SSL/TLS-Prüfung', threshold: 5 },
-              { label: 'HTTP-Header-Analyse', threshold: 15 },
-              { label: 'Sensible Dateien prüfen', threshold: 30 },
-              { label: 'Seiten-Crawling', threshold: 40 },
-              { label: 'Secret-Scanning', threshold: 60 },
-              { label: 'Schwachstellen-Tests', threshold: 75 },
-              { label: 'Bericht erstellen', threshold: 95 },
-            ].map((step) => (
-              <div key={step.label} className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                  scan.progress >= step.threshold + 10
-                    ? 'bg-green-500'
-                    : scan.progress >= step.threshold
-                    ? 'bg-primary-500 animate-pulse-slow'
-                    : 'bg-gray-200'
-                }`} />
-                <span className={`text-sm ${
-                  scan.progress >= step.threshold ? 'text-gray-900' : 'text-gray-400'
-                }`}>
-                  {step.label}
-                </span>
-              </div>
-            ))}
+          <div className="text-left max-w-sm mx-auto space-y-3">
+            {SCAN_DISPLAY_STEPS.map((step) => {
+              const isCompleted = scan.progress > step.progressThreshold + 15;
+              const isRunning = scan.progress >= step.progressThreshold && scan.progress <= step.progressThreshold + 15;
+              const isPending = scan.progress < step.progressThreshold;
+
+              return (
+                <div key={step.id} className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-5 h-5">
+                    {isCompleted ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    ) : isRunning ? (
+                      <Loader2 className="w-5 h-5 text-primary-500 animate-spin" />
+                    ) : (
+                      <div className="w-3 h-3 rounded-full bg-gray-200 ml-1" />
+                    )}
+                  </div>
+                  <span className={`text-sm ${
+                    isCompleted ? 'text-green-700 font-medium' : isRunning ? 'text-primary-700 font-medium' : 'text-gray-400'
+                  }`}>
+                    {step.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
 
-          <Button variant="outline" onClick={handleCancel} loading={cancelling}>
-            <XCircle className="h-4 w-4 mr-2" />
-            Scan abbrechen
-          </Button>
+          {/* Info text */}
+          {isActive && (
+            <p className="text-xs text-gray-400 max-w-sm mx-auto">
+              Der Scan testet SSL/TLS, HTTP-Header, CORS, E-Mail-Sicherheit, crawlt bis zu 25 Seiten,
+              prüft 80+ sensible Dateipfade, sucht nach 30+ Secret-Patterns, testet auf SQL-Injection,
+              XSS, CSRF und viele weitere Schwachstellen – alles nicht-destruktiv.
+            </p>
+          )}
+
+          {isActive && (
+            <Button variant="outline" onClick={handleCancel} loading={cancelling}>
+              <XCircle className="h-4 w-4 mr-2" />
+              Scan abbrechen
+            </Button>
+          )}
         </div>
       </Card>
     </div>

@@ -20,13 +20,13 @@ export default async function DashboardPage() {
 
   const { data: scans } = await supabase
     .from('scans')
-    .select('*, domains(domain)')
+    .select('*, domains(domain_name)')
     .eq('user_id', user!.id)
     .order('created_at', { ascending: false })
     .limit(5);
 
   const totalDomains = (domains as Domain[] | null)?.length ?? 0;
-  const verifiedDomains = (domains as Domain[] | null)?.filter((d) => d.verified).length ?? 0;
+  const verifiedDomains = (domains as Domain[] | null)?.filter((d) => d.is_verified).length ?? 0;
   const totalScans = (scans as Scan[] | null)?.length ?? 0;
 
   return (
@@ -109,7 +109,7 @@ export default async function DashboardPage() {
                     <div className="flex items-center gap-3">
                       <div>
                         <p className="font-medium text-gray-900">
-                          {scan.domains?.domain || 'Unbekannt'}
+                          {scan.domains?.domain_name || 'Unbekannt'}
                         </p>
                         <p className="text-sm text-gray-500">{formatDate(scan.created_at)}</p>
                       </div>
@@ -158,11 +158,11 @@ export default async function DashboardPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-base">{domain.domain}</CardTitle>
+                      <CardTitle className="text-base">{domain.domain_name}</CardTitle>
                       <CardDescription>{formatDate(domain.created_at)}</CardDescription>
                     </div>
-                    <Badge variant={domain.verified ? 'success' : 'warning'}>
-                      {domain.verified ? 'Verifiziert' : 'Nicht verifiziert'}
+                    <Badge variant={domain.is_verified ? 'success' : 'warning'}>
+                      {domain.is_verified ? 'Verifiziert' : 'Nicht verifiziert'}
                     </Badge>
                   </div>
                 </Card>

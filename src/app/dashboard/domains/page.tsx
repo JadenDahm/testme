@@ -52,15 +52,15 @@ export default async function DomainsPage() {
                       <Globe className="h-5 w-5 text-gray-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-base">{domain.domain}</CardTitle>
+                      <CardTitle className="text-base">{domain.domain_name}</CardTitle>
                       <CardDescription>
                         Hinzugefügt am {formatDate(domain.created_at)}
-                        {domain.verified_at && ` · Verifiziert am ${formatDate(domain.verified_at)}`}
+                        {domain.last_verified_at && ` · Verifiziert am ${formatDate(domain.last_verified_at)}`}
                       </CardDescription>
                     </div>
                   </div>
-                  <Badge variant={domain.verified ? 'success' : 'warning'}>
-                    {domain.verified ? 'Verifiziert' : 'Nicht verifiziert'}
+                  <Badge variant={domain.is_verified ? 'success' : 'warning'}>
+                    {domain.is_verified ? 'Verifiziert' : 'Nicht verifiziert'}
                   </Badge>
                 </div>
               </Card>

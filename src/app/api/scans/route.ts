@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
-import { runScan } from '@/lib/scanner';
 
 const startScanSchema = z.object({
   domain_id: z.string().uuid(),
@@ -19,7 +18,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from('scans')
-    .select('*, domains(domain)')
+    .select('*, domains(domain_name)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
@@ -30,7 +29,7 @@ export async function GET() {
   return NextResponse.json({ data });
 }
 
-// POST: Start a new scan
+// POST: Start a new scan (creates the scan record, execution happens via /execute endpoint)
 export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -60,7 +59,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Domain nicht gefunden' }, { status: 404 });
   }
 
-  if (!domain.verified) {
+  if (!domain.is_verified) {
     return NextResponse.json(
       { error: 'Domain muss zuerst verifiziert werden, bevor ein Scan gestartet werden kann.' },
       { status: 403 }
@@ -81,17 +80,17 @@ export async function POST(request: Request) {
     );
   }
 
-  // Create scan record
+  // Create scan record with 'pending' status
   const { data: scan, error: scanError } = await supabase
     .from('scans')
     .insert({
       user_id: user.id,
       domain_id,
-      consent_given: consent,
-      consent_given_at: new Date().toISOString(),
       status: 'pending',
       progress: 0,
-      current_step: 'Scan wird vorbereitet...',
+      current_step: 'init',
+      consent_given: true,
+      consent_given_at: new Date().toISOString(),
     })
     .select()
     .single();
@@ -100,22 +99,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Scan konnte nicht erstellt werden' }, { status: 500 });
   }
 
-  // Log the scan start
+  // Log the scan creation
   await supabase.from('scan_logs').insert({
     scan_id: scan.id,
     user_id: user.id,
     action: 'scan_created',
-    details: `Scan für ${domain.domain} erstellt. Zustimmung gegeben: ${consent}`,
+    details: `Scan für ${domain.domain_name} erstellt. Zustimmung: ${consent}`,
   });
-
-  // Start scan in background (fire and forget)
-  runScan({
-    scanId: scan.id,
-    domain: domain.domain,
-    userId: user.id,
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  }).catch(console.error);
 
   return NextResponse.json({ data: scan }, { status: 201 });
 }

@@ -12,7 +12,7 @@ export default async function ScansPage() {
 
   const { data: scans } = await supabase
     .from('scans')
-    .select('*, domains(domain)')
+    .select('*, domains(domain_name)')
     .eq('user_id', user!.id)
     .order('created_at', { ascending: false });
 
@@ -43,7 +43,7 @@ export default async function ScansPage() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">
-                        {scan.domains?.domain || 'Unbekannt'}
+                        {scan.domains?.domain_name || 'Unbekannt'}
                       </p>
                       <p className="text-sm text-gray-500">
                         {formatDate(scan.created_at)}

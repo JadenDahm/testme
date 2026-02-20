@@ -16,7 +16,7 @@ export async function GET(
 
   const { data: scan, error } = await supabase
     .from('scans')
-    .select('*, domains(domain)')
+    .select('*, domains(domain_name)')
     .eq('id', id)
     .eq('user_id', user.id)
     .single();
