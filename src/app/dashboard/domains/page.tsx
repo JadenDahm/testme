@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
-import { DeleteDomainButton } from '@/components/domain/delete-domain-button';
+import { DeleteDomainWrapper } from '@/components/domain/delete-domain-wrapper';
 import type { Domain } from '@/types';
 
 export default async function DomainsPage() {
@@ -65,9 +65,7 @@ export default async function DomainsPage() {
                   <Badge variant={domain.is_verified ? 'success' : 'warning'}>
                     {domain.is_verified ? 'Verifiziert' : 'Nicht verifiziert'}
                   </Badge>
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <DeleteDomainButton domainId={domain.id} />
-                  </div>
+                  <DeleteDomainWrapper domainId={domain.id} />
                 </div>
               </div>
             </Card>

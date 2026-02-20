@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate, scoreColor, scoreLabel } from '@/lib/utils';
-import { DeleteScanButton } from '@/components/scan/delete-scan-button';
+import { DeleteScanWrapper } from '@/components/scan/delete-scan-wrapper';
 import type { Scan } from '@/types';
 
 export default async function ScansPage() {
@@ -91,9 +91,7 @@ export default async function ScansPage() {
                      scan.status === 'cancelled' ? 'Abgebrochen' : 'Ausstehend'}
                   </Badge>
                   {(scan.status === 'completed' || scan.status === 'failed' || scan.status === 'cancelled') && (
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <DeleteScanButton scanId={scan.id} />
-                    </div>
+                    <DeleteScanWrapper scanId={scan.id} />
                   )}
                 </div>
               </div>
