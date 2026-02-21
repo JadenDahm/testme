@@ -39,9 +39,9 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
-            <Shield className="h-7 w-7 text-accent-400" />
+            <Shield className="h-7 w-7" style={{ color: '#3b54a5' }} />
             <span className="text-2xl font-medium text-text-primary">
-              Test<span className="text-accent-400">Me</span>
+              Test<span style={{ color: '#3b54a5' }}>Me</span>
             </span>
           </Link>
           <h1 className="text-2xl font-medium text-text-primary">Willkommen zurück</h1>
@@ -76,7 +76,7 @@ export default function LoginPage() {
               required
             />
 
-            <Button type="submit" loading={loading} className="w-full">
+            <Button type="submit" loading={loading} className="w-full btn-tetris-green">
               Anmelden
             </Button>
           </form>
@@ -84,7 +84,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-text-muted mt-6">
           Noch kein Konto?{' '}
-          <Link href="/auth/register" className="text-accent-400 hover:text-accent-300 font-medium transition-colors">
+          <Link href="/auth/register" className="font-medium transition-colors" style={{ color: '#d61e3c' }} onMouseEnter={(e) => e.currentTarget.style.color = '#b91c1c'} onMouseLeave={(e) => e.currentTarget.style.color = '#d61e3c'}>
             Jetzt registrieren
           </Link>
         </p>

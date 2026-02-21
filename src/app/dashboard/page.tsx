@@ -41,7 +41,7 @@ export default async function DashboardPage() {
     <div className="space-y-8 animate-fade-in">
       <div>
         <h1 className="text-2xl font-medium text-text-primary">Dashboard</h1>
-        <p className="text-text-muted mt-1">Willkommen zurück! Hier ist deine Übersicht.</p>
+        <p className="text-text-muted mt-1" style={{ color: '#3eaad4' }}>Willkommen zurück! Hier ist deine Übersicht.</p>
       </div>
 
       {/* Stats */}
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
               Füge deine erste Domain hinzu und starte deinen ersten Sicherheitsscan.
             </p>
             <Link href="/dashboard/domains/add">
-              <Button>
+              <Button className="btn-tetris-green">
                 <Plus className="h-4 w-4 mr-2" />
                 Domain hinzufügen
               </Button>
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-text-primary">Letzte Scans</h2>
-            <Link href="/dashboard/scans" className="text-sm text-accent-400 hover:text-accent-300 flex items-center gap-1 transition-colors">
+            <Link href="/dashboard/scans" className="text-sm flex items-center gap-1 transition-colors hover:opacity-80" style={{ color: '#ec5e24' }}>
               Alle anzeigen <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-text-primary">Deine Domains</h2>
-            <Link href="/dashboard/domains" className="text-sm text-accent-400 hover:text-accent-300 flex items-center gap-1 transition-colors">
+            <Link href="/dashboard/domains" className="text-sm flex items-center gap-1 transition-colors hover:opacity-80" style={{ color: '#9e237e' }}>
               Alle anzeigen <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

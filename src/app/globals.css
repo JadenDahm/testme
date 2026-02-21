@@ -206,3 +206,23 @@ body {
   background-color: var(--color-tetris-purple-hover) !important;
   border-color: var(--color-tetris-purple-hover) !important;
 }
+
+.btn-tetris-green {
+  background-color: var(--color-tetris-green) !important;
+  border-color: var(--color-tetris-green) !important;
+  color: white !important;
+}
+.btn-tetris-green:hover {
+  background-color: var(--color-tetris-green-hover) !important;
+  border-color: var(--color-tetris-green-hover) !important;
+}
+
+.btn-tetris-blue {
+  background-color: var(--color-tetris-blue) !important;
+  border-color: var(--color-tetris-blue) !important;
+  color: white !important;
+}
+.btn-tetris-blue:hover {
+  background-color: var(--color-tetris-blue-hover) !important;
+  border-color: var(--color-tetris-blue-hover) !important;
+}

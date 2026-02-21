@@ -60,7 +60,7 @@ export default function RegisterPage() {
             Wir haben dir eine Bestätigungs-E-Mail an <strong className="text-text-primary">{email}</strong> geschickt.
             Klicke auf den Link in der E-Mail, um dein Konto zu aktivieren.
           </p>
-          <Link href="/auth/login" className="text-accent-400 hover:text-accent-300 font-medium text-sm mt-6 inline-block transition-colors">
+          <Link href="/auth/login" className="font-medium text-sm mt-6 inline-block transition-colors" style={{ color: '#58b247' }} onMouseEnter={(e) => e.currentTarget.style.color = '#4a9a3a'} onMouseLeave={(e) => e.currentTarget.style.color = '#58b247'}>
             Zurück zur Anmeldung
           </Link>
         </div>
@@ -73,9 +73,9 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
-            <Shield className="h-7 w-7 text-accent-400" />
+            <Shield className="h-7 w-7" style={{ color: '#3b54a5' }} />
             <span className="text-2xl font-medium text-text-primary">
-              Test<span className="text-accent-400">Me</span>
+              Test<span style={{ color: '#3b54a5' }}>Me</span>
             </span>
           </Link>
           <h1 className="text-2xl font-medium text-text-primary">Konto erstellen</h1>
@@ -122,7 +122,7 @@ export default function RegisterPage() {
               minLength={8}
             />
 
-            <Button type="submit" loading={loading} className="w-full">
+            <Button type="submit" loading={loading} className="w-full btn-tetris-cyan">
               Registrieren
             </Button>
           </form>
@@ -130,7 +130,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-text-muted mt-6">
           Bereits ein Konto?{' '}
-          <Link href="/auth/login" className="text-accent-400 hover:text-accent-300 font-medium transition-colors">
+          <Link href="/auth/login" className="font-medium transition-colors" style={{ color: '#ec5e24' }} onMouseEnter={(e) => e.currentTarget.style.color = '#c94e1e'} onMouseLeave={(e) => e.currentTarget.style.color = '#ec5e24'}>
             Jetzt anmelden
           </Link>
         </p>

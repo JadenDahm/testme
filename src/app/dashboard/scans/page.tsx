@@ -28,7 +28,7 @@ export default async function ScansPage() {
     <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-2xl font-medium text-text-primary">Scans</h1>
-        <p className="text-text-muted mt-1">Übersicht aller durchgeführten Sicherheitsscans</p>
+        <p className="text-text-muted mt-1" style={{ color: '#dc9f27' }}>Übersicht aller durchgeführten Sicherheitsscans</p>
       </div>
 
       {(!scans || scans.length === 0) ? (
@@ -51,7 +51,7 @@ export default async function ScansPage() {
                     <p className="text-sm text-text-secondary mt-1">
                       {formatDate(scan.created_at)}
                       {scan.current_step && scan.status === 'running' && (
-                        <span className="ml-2 text-accent-400">· {scan.current_step}</span>
+                        <span className="ml-2" style={{ color: '#3eaad4' }}>· {scan.current_step}</span>
                       )}
                     </p>
                   </div>
@@ -71,8 +71,8 @@ export default async function ScansPage() {
                     <div className="w-24">
                       <div className="bg-surface-200 rounded h-2 overflow-hidden">
                         <div
-                          className="bg-accent-500 rounded h-2 transition-all duration-500"
-                          style={{ width: `${scan.progress}%` }}
+                          className="rounded h-2 transition-all duration-500"
+                          style={{ width: `${scan.progress}%`, backgroundColor: '#3eaad4' }}
                         />
                       </div>
                       <p className="text-xs text-text-secondary text-center mt-1">{scan.progress}%</p>

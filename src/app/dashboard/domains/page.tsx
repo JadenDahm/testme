@@ -28,10 +28,10 @@ export default async function DomainsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-medium text-text-primary">Domains</h1>
-          <p className="text-text-muted mt-1">Verwalte deine Domains und starte Scans</p>
+          <p className="text-text-muted mt-1" style={{ color: '#58b247' }}>Verwalte deine Domains und starte Scans</p>
         </div>
         <Link href="/dashboard/domains/add">
-          <Button>
+          <Button className="btn-tetris-blue">
             <Plus className="h-4 w-4 mr-2" />
             Domain hinzufügen
           </Button>
@@ -43,7 +43,7 @@ export default async function DomainsPage() {
           <h3 className="text-lg font-medium text-text-primary mb-2">Keine Domains</h3>
           <p className="text-text-secondary mb-6">Füge deine erste Domain hinzu, um sie zu prüfen.</p>
           <Link href="/dashboard/domains/add">
-            <Button>Domain hinzufügen</Button>
+            <Button className="btn-tetris-blue">Domain hinzufügen</Button>
           </Link>
         </Card>
       ) : (
