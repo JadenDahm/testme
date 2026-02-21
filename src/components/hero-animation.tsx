@@ -55,7 +55,9 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(5, 0, 22.5); // Nach rechts verschoben (von -15 auf 5)
+    // Kamera links positionieren, damit sie die Animation rechts im Blickfeld hat
+    camera.position.set(-10, 0, 20);
+    camera.lookAt(30, 0, 0); // Blick auf die rechte Seite
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -318,8 +320,8 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
         blending: THREE.AdditiveBlending
       })
     );
-    // Mesh nach rechts verschieben, damit es nicht hinter dem Text ist
-    mesh.position.x = 50; // Weiter nach rechts verschoben
+    // Mesh nach rechts verschieben, damit es rechts neben dem Text sichtbar ist
+    mesh.position.x = 30; // Position rechts im Sichtfeld
     scene.add(mesh);
 
     // --- GUI ---
