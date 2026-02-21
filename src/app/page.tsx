@@ -19,29 +19,36 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative py-32 lg:py-48 overflow-hidden">
         <HeroAnimation showGUI={false} />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl lg:text-8xl font-medium text-text-primary max-w-5xl mx-auto leading-[1.05] tracking-tight">
-            Finde Sicherheitslücken,{' '}
-            <span className="text-accent-400">bevor es andere tun</span>
-          </h1>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div className="text-center lg:text-left">
+              <h1 className="text-5xl md:text-6xl lg:text-8xl font-medium text-text-primary leading-[1.05] tracking-tight">
+                Finde Sicherheitslücken,{' '}
+                <span className="text-accent-400">bevor es andere tun</span>
+              </h1>
 
-          <p className="text-xl md:text-2xl text-text-secondary mt-8 max-w-3xl mx-auto leading-relaxed">
-            TestMe prüft deine Website automatisch auf bekannte Schwachstellen und gibt dir
-            verständliche Empfehlungen, wie du sie beheben kannst.
-          </p>
+              <p className="text-xl md:text-2xl text-text-secondary mt-8 leading-relaxed">
+                TestMe prüft deine Website automatisch auf bekannte Schwachstellen und gibt dir
+                verständliche Empfehlungen, wie du sie beheben kannst.
+              </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-            <Link href={user ? '/dashboard' : '/auth/register'}>
-              <Button size="lg" className="text-base">
-                Jetzt kostenlos prüfen
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="#how-it-works">
-              <Button variant="outline" size="lg" className="text-base">
-                So funktioniert&apos;s
-              </Button>
-            </Link>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-12">
+                <Link href={user ? '/dashboard' : '/auth/register'}>
+                  <Button size="lg" className="text-base">
+                    Jetzt kostenlos prüfen
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="#how-it-works">
+                  <Button variant="outline" size="lg" className="text-base">
+                    So funktioniert&apos;s
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="hidden lg:block relative h-full min-h-[400px]">
+              {/* Platzhalter für Animation rechts */}
+            </div>
           </div>
         </div>
       </section>
