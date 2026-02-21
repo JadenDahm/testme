@@ -9,8 +9,8 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 const CONFIG = {
   // Scene
   bgColor: '#f8f9fa',
-  baseOpacity: 0.2, // Erhöht für sichtbare blaue Linien
-  shapeOpacity: 0.3, // Erhöht für sichtbare blaue Konturen
+  baseOpacity: 0.4, // Erhöht für sichtbare blaue Linien
+  shapeOpacity: 0.5, // Erhöht für sichtbare blaue Konturen
   
   // Global Transform
   sceneRotationX: 0.0,
@@ -236,8 +236,8 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
 
         // Base Lines: Blau statt schwarz
         float gridAlpha = mix(uBaseOpacity, uShapeOpacity, vHeightNorm);
-        // Verwende die Hauptfarbe (Blau) für Basis-Linien statt Grau
-        vec3 finalColor = uColor1 * gridAlpha * 0.6; // Blau mit 60% Intensität
+        // Verwende die Hauptfarbe (Blau) für Basis-Linien
+        vec3 finalColor = uColor1 * gridAlpha; // Blau mit voller Intensität
 
         // Signal: Can be Multi-color
         if (isVisible > 0.5) {
