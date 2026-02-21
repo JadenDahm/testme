@@ -58,12 +58,13 @@
   --color-primary-900: #172554;
   --color-primary-950: #0f172a;
 
-  /* ─── Border Radius (starke Abrundungen) ───────────────────────────────────────── */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
+  /* ─── Border Radius (starke Abrundungen - Premium Look) ───────────────────────────────────────── */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
 }
 
 /* ─── Base Styles ─────────────────────────────────────── */

@@ -8,9 +8,9 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 // --- CONFIGURATION ---
 const CONFIG = {
   // Scene
-  bgColor: '#0a0a0a',
-  baseOpacity: 0.1, // Reduced for better text readability
-  shapeOpacity: 0.2, // Reduced for better text readability
+  bgColor: '#f8f9fa',
+  baseOpacity: 0.15, // Angepasst für Light-Mode
+  shapeOpacity: 0.25, // Angepasst für Light-Mode
   
   // Global Transform
   sceneRotationX: 0.0,
@@ -28,11 +28,11 @@ const CONFIG = {
   signalDensity: 0.203,
   trailLength: 0.155688,
   
-  // Colors
-  color1: '#3b82f6', // Blau
-  useColor2: false, color2: '#a5a3ff',
-  useColor3: false, color3: '#c8ff00',
-  useColor4: false, color4: '#ff007b',
+  // Colors - Light-Mode optimiert
+  color1: '#3b82f6', // Blau (Akzentfarbe)
+  useColor2: false, color2: '#a5b8fc',
+  useColor3: false, color3: '#60a5fa',
+  useColor4: false, color4: '#2563eb',
 
   // System
   linesCount: 100,
