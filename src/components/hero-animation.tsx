@@ -496,16 +496,28 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
-    const width = window.innerWidth;
-    const boardDiv = 20 * Math.round(window.innerWidth / 20);
-    const boards = 8;
-    const bWidth = boardDiv / boards;
-    const tetrisInstances: Tetris[] = [];
+    
+    const initAnimation = () => {
+      // Get container dimensions
+      const containerRect = container.getBoundingClientRect();
+      const containerWidth = containerRect.width;
+      const containerHeight = containerRect.height;
+      
+      // Use full container width since animation is already in the right grid area
+      const boardDiv = 20 * Math.round(containerWidth / 20);
+      const boards = 8;
+      const bWidth = boardDiv / boards;
+      const tetrisInstances: Tetris[] = [];
 
-    for (let w = 0; w < boards; w++) {
-      tetrisInstances.push(new Tetris(20 * Math.round((w * bWidth) / 20), 0, bWidth, window.innerHeight, container));
-    }
+      for (let w = 0; w < boards; w++) {
+        const x = 20 * Math.round((w * bWidth) / 20);
+        tetrisInstances.push(new Tetris(x, 0, bWidth, containerHeight, container));
+      }
 
+      return tetrisInstances;
+    };
+
+    let tetrisInstances = initAnimation();
     tetrisInstancesRef.current = tetrisInstances;
 
     const handleResize = () => {
@@ -520,25 +532,17 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
       });
 
       // Create new instances
-      const newWidth = window.innerWidth;
-      const newBoardDiv = 20 * Math.round(newWidth / 20);
-      const newBWidth = newBoardDiv / boards;
-      const newInstances: Tetris[] = [];
-
-      for (let w = 0; w < boards; w++) {
-        newInstances.push(
-          new Tetris(20 * Math.round((w * newBWidth) / 20), 0, newBWidth, window.innerHeight, container)
-        );
-      }
-
-      tetrisInstancesRef.current = newInstances;
+      tetrisInstances = initAnimation();
+      tetrisInstancesRef.current = tetrisInstances;
     };
+
+    window.addEventListener('resize', handleResize);
 
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      tetrisInstances.forEach((instance) => {
+      tetrisInstancesRef.current.forEach((instance) => {
         if (instance.bgCanvas.parentNode) {
           instance.bgCanvas.parentNode.removeChild(instance.bgCanvas);
         }
