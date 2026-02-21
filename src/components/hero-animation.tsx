@@ -19,7 +19,7 @@ const CONFIG = {
   // Geometry
   shape: 0,               // City Blocks
   shapeSize: 6.0,         // Größerer Radius
-  amplitude: 1.3,        // Noch etwas größer
+  amplitude: 0.7,        // Reduziert, damit Linien nicht so hoch sind
   shapeRotZ: 0.0,
   shapeScaleX: 1.0,
   
