@@ -212,6 +212,16 @@ class Tetris {
   update() {
     const curPiece = this.curPiece;
 
+    if (!curPiece.data) {
+      this.newTetromino();
+      this.render();
+      const self = this;
+      requestAnimationFrame(() => {
+        self.update();
+      });
+      return;
+    }
+
     if (!this.checkMovement(curPiece, 0, 1)) {
       if (curPiece.y < -1) {
         // you lose
@@ -303,7 +313,9 @@ class Tetris {
   }
 
   // Make sure we can mov where we want.
-  checkMovement(curPiece: { data: number[][]; x: number; y: number }, newX: number, newY: number) {
+  checkMovement(curPiece: { data: number[][] | null; x: number; y: number }, newX: number, newY: number) {
+    if (!curPiece.data) return false;
+    
     const piece = curPiece.data;
     const posX = curPiece.x;
     const posY = curPiece.y;
