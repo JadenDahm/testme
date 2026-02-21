@@ -9,8 +9,8 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 const CONFIG = {
   // Scene
   bgColor: '#f8f9fa',
-  baseOpacity: 0.15, // Angepasst für Light-Mode
-  shapeOpacity: 0.25, // Angepasst für Light-Mode
+  baseOpacity: 0.08, // Sehr subtil für Light-Mode - Linien sollen nicht schwarz sein
+  shapeOpacity: 0.15, // Subtiler für Light-Mode
   
   // Global Transform
   sceneRotationX: 0.0,
@@ -233,9 +233,11 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
         float rnd = random(vec2(seed, 30.0));
         float isVisible = step(1.0 - uDensity, rnd);
 
-        // Base Lines: Always Main Color
+        // Base Lines: Leicht aufgehellt für Light-Mode (nicht schwarz)
         float gridAlpha = mix(uBaseOpacity, uShapeOpacity, vHeightNorm);
-        vec3 finalColor = uColor1 * gridAlpha;
+        // Leicht aufgehellte Version der Hauptfarbe für Basis-Linien
+        vec3 baseColor = mix(uColor1, vec3(1.0), 0.3); // 30% Weiß-Mix für hellere Linien
+        vec3 finalColor = baseColor * gridAlpha;
 
         // Signal: Can be Multi-color
         if (isVisible > 0.5) {
