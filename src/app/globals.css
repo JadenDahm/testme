@@ -1,62 +1,69 @@
 @import "tailwindcss";
 
 @theme {
-  /* ─── Accent: Blau ─────────────────────────────── */
-  --color-accent-50: #eff6ff;
-  --color-accent-100: #dbeafe;
-  --color-accent-200: #bfdbfe;
-  --color-accent-300: #93c5fd;
+  /* ─── Accent: Modernes Blau/Lila (Primärfarbe) ─────────────────────────────── */
+  --color-accent-50: #f0f4ff;
+  --color-accent-100: #e0e9ff;
+  --color-accent-200: #c7d7fe;
+  --color-accent-300: #a5b8fc;
   --color-accent-400: #3b82f6;
   --color-accent-500: #2563eb;
   --color-accent-600: #1d4ed8;
   --color-accent-700: #1e40af;
   --color-accent-800: #1e3a8a;
-  --color-accent-900: #1e3a8a;
+  --color-accent-900: #172554;
 
-  /* ─── Surfaces: Schwarz/Dunkelgrau ──────────────────── */
-  --color-surface-0: #000000;
-  --color-surface-50: #0a0a0a;
-  --color-surface-100: #141414;
-  --color-surface-200: #1a1a1a;
-  --color-surface-300: #262626;
-  --color-surface-400: #333333;
-  --color-surface-500: #404040;
+  /* ─── Surfaces: Helles Grau/Off-White (B2B/SaaS Stil) ──────────────────── */
+  --color-surface-0: #f8f9fa;
+  --color-surface-50: #ffffff;
+  --color-surface-100: #f5f7fa;
+  --color-surface-200: #e9ecef;
+  --color-surface-300: #dee2e6;
+  --color-surface-400: #ced4da;
+  --color-surface-500: #adb5bd;
 
-  /* ─── Text ──────────────────────────────────────────── */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a3a3a3;
-  --color-text-muted: #737373;
-  --color-text-faint: #525252;
+  /* ─── Text: Dunkles Navy/Schiefergrau (kein reines Schwarz) ──────────────────────────────────────────── */
+  --color-text-primary: #1a1d29;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #718096;
+  --color-text-faint: #a0aec0;
 
-  /* ─── Borders ───────────────────────────────────────── */
-  --color-border-subtle: rgba(255, 255, 255, 0.06);
-  --color-border-default: rgba(255, 255, 255, 0.1);
-  --color-border-strong: rgba(255, 255, 255, 0.15);
+  /* ─── Borders: Subtile, helle Trennlinien ───────────────────────────────────────── */
+  --color-border-subtle: rgba(0, 0, 0, 0.05);
+  --color-border-default: rgba(0, 0, 0, 0.08);
+  --color-border-strong: rgba(0, 0, 0, 0.12);
 
-  /* ─── Severity ──────────────────────────────────────── */
-  --color-severity-critical: #dc2626;
-  --color-severity-high: #ea580c;
-  --color-severity-medium: #ca8a04;
-  --color-severity-low: #737373;
-  --color-severity-info: #525252;
+  /* ─── Severity: Weiche Pastell-Töne ──────────────────────────────────────── */
+  --color-severity-critical: #f87171;
+  --color-severity-high: #fb923c;
+  --color-severity-medium: #fbbf24;
+  --color-severity-low: #94a3b8;
+  --color-severity-info: #64748b;
 
-  /* ─── Status ────────────────────────────────────────── */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+  /* ─── Status: Weiche Pastell-Töne ────────────────────────────────────────── */
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
 
   /* Keep legacy primary aliases for compatibility */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
+  --color-primary-50: #f0f4ff;
+  --color-primary-100: #e0e9ff;
+  --color-primary-200: #c7d7fe;
+  --color-primary-300: #a5b8fc;
   --color-primary-400: #3b82f6;
   --color-primary-500: #2563eb;
   --color-primary-600: #1d4ed8;
   --color-primary-700: #1e40af;
   --color-primary-800: #1e3a8a;
-  --color-primary-900: #1e3a8a;
-  --color-primary-950: #172554;
+  --color-primary-900: #172554;
+  --color-primary-950: #0f172a;
+
+  /* ─── Border Radius (starke Abrundungen) ───────────────────────────────────────── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
 }
 
 /* ─── Base Styles ─────────────────────────────────────── */
@@ -65,17 +72,18 @@ html {
 }
 
 body {
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   background-color: var(--color-surface-0);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 400;
+  line-height: 1.6;
 }
 
 ::selection {
-  background-color: var(--color-accent-500);
-  color: var(--color-text-primary);
+  background-color: var(--color-accent-100);
+  color: var(--color-accent-700);
 }
 
 /* scrollbar */
@@ -87,11 +95,11 @@ body {
   background: var(--color-surface-100);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-surface-400);
-  border-radius: 2px;
+  background: var(--color-surface-300);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-surface-500);
+  background: var(--color-surface-400);
 }
 
 /* ─── Animations ──────────────────────────────────────── */
@@ -129,7 +137,7 @@ body {
   color: var(--color-accent-400);
   background: var(--color-surface-200);
   padding: 0.125rem 0.375rem;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   font-size: 0.875em;
 }
 
