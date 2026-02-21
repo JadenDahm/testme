@@ -145,7 +145,7 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
   const p5InstanceRef = useRef<p5 | null>(null);
   const particlesRef = useRef<Particle[]>([]);
   const optRef = useRef<Opt>({
-    particles: typeof window !== 'undefined' && window.innerWidth ? Math.floor((window.innerWidth / 50) * 3) : 6000,
+    particles: typeof window !== 'undefined' && window.innerWidth ? Math.floor((window.innerWidth / 50) * 3 * 2) : 12000,
     noiseScale: 0.009,
     angle: Math.PI / 180 * -90,
     h1: 210, // Blau
@@ -155,7 +155,7 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
     l1: 45, // Dunklere Helligkeit für bessere Sichtbarkeit
     l2: 45,
     strokeWeight: 2.0, // Doppelt so dick
-    tail: 40, // Weniger Tail für längere Linien
+    tail: 20, // Doppelt so langer Schweif (weniger Fade = längere Linien)
   });
   const timeRef = useRef(0);
 
