@@ -66,7 +66,7 @@ class Particle {
     this.hue = this.hueSemen > 0.5 ? 20 + this.opt.h1 : 20 + this.opt.h2;
     this.sat = this.hueSemen > 0.5 ? this.opt.s1 : this.opt.s2;
     this.light = this.hueSemen > 0.5 ? this.opt.l1 : this.opt.l2;
-    this.maxSpeed = this.hueSemen > 0.5 ? 3 : 2;
+    this.maxSpeed = this.hueSemen > 0.5 ? 6 : 4; // Doppelt so schnell = längere Linien
   }
 
   update() {
@@ -154,8 +154,8 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
     s2: 70,
     l1: 45, // Dunklere Helligkeit für bessere Sichtbarkeit
     l2: 45,
-    strokeWeight: 1.0, // Dünnere Linien für mehr Details
-    tail: 60, // Weniger Tail, damit mehr sichtbar bleibt
+    strokeWeight: 2.0, // Doppelt so dick
+    tail: 40, // Weniger Tail für längere Linien
   });
   const timeRef = useRef(0);
 
