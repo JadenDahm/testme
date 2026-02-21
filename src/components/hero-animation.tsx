@@ -16,8 +16,8 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
   const colYPosRef = useRef<number[]>([]);
   const stateRef = useRef<MatrixState>({
     fps: 20, // Langsamer
-    bgOpacity: 0.02, // Weniger prägnant
-    color: '#3b82f6', // Blau statt grün für Light-Mode
+    bgOpacity: 0.05, // Wieder prägnant
+    color: '#6b7280', // Grau
     charset: '01',
     size: 20,
   });
@@ -56,9 +56,8 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
       ctx.fillStyle = `rgba(248, 249, 250, ${state.bgOpacity})`;
       ctx.fillRect(0, 0, w, h);
 
-      // Set text style - weniger prägnant mit reduzierter Opazität
+      // Set text style - wieder prägnant
       ctx.fillStyle = state.color;
-      ctx.globalAlpha = 0.4; // Reduzierte Opazität für weniger prägnantes Aussehen
       ctx.font = `${state.size}px monospace`;
 
       // Draw and update each column
@@ -81,9 +80,6 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
           colYPos[i] = yPos + state.size * 0.5; // Langsamer fallen (50% der normalen Geschwindigkeit)
         }
       }
-      
-      // Reset global alpha
-      ctx.globalAlpha = 1.0;
     };
 
     // Initial setup
