@@ -34,13 +34,13 @@ export default async function HomePage() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-12">
                 <Link href={user ? '/dashboard' : '/auth/register'}>
-                  <Button size="lg" className="text-base" style={{ backgroundColor: '#d61e3c', borderColor: '#d61e3c' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#d61e3c'}>
+                  <Button size="lg" className="text-base btn-tetris-red">
                     Jetzt kostenlos prüfen
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link href="#how-it-works">
-                  <Button variant="outline" size="lg" className="text-base" style={{ borderColor: '#3eaad4', color: '#3eaad4' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#3eaad4'; e.currentTarget.style.color = 'white'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#3eaad4'; }}>
+                  <Button variant="outline" size="lg" className="text-base btn-tetris-cyan">
                     So funktioniert&apos;s
                   </Button>
                 </Link>
@@ -189,7 +189,7 @@ export default async function HomePage() {
             Erstelle jetzt ein kostenloses Konto und starte deinen ersten Sicherheitsscan.
           </p>
           <Link href={user ? '/dashboard' : '/auth/register'}>
-            <Button size="lg" className="text-base" style={{ backgroundColor: '#ec5e24', borderColor: '#ec5e24' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c94e1e'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ec5e24'}>
+            <Button size="lg" className="text-base btn-tetris-orange">
               Jetzt starten
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

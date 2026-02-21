@@ -56,7 +56,7 @@ export function Navbar({ user }: NavbarProps) {
                   <Button variant="ghost" size="sm">Anmelden</Button>
                 </Link>
                 <Link href="/auth/register">
-                  <Button size="sm" style={{ backgroundColor: '#9e237e', borderColor: '#9e237e' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#851d6a'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9e237e'}>Kostenlos starten</Button>
+                  <Button size="sm" className="btn-tetris-purple">Kostenlos starten</Button>
                 </Link>
               </>
             )}

@@ -165,3 +165,44 @@ body {
   outline: 2px solid var(--color-accent-500);
   outline-offset: 2px;
 }
+
+/* ─── Tetris Color Buttons ──────────────────────────────────────── */
+.btn-tetris-red {
+  background-color: var(--color-tetris-red) !important;
+  border-color: var(--color-tetris-red) !important;
+  color: white !important;
+}
+.btn-tetris-red:hover {
+  background-color: var(--color-tetris-red-hover) !important;
+  border-color: var(--color-tetris-red-hover) !important;
+}
+
+.btn-tetris-cyan {
+  border-color: var(--color-tetris-cyan) !important;
+  color: var(--color-tetris-cyan) !important;
+  background-color: transparent !important;
+}
+.btn-tetris-cyan:hover {
+  background-color: var(--color-tetris-cyan) !important;
+  color: white !important;
+}
+
+.btn-tetris-orange {
+  background-color: var(--color-tetris-orange) !important;
+  border-color: var(--color-tetris-orange) !important;
+  color: white !important;
+}
+.btn-tetris-orange:hover {
+  background-color: var(--color-tetris-orange-hover) !important;
+  border-color: var(--color-tetris-orange-hover) !important;
+}
+
+.btn-tetris-purple {
+  background-color: var(--color-tetris-purple) !important;
+  border-color: var(--color-tetris-purple) !important;
+  color: white !important;
+}
+.btn-tetris-purple:hover {
+  background-color: var(--color-tetris-purple-hover) !important;
+  border-color: var(--color-tetris-purple-hover) !important;
+}
