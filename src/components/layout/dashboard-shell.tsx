@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Shield, LayoutDashboard, Globe, Search, LogOut } from 'lucide-react';
+import { LayoutDashboard, Globe, Search, LogOut } from 'lucide-react';
+import { TestMeLogo } from '@/components/ui/testme-logo';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import type { User } from '@supabase/supabase-js';
@@ -30,9 +31,9 @@ export function DashboardShell({ user, children }: { user: User; children: React
       <aside className="hidden lg:flex w-64 bg-surface-50 border-r border-border-subtle flex-col fixed inset-y-0">
         <div className="p-6 border-b border-border-subtle">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <Shield className="h-6 w-6 text-accent-400" />
+            <TestMeLogo size={28} />
             <span className="text-xl font-medium text-text-primary">
-              Test<span className="text-accent-400">Me</span>
+              Test<span style={{ color: '#3b54a5' }}>Me</span>
             </span>
           </Link>
         </div>
@@ -75,9 +76,9 @@ export function DashboardShell({ user, children }: { user: User; children: React
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-surface-50 border-b border-border-subtle">
         <div className="flex items-center justify-between px-4 h-14">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-accent-400" />
+            <TestMeLogo size={24} />
             <span className="text-lg font-medium text-text-primary">
-              Test<span className="text-accent-400">Me</span>
+              Test<span style={{ color: '#3b54a5' }}>Me</span>
             </span>
           </Link>
         </div>

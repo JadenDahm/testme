@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Shield } from 'lucide-react';
+import { TestMeLogo } from '@/components/ui/testme-logo';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,7 +73,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
-            <Shield className="h-7 w-7" style={{ color: '#3b54a5' }} />
+            <TestMeLogo size={32} />
             <span className="text-2xl font-medium text-text-primary">
               Test<span style={{ color: '#3b54a5' }}>Me</span>
             </span>

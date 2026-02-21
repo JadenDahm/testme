@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Shield, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
+import { LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
+import { TestMeLogo } from '@/components/ui/testme-logo';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -27,7 +28,7 @@ export function Navbar({ user }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2.5">
-            <Shield className="h-6 w-6" style={{ color: '#3b54a5' }} />
+            <TestMeLogo size={28} />
             <span className="text-xl font-medium text-text-primary">
               Test<span style={{ color: '#3b54a5' }}>Me</span>
             </span>
