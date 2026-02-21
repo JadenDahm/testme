@@ -132,8 +132,8 @@ class Particle {
   }
 
   render() {
-    // Blau-Töne für Light-Mode - weich und natürlich
-    const alpha = 0.25; // Subtile Opazität für natürlicheres Aussehen
+    // Blau-Töne für Light-Mode - gut sichtbar
+    const alpha = 0.6; // Höhere Opazität für bessere Sichtbarkeit
     this.p.stroke(`hsla(${this.hue}, ${this.sat}%, ${this.light}%, ${alpha})`);
     this.p.line(this.x, this.y, this.lx, this.ly);
     this.updatePrev();
@@ -145,17 +145,17 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
   const p5InstanceRef = useRef<p5 | null>(null);
   const particlesRef = useRef<Particle[]>([]);
   const optRef = useRef<Opt>({
-    particles: typeof window !== 'undefined' && window.innerWidth ? Math.floor(window.innerWidth / 500) : 500,
+    particles: typeof window !== 'undefined' && window.innerWidth ? Math.floor(window.innerWidth / 200) : 1000,
     noiseScale: 0.009,
     angle: Math.PI / 180 * -90,
     h1: 210, // Blau
     h2: 210, // Blau
-    s1: 60, // Mittlere Sättigung
-    s2: 60,
-    l1: 50, // Mittlere Helligkeit
-    l2: 50,
-    strokeWeight: 1.0, // Dünnere Linien
-    tail: 95, // Mehr Tail für weichere Übergänge
+    s1: 70, // Höhere Sättigung für bessere Sichtbarkeit
+    s2: 70,
+    l1: 45, // Dunklere Helligkeit für bessere Sichtbarkeit
+    l2: 45,
+    strokeWeight: 1.2, // Etwas dickere Linien
+    tail: 70, // Weniger Tail, damit mehr sichtbar bleibt
   });
   const timeRef = useRef(0);
 
@@ -180,7 +180,7 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
         time++;
         (window as any).time = time;
         
-        // Helles Grau für Light-Mode (statt schwarz)
+        // Helles Grau für Light-Mode - weniger Fade für bessere Sichtbarkeit
         p.background(248, 249, 250, 100 - opt.tail);
 
         for (const particle of particles) {
