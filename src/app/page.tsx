@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
+import { HeroAnimation } from '@/components/hero-animation';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function HomePage() {
@@ -16,8 +17,9 @@ export default async function HomePage() {
       <Navbar user={user} />
 
       {/* Hero */}
-      <section className="relative py-32 lg:py-48">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative py-32 lg:py-48 overflow-hidden">
+        <HeroAnimation showGUI={false} />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-medium text-text-primary max-w-5xl mx-auto leading-[1.05] tracking-tight">
             Finde Sicherheitslücken,{' '}
             <span className="text-accent-400">bevor es andere tun</span>
