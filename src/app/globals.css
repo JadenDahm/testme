@@ -171,15 +171,15 @@ body {
   background-color: var(--color-tetris-red) !important;
   border-color: rgba(0, 0, 0, 0.2) !important;
   color: white !important;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.8) !important;
 }
 .btn-tetris-red:hover {
   background-color: var(--color-tetris-red-hover) !important;
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(2px) !important;
 }
 .btn-tetris-red:active {
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(4px) !important;
 }
 
@@ -187,16 +187,16 @@ body {
   border-color: rgba(0, 0, 0, 0.2) !important;
   color: var(--color-tetris-cyan) !important;
   background-color: transparent !important;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.8) !important;
 }
 .btn-tetris-cyan:hover {
   background-color: var(--color-tetris-cyan) !important;
   color: white !important;
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(2px) !important;
 }
 .btn-tetris-cyan:active {
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(4px) !important;
 }
 
@@ -204,15 +204,15 @@ body {
   background-color: var(--color-tetris-orange) !important;
   border-color: rgba(0, 0, 0, 0.2) !important;
   color: white !important;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.8) !important;
 }
 .btn-tetris-orange:hover {
   background-color: var(--color-tetris-orange-hover) !important;
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(2px) !important;
 }
 .btn-tetris-orange:active {
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(4px) !important;
 }
 
@@ -220,15 +220,15 @@ body {
   background-color: var(--color-tetris-purple) !important;
   border-color: rgba(0, 0, 0, 0.2) !important;
   color: white !important;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.8) !important;
 }
 .btn-tetris-purple:hover {
   background-color: var(--color-tetris-purple-hover) !important;
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(2px) !important;
 }
 .btn-tetris-purple:active {
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(4px) !important;
 }
 
@@ -236,15 +236,15 @@ body {
   background-color: var(--color-tetris-green) !important;
   border-color: rgba(0, 0, 0, 0.2) !important;
   color: white !important;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.8) !important;
 }
 .btn-tetris-green:hover {
   background-color: var(--color-tetris-green-hover) !important;
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(2px) !important;
 }
 .btn-tetris-green:active {
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(4px) !important;
 }
 
@@ -252,14 +252,14 @@ body {
   background-color: var(--color-tetris-blue) !important;
   border-color: rgba(0, 0, 0, 0.2) !important;
   color: white !important;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.8) !important;
 }
 .btn-tetris-blue:hover {
   background-color: var(--color-tetris-blue-hover) !important;
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(2px) !important;
 }
 .btn-tetris-blue:active {
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.8) !important;
   transform: translateY(4px) !important;
 }

@@ -46,20 +46,20 @@ export function SecurityRadarChart({ categoryScores }: Props) {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-sm font-medium text-text-secondary mb-3">Sicherheitsprofil</h3>
+      <h3 className="text-sm font-medium text-text-primary mb-3">Sicherheitsprofil</h3>
       <div className="w-full h-[260px]">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
-            <PolarGrid stroke="rgba(255,255,255,0.06)" />
+            <PolarGrid stroke="rgba(0,0,0,0.1)" />
             <PolarAngleAxis
               dataKey="category"
-              tick={{ fontSize: 10, fill: '#a0aec0' }}
+              tick={{ fontSize: 10, fill: '#4a5568' }}
               tickLine={false}
             />
             <PolarRadiusAxis
               angle={90}
               domain={[0, 100]}
-              tick={{ fontSize: 9, fill: '#5a6578' }}
+              tick={{ fontSize: 9, fill: '#718096' }}
               tickCount={5}
               axisLine={false}
             />
