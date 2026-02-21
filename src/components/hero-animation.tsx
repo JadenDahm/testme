@@ -1,230 +1,119 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import p5 from 'p5';
 
-/*--------------------
-Vars
---------------------*/
-const deg = (a: number) => (Math.PI / 180) * a;
-const rand = (v1: number, v2: number) => Math.floor(v1 + Math.random() * (v2 - v1));
-
-interface Opt {
-  particles: number;
-  noiseScale: number;
-  angle: number;
-  h1: number;
-  h2: number;
-  s1: number;
-  s2: number;
-  l1: number;
-  l2: number;
-  strokeWeight: number;
-  tail: number;
-}
-
-/*--------------------
-Particle
---------------------*/
-class Particle {
-  x: number;
-  y: number;
-  lx: number;
-  ly: number;
-  vx: number;
-  vy: number;
-  ax: number;
-  ay: number;
-  hueSemen: number;
-  hue: number;
-  sat: number;
-  light: number;
-  maxSpeed: number;
-  p: p5;
-  opt: Opt;
-
-  constructor(x: number, y: number, p: p5, opt: Opt) {
-    this.p = p;
-    this.opt = opt;
-    this.x = x;
-    this.y = y;
-    this.lx = x;
-    this.ly = y;
-    this.vx = 0;
-    this.vy = 0;
-    this.ax = 0;
-    this.ay = 0;
-    this.hueSemen = Math.random();
-    this.hue = this.hueSemen > 0.5 ? 20 + opt.h1 : 20 + opt.h2;
-    this.sat = this.hueSemen > 0.5 ? opt.s1 : opt.s2;
-    this.light = this.hueSemen > 0.5 ? opt.l1 : opt.l2;
-    this.maxSpeed = this.hueSemen > 0.5 ? 3 : 2;
-  }
-
-  randomize() {
-    this.hueSemen = Math.random();
-    this.hue = this.hueSemen > 0.5 ? 20 + this.opt.h1 : 20 + this.opt.h2;
-    this.sat = this.hueSemen > 0.5 ? this.opt.s1 : this.opt.s2;
-    this.light = this.hueSemen > 0.5 ? this.opt.l1 : this.opt.l2;
-    this.maxSpeed = this.hueSemen > 0.5 ? 6 : 4; // Doppelt so schnell = längere Linien
-  }
-
-  update() {
-    this.follow();
-
-    this.vx += this.ax;
-    this.vy += this.ay;
-
-    const p = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-    const a = Math.atan2(this.vy, this.vx);
-    const m = Math.min(this.maxSpeed, p);
-    this.vx = Math.cos(a) * m;
-    this.vy = Math.sin(a) * m;
-
-    this.x += this.vx;
-    this.y += this.vy;
-    this.ax = 0;
-    this.ay = 0;
-
-    this.edges();
-  }
-
-  follow() {
-    const angle =
-      this.p.noise(
-        this.x * this.opt.noiseScale,
-        this.y * this.opt.noiseScale,
-        (window as any).time * this.opt.noiseScale
-      ) *
-        Math.PI *
-        0.5 +
-      this.opt.angle;
-
-    this.ax += Math.cos(angle);
-    this.ay += Math.sin(angle);
-  }
-
-  updatePrev() {
-    this.lx = this.x;
-    this.ly = this.y;
-  }
-
-  edges() {
-    const width = this.p.width;
-    const height = this.p.height;
-
-    if (this.x < 0) {
-      this.x = width;
-      this.updatePrev();
-    }
-    if (this.x > width) {
-      this.x = 0;
-      this.updatePrev();
-    }
-    if (this.y < 0) {
-      this.y = height;
-      this.updatePrev();
-    }
-    if (this.y > height) {
-      this.y = 0;
-      this.updatePrev();
-    }
-  }
-
-  render() {
-    // Blau-Töne für Light-Mode - gut sichtbar
-    const alpha = 0.6; // Höhere Opazität für bessere Sichtbarkeit
-    this.p.stroke(`hsla(${this.hue}, ${this.sat}%, ${this.light}%, ${alpha})`);
-    this.p.line(this.x, this.y, this.lx, this.ly);
-    this.updatePrev();
-  }
+interface MatrixState {
+  fps: number;
+  bgOpacity: number;
+  color: string;
+  charset: string;
+  size: number;
 }
 
 export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const p5InstanceRef = useRef<p5 | null>(null);
-  const particlesRef = useRef<Particle[]>([]);
-  const optRef = useRef<Opt>({
-    particles: typeof window !== 'undefined' && window.innerWidth ? Math.floor((window.innerWidth / 50) * 3 * 2) : 12000,
-    noiseScale: 0.009,
-    angle: Math.PI / 180 * -90,
-    h1: 210, // Blau
-    h2: 210, // Blau
-    s1: 70, // Höhere Sättigung für bessere Sichtbarkeit
-    s2: 70,
-    l1: 45, // Dunklere Helligkeit für bessere Sichtbarkeit
-    l2: 45,
-    strokeWeight: 2.0, // Doppelt so dick
-    tail: 20, // Doppelt so langer Schweif (weniger Fade = längere Linien)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+  const colYPosRef = useRef<number[]>([]);
+  const stateRef = useRef<MatrixState>({
+    fps: 30,
+    bgOpacity: 0.05,
+    color: '#3b82f6', // Blau statt grün für Light-Mode
+    charset: '01',
+    size: 20,
   });
-  const timeRef = useRef(0);
+  const dimensionsRef = useRef({ w: 0, h: 0 });
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!canvasRef.current) return;
 
-    const opt = optRef.current;
-    let particles = particlesRef.current;
-    let time = timeRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    const sketch = (p: p5) => {
-      p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
-        particles = [];
-        for (let i = 0; i < opt.particles; i++) {
-          particles.push(new Particle(p.random(p.width), p.random(p.height), p, opt));
-        }
-        p.strokeWeight(opt.strokeWeight);
-      };
+    const state = stateRef.current;
+    let { w, h } = dimensionsRef.current;
+    let colYPos = colYPosRef.current;
 
-      p.draw = () => {
-        time++;
-        (window as any).time = time;
-        
-        // Helles Grau für Light-Mode - weniger Fade für bessere Sichtbarkeit
-        p.background(248, 249, 250, 100 - opt.tail);
+    // Helper functions
+    const random = (items: string) => items[Math.floor(Math.random() * items.length)];
+    const randomRange = (start: number, end: number) => start + end * Math.random();
 
-        for (const particle of particles) {
-          particle.update();
-          particle.render();
-        }
-      };
+    // Resize canvas to fit window and reinitialize column positions
+    const resize = () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      dimensionsRef.current = { w, h };
 
-      p.windowResized = () => {
-        p.resizeCanvas(p.windowWidth, p.windowHeight);
-      };
-
-      // Click handler für Farbwechsel
-      p.mousePressed = () => {
-        opt.h1 = rand(0, 360);
-        opt.h2 = rand(0, 360);
-        opt.s1 = rand(20, 90);
-        opt.s2 = rand(20, 90);
-        opt.l1 = rand(30, 80);
-        opt.l2 = rand(30, 80);
-        opt.angle += deg(rand(60, 60)) * (Math.random() > 0.5 ? 1 : -1);
-
-        for (const particle of particles) {
-          particle.randomize();
-        }
-      };
+      // Create array to track y-position of each column
+      const numCols = Math.ceil(w / state.size);
+      colYPos = Array(numCols).fill(0);
+      colYPosRef.current = colYPos;
     };
 
-    const p5Instance = new p5(sketch, containerRef.current);
-    p5InstanceRef.current = p5Instance;
-    particlesRef.current = particles;
-    timeRef.current = time;
+    // Draw one frame of the Matrix effect
+    const draw = () => {
+      // Helles Grau für Light-Mode (statt schwarz)
+      ctx.fillStyle = `rgba(248, 249, 250, ${state.bgOpacity})`;
+      ctx.fillRect(0, 0, w, h);
 
+      // Set text style
+      ctx.fillStyle = state.color;
+      ctx.font = `${state.size}px monospace`;
+
+      // Draw and update each column
+      for (let i = 0; i < colYPos.length; i++) {
+        const yPos = colYPos[i];
+
+        // Calculate x position for this column
+        const xPos = i * state.size;
+
+        // Draw random character at current position
+        ctx.fillText(random(state.charset), xPos, yPos);
+
+        // Update position for next frame
+        const reachedBottom = yPos >= h;
+        const randomReset = yPos >= randomRange(100, 5000);
+
+        if (reachedBottom || randomReset) {
+          colYPos[i] = 0; // Reset to top
+        } else {
+          colYPos[i] = yPos + state.size; // Move down
+        }
+      }
+    };
+
+    // Initial setup
+    resize();
+
+    // Animation loop with FPS control
+    const startAnimation = () => {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
+      intervalIdRef.current = setInterval(draw, 1000 / state.fps);
+    };
+
+    startAnimation();
+
+    // Handle window resize
+    const handleResize = () => {
+      resize();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
     return () => {
-      if (p5InstanceRef.current) {
-        p5InstanceRef.current.remove();
-        p5InstanceRef.current = null;
+      window.removeEventListener('resize', handleResize);
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
       }
     };
   }, []);
 
   return (
-    <div
-      ref={containerRef}
+    <canvas
+      ref={canvasRef}
       className="absolute inset-0 w-full h-full pointer-events-none"
       style={{ zIndex: 0 }}
     />
