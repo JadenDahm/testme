@@ -336,8 +336,10 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
       
       const fScene = gui.addFolder('Scene');
       fScene.addColor(CONFIG, 'bgColor').name('Background').onChange((v: string) => {
-        if (scene.background) {
+        if (scene.background instanceof THREE.Color) {
           scene.background.set(v);
+        } else {
+          scene.background = new THREE.Color(v);
         }
       });
       fScene.add(CONFIG, 'sceneRotationY', -3.14, 3.14).name('Global Tilt Y').onChange((v: number) => mesh.rotation.y = v);
