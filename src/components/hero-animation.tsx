@@ -427,7 +427,8 @@ class Tetris {
   }
 
   // adds the piece as part of the board
-  fillBoard(curPiece: { data: number[][]; colors: string[]; x: number; y: number }) {
+  fillBoard(curPiece: { data: number[][] | null; colors: string[]; x: number; y: number }) {
+    if (!curPiece.data) return;
     const piece = curPiece.data;
     const posX = curPiece.x;
     const posY = curPiece.y;
@@ -447,7 +448,8 @@ class Tetris {
   }
 
   // rotate a piece
-  rotateTetrimono(curPiece: { data: number[][]; x: number; y: number }) {
+  rotateTetrimono(curPiece: { data: number[][] | null; x: number; y: number }) {
+    if (!curPiece.data) return null;
     const rotated: number[][] = [];
 
     for (let x = 0; x < 4; x++) {
