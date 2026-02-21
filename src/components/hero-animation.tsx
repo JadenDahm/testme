@@ -259,10 +259,6 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
           float formGlow = smoothstep(0.1, 1.0, abs(vZ)) * 0.2;
           finalColor += uColor1 * formGlow * uShapeOpacity;
         }
-        
-        // Stelle sicher, dass keine schwarzen Linien übrig bleiben
-        // Alle Linien sollten mindestens die Basis-Linien-Farbe haben
-        finalColor = max(finalColor, baseLineColor * 0.05);
 
         gl_FragColor = vec4(finalColor, 1.0);
       }
