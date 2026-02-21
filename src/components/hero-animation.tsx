@@ -29,7 +29,7 @@ const CONFIG = {
   trailLength: 0.155688,
   
   // Colors
-  color1: '#44ff44', // Grün
+  color1: '#ffffff', // Weiß
   useColor2: false, color2: '#a5a3ff',
   useColor3: false, color3: '#c8ff00',
   useColor4: false, color4: '#ff007b',
