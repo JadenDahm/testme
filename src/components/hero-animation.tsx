@@ -150,7 +150,7 @@ class Tetris {
     };
 
     this.lastMove = Date.now();
-    this.curSpeed = 50 + Math.random() * 50;
+    this.curSpeed = 20 + Math.random() * 20; // Faster for smoother animation
     this.unitSize = 20;
     this.linesCleared = 0;
     this.level = 0;
@@ -527,9 +527,9 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
       const sectionWidth = sectionRect.width;
       const sectionHeight = sectionRect.height;
       
-      // Start from 50% of section (where text ends) and go to the right edge
-      const startX = sectionWidth * 0.5;
-      const animationWidth = sectionWidth * 0.5;
+      // Start from 60% of section (10% further right than middle) and go to the right edge
+      const startX = sectionWidth * 0.6;
+      const animationWidth = sectionWidth * 0.4;
       
       const boardDiv = 20 * Math.round(animationWidth / 20);
       const boards = 8;
