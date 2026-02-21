@@ -89,21 +89,21 @@ class Tetris {
   fgCanvas: HTMLCanvasElement;
   bgCtx: CanvasRenderingContext2D;
   fgCtx: CanvasRenderingContext2D;
-  curPiece: {
+  curPiece!: {
     data: number[][] | null;
     colors: string[];
     x: number;
     y: number;
   };
-  lastMove: number;
-  curSpeed: number;
-  unitSize: number;
-  linesCleared: number;
-  level: number;
-  loseBlock: number;
-  board: Array<Array<{ data: number; colors: string[] }>>;
-  boardWidth: number;
-  boardHeight: number;
+  lastMove!: number;
+  curSpeed!: number;
+  unitSize!: number;
+  linesCleared!: number;
+  level!: number;
+  loseBlock!: number;
+  board!: Array<Array<{ data: number; colors: string[] }>>;
+  boardWidth!: number;
+  boardHeight!: number;
   container: HTMLElement;
 
   constructor(x: number, y: number, width: number, height: number, container: HTMLElement) {
