@@ -15,8 +15,8 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
   const colYPosRef = useRef<number[]>([]);
   const stateRef = useRef<MatrixState>({
-    fps: 30,
-    bgOpacity: 0.05,
+    fps: 20, // Langsamer
+    bgOpacity: 0.02, // Weniger prägnant
     color: '#3b82f6', // Blau statt grün für Light-Mode
     charset: '01',
     size: 20,
@@ -56,8 +56,9 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
       ctx.fillStyle = `rgba(248, 249, 250, ${state.bgOpacity})`;
       ctx.fillRect(0, 0, w, h);
 
-      // Set text style
+      // Set text style - weniger prägnant mit reduzierter Opazität
       ctx.fillStyle = state.color;
+      ctx.globalAlpha = 0.4; // Reduzierte Opazität für weniger prägnantes Aussehen
       ctx.font = `${state.size}px monospace`;
 
       // Draw and update each column
@@ -70,16 +71,19 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
         // Draw random character at current position
         ctx.fillText(random(state.charset), xPos, yPos);
 
-        // Update position for next frame
+        // Update position for next frame - langsamer fallen
         const reachedBottom = yPos >= h;
         const randomReset = yPos >= randomRange(100, 5000);
 
         if (reachedBottom || randomReset) {
           colYPos[i] = 0; // Reset to top
         } else {
-          colYPos[i] = yPos + state.size; // Move down
+          colYPos[i] = yPos + state.size * 0.5; // Langsamer fallen (50% der normalen Geschwindigkeit)
         }
       }
+      
+      // Reset global alpha
+      ctx.globalAlpha = 1.0;
     };
 
     // Initial setup
