@@ -18,6 +18,7 @@ export default async function HomePage() {
 
       {/* Hero */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
+        <HeroAnimation showGUI={false} />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="text-center lg:text-left pt-8 lg:pt-0">
@@ -46,7 +47,7 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="hidden lg:block relative h-full min-h-[400px]">
-              <HeroAnimation showGUI={false} />
+              {/* Platzhalter für rechten Bereich */}
             </div>
           </div>
         </div>

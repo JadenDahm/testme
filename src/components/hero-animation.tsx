@@ -105,6 +105,8 @@ class Tetris {
   boardWidth!: number;
   boardHeight!: number;
   container: HTMLElement;
+  isActive: boolean;
+  animationFrameId: number | null;
 
   constructor(x: number, y: number, width: number, height: number, container: HTMLElement) {
     this.posX = x || 0;
@@ -112,6 +114,8 @@ class Tetris {
     this.width = width || window.innerWidth;
     this.height = height || window.innerHeight;
     this.container = container;
+    this.isActive = true;
+    this.animationFrameId = null;
 
     this.bgCanvas = document.createElement('canvas');
     this.fgCanvas = document.createElement('canvas');
@@ -210,15 +214,19 @@ class Tetris {
   }
 
   update() {
+    if (!this.isActive) return;
+
     const curPiece = this.curPiece;
 
     if (!curPiece.data) {
       this.newTetromino();
       this.render();
-      const self = this;
-      requestAnimationFrame(() => {
-        self.update();
-      });
+      if (this.isActive) {
+        const self = this;
+        this.animationFrameId = requestAnimationFrame(() => {
+          self.update();
+        });
+      }
       return;
     }
 
@@ -245,10 +253,20 @@ class Tetris {
 
     this.render();
 
-    const self = this;
-    requestAnimationFrame(() => {
-      self.update();
-    });
+    if (this.isActive) {
+      const self = this;
+      this.animationFrameId = requestAnimationFrame(() => {
+        self.update();
+      });
+    }
+  }
+
+  stop() {
+    this.isActive = false;
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
   }
 
   // render only the board.
@@ -491,27 +509,38 @@ class Tetris {
 export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const tetrisInstancesRef = useRef<Tetris[]>([]);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
+    // Find the parent section element
+    sectionRef.current = container.closest('section');
     
     const initAnimation = () => {
-      // Get container dimensions
+      if (!sectionRef.current) return [];
+
+      // Get section dimensions
+      const sectionRect = sectionRef.current.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
-      const containerWidth = containerRect.width;
-      const containerHeight = containerRect.height;
+      const sectionWidth = sectionRect.width;
+      const sectionHeight = sectionRect.height;
       
-      // Use full container width since animation is already in the right grid area
-      const boardDiv = 20 * Math.round(containerWidth / 20);
+      // Start from 50% of section (where text ends) and go to the right edge
+      const startX = sectionWidth * 0.5;
+      const animationWidth = sectionWidth * 0.5;
+      
+      const boardDiv = 20 * Math.round(animationWidth / 20);
       const boards = 8;
       const bWidth = boardDiv / boards;
       const tetrisInstances: Tetris[] = [];
 
       for (let w = 0; w < boards; w++) {
-        const x = 20 * Math.round((w * bWidth) / 20);
-        tetrisInstances.push(new Tetris(x, 0, bWidth, containerHeight, container));
+        // Calculate position relative to container
+        const x = startX - containerRect.left + 20 * Math.round((w * bWidth) / 20);
+        const y = sectionRect.top - containerRect.top;
+        tetrisInstances.push(new Tetris(x, y, bWidth, sectionHeight, container));
       }
 
       return tetrisInstances;
@@ -521,8 +550,9 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
     tetrisInstancesRef.current = tetrisInstances;
 
     const handleResize = () => {
-      // Cleanup old instances
+      // Stop all animations first
       tetrisInstances.forEach((instance) => {
+        instance.stop();
         if (instance.bgCanvas.parentNode) {
           instance.bgCanvas.parentNode.removeChild(instance.bgCanvas);
         }
@@ -538,11 +568,11 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
 
     window.addEventListener('resize', handleResize);
 
-    window.addEventListener('resize', handleResize);
-
     return () => {
       window.removeEventListener('resize', handleResize);
+      // Stop all animations before cleanup
       tetrisInstancesRef.current.forEach((instance) => {
+        instance.stop();
         if (instance.bgCanvas.parentNode) {
           instance.bgCanvas.parentNode.removeChild(instance.bgCanvas);
         }
@@ -550,6 +580,7 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
           instance.fgCanvas.parentNode.removeChild(instance.fgCanvas);
         }
       });
+      tetrisInstancesRef.current = [];
     };
   }, []);
 
