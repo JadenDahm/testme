@@ -321,7 +321,7 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
       })
     );
     // Mesh nach rechts verschieben, damit es rechts neben dem Text sichtbar ist
-    mesh.position.x = 30; // Position rechts im Sichtfeld
+    mesh.position.x = 20; // Etwas weiter links positioniert
     scene.add(mesh);
 
     // --- GUI ---
