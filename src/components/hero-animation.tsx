@@ -18,8 +18,8 @@ const CONFIG = {
   
   // Geometry
   shape: 0,               // City Blocks
-  shapeSize: 4.0,
-  amplitude: 1.0,         
+  shapeSize: 6.0,         // 50% größer (von 4.0 auf 6.0)
+  amplitude: 1.5,         // 50% größer (von 1.0 auf 1.5)
   shapeRotZ: 0.0,
   shapeScaleX: 1.0,
   
@@ -29,7 +29,7 @@ const CONFIG = {
   trailLength: 0.155688,
   
   // Colors
-  color1: '#7ae4ff',
+  color1: '#ff4444', // Rot
   useColor2: false, color2: '#a5a3ff',
   useColor3: false, color3: '#c8ff00',
   useColor4: false, color4: '#ff007b',
@@ -55,7 +55,7 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(-10, 0, 15);
+    camera.position.set(-15, 0, 22.5); // 50% weiter weg für größere Sicht
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -263,8 +263,8 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
     function createGeometry() {
       const numLines = CONFIG.linesCount;
       const segments = CONFIG.segments; 
-      const width = 120; 
-      const height = 18;
+      const width = 180; // 50% größer (von 120 auf 180)
+      const height = 27; // 50% größer (von 18 auf 27)
       
       const geometry = new THREE.BufferGeometry();
       const positions = [];
