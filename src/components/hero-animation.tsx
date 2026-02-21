@@ -9,8 +9,8 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 const CONFIG = {
   // Scene
   bgColor: '#f8f9fa',
-  baseOpacity: 0.08, // Sehr subtil für Light-Mode - Linien sollen nicht schwarz sein
-  shapeOpacity: 0.15, // Subtiler für Light-Mode
+  baseOpacity: 0.2, // Erhöht für sichtbare blaue Linien
+  shapeOpacity: 0.3, // Erhöht für sichtbare blaue Konturen
   
   // Global Transform
   sceneRotationX: 0.0,
@@ -234,10 +234,10 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
         float rnd = random(vec2(seed, 30.0));
         float isVisible = step(1.0 - uDensity, rnd);
 
-        // Base Lines: Helles Grau für Light-Mode
+        // Base Lines: Blau statt schwarz
         float gridAlpha = mix(uBaseOpacity, uShapeOpacity, vHeightNorm);
-        vec3 baseLineColor = vec3(0.82, 0.84, 0.86); // Helles Grau (#d1d5db)
-        vec3 finalColor = baseLineColor * gridAlpha;
+        // Verwende die Hauptfarbe (Blau) für Basis-Linien statt Grau
+        vec3 finalColor = uColor1 * gridAlpha * 0.6; // Blau mit 60% Intensität
 
         // Signal: Can be Multi-color
         if (isVisible > 0.5) {
@@ -254,11 +254,15 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
           finalColor += signalCol * brightness;
         }
 
-        // Contour: Always Main Color
+        // Contour: Blau für Light-Mode
         if (uShapeOpacity > 0.01) {
           float formGlow = smoothstep(0.1, 1.0, abs(vZ)) * 0.2;
           finalColor += uColor1 * formGlow * uShapeOpacity;
         }
+        
+        // Stelle sicher, dass keine schwarzen Linien übrig bleiben
+        // Alle Linien sollten mindestens die Basis-Linien-Farbe haben
+        finalColor = max(finalColor, baseLineColor * 0.05);
 
         gl_FragColor = vec4(finalColor, 1.0);
       }
