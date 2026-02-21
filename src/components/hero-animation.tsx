@@ -18,8 +18,8 @@ const CONFIG = {
   
   // Geometry
   shape: 0,               // City Blocks
-  shapeSize: 4.0,         // Etwas größer
-  amplitude: 1.2,        // Etwas größer
+  shapeSize: 4.5,         // Noch etwas größer
+  amplitude: 1.3,        // Noch etwas größer
   shapeRotZ: 0.0,
   shapeScaleX: 1.0,
   
@@ -320,8 +320,9 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
         blending: THREE.AdditiveBlending
       })
     );
-    // Mesh nach rechts verschieben, damit es rechts neben dem Text sichtbar ist
+    // Mesh nach rechts verschieben und vertikal zentrieren
     mesh.position.x = 10; // Weiter links positioniert
+    mesh.position.y = 0; // Vertikal zentriert
     scene.add(mesh);
 
     // --- GUI ---
