@@ -494,6 +494,50 @@ class Tetris {
     return rotated;
   }
 
+  // Get the height of a column (how many blocks are stacked)
+  getColumnHeight(x: number): number {
+    for (let y = 0; y < this.boardHeight; y++) {
+      if (this.board[x] && this.board[x][y] && this.board[x][y].data === 1) {
+        return this.boardHeight - y;
+      }
+    }
+    return 0;
+  }
+
+  // Find the best position to spawn a new piece (lowest columns)
+  findBestSpawnPosition(pieceWidth: number): number {
+    const validPositions: number[] = [];
+    const heights: number[] = [];
+    
+    // Check all possible positions
+    for (let x = 0; x <= this.boardWidth - pieceWidth; x++) {
+      // Get the maximum height in this position
+      let maxHeight = 0;
+      for (let px = 0; px < pieceWidth && x + px < this.boardWidth; px++) {
+        const height = this.getColumnHeight(x + px);
+        if (height > maxHeight) {
+          maxHeight = height;
+        }
+      }
+      validPositions.push(x);
+      heights.push(maxHeight);
+    }
+    
+    // Find the minimum height
+    const minHeight = Math.min(...heights);
+    
+    // Get all positions with minimum height
+    const lowestPositions = validPositions.filter((_, i) => heights[i] === minHeight);
+    
+    // Return a random position from the lowest positions, or random if all are equal
+    if (lowestPositions.length > 0) {
+      return lowestPositions[Math.floor(Math.random() * lowestPositions.length)];
+    }
+    
+    // Fallback to random
+    return Math.floor(Math.random() * (this.boardWidth - pieceWidth + 1));
+  }
+
   // assign the player a new peice
   newTetromino() {
     const pieceNum = Math.floor(Math.random() * tetrominos.length);
@@ -501,7 +545,21 @@ class Tetris {
 
     curPiece.data = tetrominos[pieceNum].data;
     curPiece.colors = tetrominos[pieceNum].colors;
-    curPiece.x = Math.floor(Math.random() * (this.boardWidth - curPiece.data.length + 1));
+    
+    // Find the width of the piece
+    let pieceWidth = 0;
+    if (curPiece.data) {
+      for (let x = 0; x < 4; x++) {
+        for (let y = 0; y < 4; y++) {
+          if (curPiece.data[x] && curPiece.data[x][y] === 1) {
+            if (x + 1 > pieceWidth) pieceWidth = x + 1;
+          }
+        }
+      }
+    }
+    
+    // Use intelligent positioning to build more evenly
+    curPiece.x = this.findBestSpawnPosition(pieceWidth || 4);
     curPiece.y = -4;
   }
 }
