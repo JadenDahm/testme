@@ -24,7 +24,7 @@ export default async function HomePage() {
             <div className="text-center lg:text-left pt-8 lg:pt-0">
               <h1 className="text-5xl md:text-6xl lg:text-8xl font-medium text-text-primary leading-[1.05] tracking-tight">
                 Finde Sicherheitslücken,{' '}
-                <span className="text-accent-400">bevor es andere tun</span>
+                <span style={{ color: '#58b247' }}>bevor es andere tun</span>
               </h1>
 
               <p className="text-xl md:text-2xl text-text-secondary mt-8 leading-relaxed">
@@ -34,13 +34,13 @@ export default async function HomePage() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-12">
                 <Link href={user ? '/dashboard' : '/auth/register'}>
-                  <Button size="lg" className="text-base">
+                  <Button size="lg" className="text-base" style={{ backgroundColor: '#d61e3c', borderColor: '#d61e3c' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#d61e3c'}>
                     Jetzt kostenlos prüfen
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link href="#how-it-works">
-                  <Button variant="outline" size="lg" className="text-base">
+                  <Button variant="outline" size="lg" className="text-base" style={{ borderColor: '#3eaad4', color: '#3eaad4' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#3eaad4'; e.currentTarget.style.color = 'white'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#3eaad4'; }}>
                     So funktioniert&apos;s
                   </Button>
                 </Link>
@@ -58,7 +58,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-medium text-text-primary">So funktioniert&apos;s</h2>
-            <p className="text-text-muted mt-4 max-w-2xl mx-auto text-lg">
+            <p className="text-text-muted mt-4 max-w-2xl mx-auto text-lg" style={{ color: '#dc9f27' }}>
               In drei einfachen Schritten zu deinem Sicherheitsbericht
             </p>
           </div>
@@ -80,15 +80,19 @@ export default async function HomePage() {
                 title: 'Bericht analysieren',
                 desc: 'Erhalte einen detaillierten Bericht mit Score, Graphen, priorisierten Schwachstellen und konkreten Lösungen.',
               },
-            ].map((item) => (
-              <div key={item.step} className="text-center">
-                <div className="text-sm font-medium text-accent-400 uppercase tracking-wider mb-3">
-                  Schritt {item.step}
+            ].map((item, index) => {
+              const colors = ['#d61e3c', '#58b247', '#3eaad4', '#ec5e24', '#dc9f27', '#9e237e', '#3b54a5'];
+              const color = colors[index % colors.length];
+              return (
+                <div key={item.step} className="text-center">
+                  <div className="text-sm font-medium uppercase tracking-wider mb-3" style={{ color }}>
+                    Schritt {item.step}
+                  </div>
+                  <h3 className="text-2xl font-medium text-text-primary mb-4">{item.title}</h3>
+                  <p className="text-text-secondary leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="text-2xl font-medium text-text-primary mb-4">{item.title}</h3>
-                <p className="text-text-secondary leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -98,7 +102,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-medium text-text-primary">Was wird geprüft?</h2>
-            <p className="text-text-muted mt-4 max-w-2xl mx-auto text-lg">
+            <p className="text-text-muted mt-4 max-w-2xl mx-auto text-lg" style={{ color: '#58b247' }}>
               Über 80 Sicherheitschecks in 8 Kategorien für einen vollständigen Überblick
             </p>
           </div>
@@ -185,7 +189,7 @@ export default async function HomePage() {
             Erstelle jetzt ein kostenloses Konto und starte deinen ersten Sicherheitsscan.
           </p>
           <Link href={user ? '/dashboard' : '/auth/register'}>
-            <Button size="lg" className="text-base">
+            <Button size="lg" className="text-base" style={{ backgroundColor: '#ec5e24', borderColor: '#ec5e24' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c94e1e'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ec5e24'}>
               Jetzt starten
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

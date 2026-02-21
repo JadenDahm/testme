@@ -1,6 +1,24 @@
 @import "tailwindcss";
 
 @theme {
+  /* ─── Tetris Animation Colors ─────────────────────────────── */
+  --color-tetris-red: #d61e3c;
+  --color-tetris-green: #58b247;
+  --color-tetris-cyan: #3eaad4;
+  --color-tetris-orange: #ec5e24;
+  --color-tetris-yellow: #dc9f27;
+  --color-tetris-purple: #9e237e;
+  --color-tetris-blue: #3b54a5;
+  
+  /* Tetris color variants for hover states */
+  --color-tetris-red-hover: #b91c1c;
+  --color-tetris-green-hover: #4a9a3a;
+  --color-tetris-cyan-hover: #2e8fb8;
+  --color-tetris-orange-hover: #c94e1e;
+  --color-tetris-yellow-hover: #c08921;
+  --color-tetris-purple-hover: #851d6a;
+  --color-tetris-blue-hover: #2f4487;
+
   /* ─── Accent: Rot (aus Tetris-Animation) ─────────────────────────────── */
   --color-accent-50: #fef2f2;
   --color-accent-100: #fee2e2;

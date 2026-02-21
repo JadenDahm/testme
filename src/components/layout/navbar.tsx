@@ -27,9 +27,9 @@ export function Navbar({ user }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2.5">
-            <Shield className="h-6 w-6 text-accent-400" />
+            <Shield className="h-6 w-6" style={{ color: '#3b54a5' }} />
             <span className="text-xl font-medium text-text-primary">
-              Test<span className="text-accent-400">Me</span>
+              Test<span style={{ color: '#3b54a5' }}>Me</span>
             </span>
           </Link>
 
@@ -56,7 +56,7 @@ export function Navbar({ user }: NavbarProps) {
                   <Button variant="ghost" size="sm">Anmelden</Button>
                 </Link>
                 <Link href="/auth/register">
-                  <Button size="sm">Kostenlos starten</Button>
+                  <Button size="sm" style={{ backgroundColor: '#9e237e', borderColor: '#9e237e' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#851d6a'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9e237e'}>Kostenlos starten</Button>
                 </Link>
               </>
             )}
