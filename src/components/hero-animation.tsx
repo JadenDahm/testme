@@ -145,7 +145,7 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
   const p5InstanceRef = useRef<p5 | null>(null);
   const particlesRef = useRef<Particle[]>([]);
   const optRef = useRef<Opt>({
-    particles: typeof window !== 'undefined' && window.innerWidth ? Math.floor(window.innerWidth / 50) : 2000,
+    particles: typeof window !== 'undefined' && window.innerWidth ? Math.floor((window.innerWidth / 50) * 3) : 6000,
     noiseScale: 0.009,
     angle: Math.PI / 180 * -90,
     h1: 210, // Blau
