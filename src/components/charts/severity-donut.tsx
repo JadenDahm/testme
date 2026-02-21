@@ -49,7 +49,7 @@ export function SeverityDonutChart({ counts }: Props) {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-sm font-medium text-text-secondary mb-3">Schweregrad-Verteilung</h3>
+      <h3 className="text-sm font-medium text-text-primary mb-3">Schweregrad-Verteilung</h3>
       <div className="w-full h-[220px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -72,17 +72,17 @@ export function SeverityDonutChart({ counts }: Props) {
             <Tooltip content={<CustomTooltip />} />
             <Legend
               formatter={(value: string) => (
-                <span className="text-xs text-text-muted">{value}</span>
+                <span className="text-xs" style={{ color: '#4a5568' }}>{value}</span>
               )}
               iconSize={8}
               iconType="circle"
               wrapperStyle={{ fontSize: '12px' }}
             />
             {/* Center text */}
-            <text x="50%" y="47%" textAnchor="middle" className="fill-text-primary text-2xl font-medium">
+            <text x="50%" y="47%" textAnchor="middle" style={{ fill: '#1a1d29', fontSize: '24px', fontWeight: 500 }}>
               {total}
             </text>
-            <text x="50%" y="57%" textAnchor="middle" className="fill-text-muted text-[10px]">
+            <text x="50%" y="57%" textAnchor="middle" style={{ fill: '#718096', fontSize: '10px' }}>
               Gesamt
             </text>
           </PieChart>

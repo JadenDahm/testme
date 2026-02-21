@@ -28,15 +28,15 @@ const categoryConfig: Record<FindingCategory, string> = {
 const severityOrder: Severity[] = ['critical', 'high', 'medium', 'low', 'info'];
 
 function getCellColor(severity: Severity, count: number): string {
-  if (count === 0) return 'bg-surface-200/50 border-border-subtle';
+  if (count === 0) return 'bg-surface-200 border-border-subtle';
 
-  const opacity = count === 1 ? 'opacity-50' : count <= 3 ? 'opacity-75' : 'opacity-100';
+  const opacity = count === 1 ? 'opacity-60' : count <= 3 ? 'opacity-80' : 'opacity-100';
   const colors: Record<Severity, string> = {
-    critical: 'bg-rose-500 border-rose-400/30',
-    high: 'bg-orange-500 border-orange-400/30',
-    medium: 'bg-yellow-500 border-yellow-400/30',
-    low: 'bg-accent-500 border-accent-400/30',
-    info: 'bg-slate-500 border-slate-400/30',
+    critical: 'bg-rose-500 border-rose-500/40',
+    high: 'bg-orange-500 border-orange-500/40',
+    medium: 'bg-yellow-500 border-yellow-500/40',
+    low: 'bg-cyan-500 border-cyan-500/40',
+    info: 'bg-slate-500 border-slate-500/40',
   };
   return `${colors[severity]} ${opacity}`;
 }
@@ -58,7 +58,7 @@ export function FindingsHeatmap({ findings }: Props) {
 
   return (
     <div className="flex flex-col">
-      <h3 className="text-sm font-medium text-text-secondary mb-3">Ergebnis-Matrix</h3>
+      <h3 className="text-sm font-medium text-text-primary mb-3">Ergebnis-Matrix</h3>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

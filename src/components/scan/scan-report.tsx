@@ -124,7 +124,7 @@ export function ScanReport({ scan, findings }: Props) {
           <a
             href={`/api/scans/${scan.id}/pdf`}
             download
-            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-accent-500 text-white text-sm font-medium hover:bg-accent-400 transition-colors duration-200"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm font-medium transition-colors duration-200 btn-tetris-blue"
           >
             <Download className="h-4 w-4" />
             PDF Report
@@ -195,14 +195,14 @@ export function ScanReport({ scan, findings }: Props) {
 
       {/* ── View Mode Toggle ────────────────────────────────────────────── */}
       {findings.length > 0 && (
-        <div className="flex items-center gap-1 bg-surface-200 rounded p-1 w-fit border border-border-subtle">
+        <div className="flex items-center gap-1 bg-surface-100 rounded-xl p-1 w-fit border border-border-default">
           <button
             onClick={() => setViewMode('overview')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition-all duration-200',
+              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
               viewMode === 'overview'
-                ? 'bg-surface-400 text-text-primary shadow-sm'
-                : 'text-text-muted hover:text-text-secondary'
+                ? 'bg-surface-50 text-text-primary shadow-sm border border-border-subtle'
+                : 'text-text-muted hover:text-text-primary hover:bg-surface-50'
             )}
           >
             <BarChart3 className="h-4 w-4" />
@@ -211,10 +211,10 @@ export function ScanReport({ scan, findings }: Props) {
           <button
             onClick={() => setViewMode('findings')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition-all duration-200',
+              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
               viewMode === 'findings'
-                ? 'bg-surface-400 text-text-primary shadow-sm'
-                : 'text-text-muted hover:text-text-secondary'
+                ? 'bg-surface-50 text-text-primary shadow-sm border border-border-subtle'
+                : 'text-text-muted hover:text-text-primary hover:bg-surface-50'
             )}
           >
             <List className="h-4 w-4" />
@@ -254,15 +254,15 @@ export function ScanReport({ scan, findings }: Props) {
 
           {/* Category Detail Cards */}
           <div>
-            <h3 className="text-sm font-medium text-text-secondary mb-3">Kategoriedetails</h3>
+            <h3 className="text-sm font-medium text-text-primary mb-3">Kategoriedetails</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {categoryScores.map((cat) => {
                 const catColorClasses =
-                  cat.score >= 90 ? 'border-emerald-500/20 bg-emerald-500/5' :
-                  cat.score >= 70 ? 'border-cyan-500/20 bg-cyan-500/5' :
-                  cat.score >= 50 ? 'border-yellow-500/20 bg-yellow-500/5' :
-                  cat.score >= 30 ? 'border-orange-500/20 bg-orange-500/5' :
-                  'border-rose-500/20 bg-rose-500/5';
+                  cat.score >= 90 ? 'border-emerald-500/30 bg-emerald-500/10' :
+                  cat.score >= 70 ? 'border-cyan-500/30 bg-cyan-500/10' :
+                  cat.score >= 50 ? 'border-yellow-500/30 bg-yellow-500/10' :
+                  cat.score >= 30 ? 'border-orange-500/30 bg-orange-500/10' :
+                  'border-rose-500/30 bg-rose-500/10';
 
                 return (
                   <button
@@ -296,13 +296,14 @@ export function ScanReport({ scan, findings }: Props) {
           {findings.filter((f) => f.severity === 'critical' || f.severity === 'high').length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium text-text-secondary">Wichtigste Probleme</h3>
+                <h3 className="text-sm font-medium text-text-primary">Wichtigste Probleme</h3>
                 <button
                   onClick={() => {
                     setViewMode('findings');
                     setFilterSeverity('all');
                   }}
-                  className="text-xs text-accent-400 hover:text-accent-300 font-medium transition-colors"
+                  className="text-xs font-medium transition-colors hover:opacity-80"
+                  style={{ color: '#d61e3c' }}
                 >
                   Alle anzeigen →
                 </button>
@@ -440,7 +441,8 @@ export function ScanReport({ scan, findings }: Props) {
                               href={finding.affected_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm text-accent-400 hover:text-accent-300 flex items-center gap-1 break-all transition-colors"
+                              className="text-sm flex items-center gap-1 break-all transition-colors hover:opacity-80"
+                              style={{ color: '#3eaad4' }}
                             >
                               {finding.affected_url}
                               <ExternalLink className="h-3 w-3 flex-shrink-0" />
@@ -450,12 +452,12 @@ export function ScanReport({ scan, findings }: Props) {
 
                         {/* Recommendation */}
                         {finding.recommendation && (
-                          <div className="bg-emerald-500/8 border border-emerald-500/15 rounded p-4">
-                            <h5 className="text-xs font-medium uppercase text-emerald-400 mb-1.5 tracking-wide flex items-center gap-1">
+                          <div className="bg-emerald-500/15 border border-emerald-500/30 rounded-xl p-4">
+                            <h5 className="text-xs font-medium uppercase mb-1.5 tracking-wide flex items-center gap-1" style={{ color: '#10b981' }}>
                               <CheckCircle className="h-3 w-3" />
                               Empfehlung
                             </h5>
-                            <p className="text-sm text-emerald-300/80 leading-relaxed">{finding.recommendation}</p>
+                            <p className="text-sm leading-relaxed" style={{ color: '#059669' }}>{finding.recommendation}</p>
                           </div>
                         )}
 
@@ -465,7 +467,7 @@ export function ScanReport({ scan, findings }: Props) {
                             <h5 className="text-xs font-semibold uppercase text-text-faint mb-1 tracking-wide">
                               Technische Details
                             </h5>
-                            <pre className="bg-surface-0 border border-border-subtle text-accent-400 rounded p-4 text-xs overflow-x-auto leading-relaxed">
+                            <pre className="bg-surface-100 border border-border-default text-text-primary rounded-xl p-4 text-xs overflow-x-auto leading-relaxed font-mono">
                               {JSON.stringify(finding.details, null, 2)}
                             </pre>
                           </div>

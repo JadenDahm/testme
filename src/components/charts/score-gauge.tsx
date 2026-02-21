@@ -62,7 +62,7 @@ export function ScoreGauge({ score, size = 180 }: Props) {
           cy={center}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(0,0,0,0.1)"
           strokeWidth="10"
         />
 
@@ -79,7 +79,7 @@ export function ScoreGauge({ score, size = 180 }: Props) {
               y1={center + innerR * Math.sin(rad)}
               x2={center + outerR * Math.cos(rad)}
               y2={center + outerR * Math.sin(rad)}
-              stroke="rgba(255,255,255,0.1)"
+              stroke="rgba(0,0,0,0.15)"
               strokeWidth="1.5"
               strokeLinecap="round"
             />
@@ -106,7 +106,7 @@ export function ScoreGauge({ score, size = 180 }: Props) {
         <span className={`text-4xl font-medium tracking-tight ${scoreColor(score)}`}>
           {animatedScore}
         </span>
-        <span className="text-xs text-text-faint font-medium mt-0.5">von 100</span>
+        <span className="text-xs font-medium mt-0.5" style={{ color: '#718096' }}>von 100</span>
         <span className={`text-xs font-medium mt-1 ${scoreColor(score)}`}>
           {scoreLabel(score)}
         </span>

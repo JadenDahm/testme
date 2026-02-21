@@ -68,7 +68,7 @@ export function CategoryBarChart({ categoryScores }: Props) {
 
   return (
     <div className="flex flex-col">
-      <h3 className="text-sm font-medium text-text-secondary mb-3">Kategorie-Bewertung</h3>
+      <h3 className="text-sm font-medium text-text-primary mb-3">Kategorie-Bewertung</h3>
       <div className="w-full h-[220px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -76,17 +76,17 @@ export function CategoryBarChart({ categoryScores }: Props) {
             layout="vertical"
             margin={{ top: 5, right: 40, left: 10, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(255,255,255,0.04)" />
-            <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#5a6578' }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(0,0,0,0.08)" />
+            <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#718096' }} axisLine={false} tickLine={false} />
             <YAxis
               type="category"
               dataKey="displayName"
               width={120}
-              tick={{ fontSize: 11, fill: '#a0aec0' }}
+              tick={{ fontSize: 11, fill: '#4a5568' }}
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.05)' }} />
             <Bar
               dataKey="score"
               radius={[0, 6, 6, 0]}
@@ -100,7 +100,7 @@ export function CategoryBarChart({ categoryScores }: Props) {
                 dataKey="score"
                 position="right"
                 formatter={(value: unknown) => `${value}%`}
-                style={{ fontSize: 11, fontWeight: 600, fill: '#a0aec0' }}
+                style={{ fontSize: 11, fontWeight: 600, fill: '#4a5568' }}
               />
             </Bar>
           </BarChart>
