@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* ─── Accent: Modernes Blau/Lila (Primärfarbe) ─────────────────────────────── */
-  --color-accent-50: #f0f4ff;
-  --color-accent-100: #e0e9ff;
-  --color-accent-200: #c7d7fe;
-  --color-accent-300: #a5b8fc;
-  --color-accent-400: #3b82f6;
-  --color-accent-500: #2563eb;
-  --color-accent-600: #1d4ed8;
-  --color-accent-700: #1e40af;
-  --color-accent-800: #1e3a8a;
-  --color-accent-900: #172554;
+  /* ─── Accent: Rot (aus Tetris-Animation) ─────────────────────────────── */
+  --color-accent-50: #fef2f2;
+  --color-accent-100: #fee2e2;
+  --color-accent-200: #fecaca;
+  --color-accent-300: #fca5a5;
+  --color-accent-400: #d61e3c;
+  --color-accent-500: #b91c1c;
+  --color-accent-600: #991b1b;
+  --color-accent-700: #7f1d1d;
+  --color-accent-800: #6b1e1e;
+  --color-accent-900: #4c1515;
 
   /* ─── Surfaces: Helles Grau/Off-White (B2B/SaaS Stil) ──────────────────── */
   --color-surface-0: #f8f9fa;
@@ -46,17 +46,17 @@
   --color-danger: #f87171;
 
   /* Keep legacy primary aliases for compatibility */
-  --color-primary-50: #f0f4ff;
-  --color-primary-100: #e0e9ff;
-  --color-primary-200: #c7d7fe;
-  --color-primary-300: #a5b8fc;
-  --color-primary-400: #3b82f6;
-  --color-primary-500: #2563eb;
-  --color-primary-600: #1d4ed8;
-  --color-primary-700: #1e40af;
-  --color-primary-800: #1e3a8a;
-  --color-primary-900: #172554;
-  --color-primary-950: #0f172a;
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fee2e2;
+  --color-primary-200: #fecaca;
+  --color-primary-300: #fca5a5;
+  --color-primary-400: #d61e3c;
+  --color-primary-500: #b91c1c;
+  --color-primary-600: #991b1b;
+  --color-primary-700: #7f1d1d;
+  --color-primary-800: #6b1e1e;
+  --color-primary-900: #4c1515;
+  --color-primary-950: #2a0a0a;
 
   /* ─── Border Radius (starke Abrundungen - Premium Look) ───────────────────────────────────────── */
   --radius-sm: 12px;

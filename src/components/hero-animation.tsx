@@ -150,7 +150,7 @@ class Tetris {
     };
 
     this.lastMove = Date.now();
-    this.curSpeed = 20 + Math.random() * 20; // Faster for smoother animation
+    this.curSpeed = 150 + Math.random() * 100; // Slower falling speed
     this.unitSize = 20;
     this.linesCleared = 0;
     this.level = 0;
