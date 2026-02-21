@@ -29,7 +29,8 @@ const CONFIG = {
   trailLength: 0.155688,
   
   // Colors - Light-Mode optimiert
-  color1: '#3b82f6', // Blau (Akzentfarbe)
+  color1: '#3b82f6', // Blau (Akzentfarbe für Signale)
+  baseLineColor: '#d1d5db', // Helles Grau für Basis-Linien
   useColor2: false, color2: '#a5b8fc',
   useColor3: false, color3: '#60a5fa',
   useColor4: false, color4: '#2563eb',
@@ -233,11 +234,10 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
         float rnd = random(vec2(seed, 30.0));
         float isVisible = step(1.0 - uDensity, rnd);
 
-        // Base Lines: Leicht aufgehellt für Light-Mode (nicht schwarz)
+        // Base Lines: Helles Grau für Light-Mode
         float gridAlpha = mix(uBaseOpacity, uShapeOpacity, vHeightNorm);
-        // Leicht aufgehellte Version der Hauptfarbe für Basis-Linien
-        vec3 baseColor = mix(uColor1, vec3(1.0), 0.3); // 30% Weiß-Mix für hellere Linien
-        vec3 finalColor = baseColor * gridAlpha;
+        vec3 baseLineColor = vec3(0.82, 0.84, 0.86); // Helles Grau (#d1d5db)
+        vec3 finalColor = baseLineColor * gridAlpha;
 
         // Signal: Can be Multi-color
         if (isVisible > 0.5) {
