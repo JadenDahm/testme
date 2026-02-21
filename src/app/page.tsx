@@ -17,11 +17,11 @@ export default async function HomePage() {
       <Navbar user={user} />
 
       {/* Hero */}
-      <section className="relative py-32 lg:py-48 overflow-hidden">
+      <section className="relative py-20 lg:py-32 overflow-hidden">
         <HeroAnimation showGUI={false} />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div className="text-center lg:text-left">
+            <div className="text-center lg:text-left pt-8 lg:pt-0">
               <h1 className="text-5xl md:text-6xl lg:text-8xl font-medium text-text-primary leading-[1.05] tracking-tight">
                 Finde Sicherheitslücken,{' '}
                 <span className="text-accent-400">bevor es andere tun</span>

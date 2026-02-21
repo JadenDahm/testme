@@ -321,7 +321,7 @@ export function HeroAnimation({ showGUI = false }: { showGUI?: boolean }) {
       })
     );
     // Mesh nach rechts verschieben und vertikal zentrieren
-    mesh.position.x = 10; // Weiter links positioniert
+    mesh.position.x = 15; // Etwas weiter nach rechts
     mesh.position.y = 0; // Vertikal zentriert
     scene.add(mesh);
 
